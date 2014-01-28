@@ -16,6 +16,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
 
 import layout.SpringUtilities;
+import model.LevelParameters;
+import actionlisteners.CreateButtonListener;
+import actionlisteners.LevelNumOfWaypointsParameterListener;
+import actionlisteners.LevelheightParameterListener;
+import actionlisteners.LevelnameParameterListener;
+import actionlisteners.LevelwidthParameterListener;
+import actionlisteners.ParameterListenerBase;
 
 public class LevelCreater extends JFrame {
 
@@ -25,21 +32,24 @@ public class LevelCreater extends JFrame {
 	private static final long serialVersionUID = -1728955245801240639L;
 	private static final Dimension defaultDimension = new Dimension(800, 600);
 
+	private LevelParameters levelParameters;
+
 	public LevelCreater() {
 		this.setTitle("Level Creater");
 		this.setSize(defaultDimension);
 		this.setLocation(200, 100);
+		levelParameters = new LevelParameters();
 	}
 
 	private static void createAndShowGUI() {
 		LevelCreater frame = new LevelCreater();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		addComponentsToPane(frame.getContentPane());
+		frame.addComponentsToPane(frame.getContentPane());
 		frame.pack();
 		frame.setVisible(true);
 	}
 
-	private static void addComponentsToPane(Container pane) {
+	private void addComponentsToPane(Container pane) {
 		if (!(pane.getLayout() instanceof BorderLayout)) {
 			pane.add(new JLabel("Container doesn't use BorderLayout!"));
 			return;
@@ -52,13 +62,15 @@ public class LevelCreater extends JFrame {
 
 		// Create and populate the panel.
 		JPanel parameterPanel = new JPanel(new SpringLayout());
-		for (int i = 0; i < numPairs; i++) {
-			JLabel l = new JLabel(labels[i], JLabel.TRAILING);
-			parameterPanel.add(l);
-			JTextField textField = new JTextField(10);
-			l.setLabelFor(textField);
-			parameterPanel.add(textField);
-		}
+
+		addParameter("Levelname", parameterPanel,
+				new LevelnameParameterListener(levelParameters));
+		addParameter("Width", parameterPanel, new LevelwidthParameterListener(
+				levelParameters));
+		addParameter("Height", parameterPanel,
+				new LevelheightParameterListener(levelParameters));
+		addParameter("Number of Waypoints", parameterPanel,
+				new LevelNumOfWaypointsParameterListener(levelParameters));
 
 		// Lay out the panel.
 		SpringUtilities.makeCompactGrid(parameterPanel, numPairs, 2, // rows,//
@@ -71,28 +83,28 @@ public class LevelCreater extends JFrame {
 		pane.add(parameterPanel, BorderLayout.CENTER);
 
 		JButton createButton = new JButton("CREATE");
+		createButton.addActionListener(new CreateButtonListener(this
+				.getLevelParameters()));
 		pane.add(createButton, BorderLayout.SOUTH);
 
-		// REFERENCE TODO: DELETE
-		//
-		//
-		// JButton button = new JButton("Button 1 (PAGE_START)");
-		// pane.add(button, BorderLayout.PAGE_START);
-		//
-		// // Make the center component big, since that's the
-		// // typical usage of BorderLayout.
-		// button = new JButton("Button 2 (CENTER)");
-		// button.setPreferredSize(new Dimension(200, 100));
-		// pane.add(button, BorderLayout.CENTER);
-		//
-		// button = new JButton("Button 3 (LINE_START)");
-		// pane.add(button, BorderLayout.LINE_START);
-		//
-		// button = new JButton("Long-Named Button 4 (PAGE_END)");
-		// pane.add(button, BorderLayout.PAGE_END);
-		//
-		// button = new JButton("5 (LINE_END)");
-		// pane.add(button, BorderLayout.LINE_END);
+	}
+
+	private void addParameter(String parameterName, JPanel parameterPanel,
+			ParameterListenerBase listener) {
+		JLabel l = new JLabel(parameterName, JLabel.TRAILING);
+		parameterPanel.add(l);
+		JTextField textField = new JTextField(10);
+		textField.getDocument().addDocumentListener(listener);
+		l.setLabelFor(textField);
+		parameterPanel.add(textField);
+	}
+
+	public LevelParameters getLevelParameters() {
+		return levelParameters;
+	}
+
+	public void setLevelParameters(LevelParameters levelParameters) {
+		this.levelParameters = levelParameters;
 	}
 
 	public static void main(String[] args) {
