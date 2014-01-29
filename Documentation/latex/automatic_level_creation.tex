@@ -1,0 +1,77 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[T1]{fontenc}
+
+\frenchspacing{}
+
+\usepackage[english, ngerman]{babel}
+\usepackage{textcomp}
+
+\usepackage{hyperref}
+
+
+\usepackage{droid}
+
+\usepackage[pdftex]{graphicx}
+
+\usepackage[a4paper]{geometry}
+
+\usepackage{setspace}
+\setstretch{1.3}
+
+\usepackage{xhfill}
+\usepackage{nth}
+\usepackage[labelfont=bf,figurename=Fig.,tablename=Tab.]{caption}
+
+
+\definecolor{codeNote}{rgb}{0.0, 0.6, 0.0}
+\definecolor{gray-5}{gray}{0.85}
+\definecolor{orange}{rgb}{1.0, 0.27, 0}
+\definecolor{blue}{rgb}{0.0, 0.0, 0.8}
+
+\usepackage{multicol}
+
+\usepackage[activate]{pdfcprot}
+\usepackage{listings}
+\lstset{breaklines=true} 
+%\lstset{numbers=left, numberstyle=\scriptsize\ttfamily, numbersep=10pt, captionpos=b} 
+\lstset{columns=flexible}
+\lstset{backgroundcolor=\color{gray-5}}
+\lstset{basicstyle=\small\ttfamily}
+\lstset{framesep=4pt}
+\lstset{upquote=true}
+\lstset{inputencoding=utf8}
+\lstset{escapeinside={\%*}{*)}}
+\lstset{language=bash}
+\lstset{commentstyle=\color{blue},}
+\lstset{
+    literate={~} {$\sim$}{1}
+}
+
+\begin{document}
+
+%%%%%%%%%%%%%   COMMANDS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\tip}{\rule{10pt}{10pt}\hspace{12pt}}
+
+\newenvironment{command}[1]{\noindent\xrfill{2pt}[orange]\textcolor{orange}{\textbf{#1}}\xrfill{2pt}[orange]}{\noindent\xrfill{2pt}[orange]}
+
+\newcommand{\codenote}[1]{\textcolor{codeNote}{#1}}
+%%%%%%%%%%%%%   COMMANDS END   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	
+\title{Automatische Level-Erzeugung}
+\author{Simon Mary}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Preface}
+In 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
