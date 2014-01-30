@@ -35,7 +35,6 @@ public class LevelnameParameterListener extends ParameterListenerBase implements
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 		}
-		System.out.println(text);
 		levelParameters.setLevelName(text);
 		// java.awt.EventQueue.invokeLater(new Runnable() {
 		//

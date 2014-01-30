@@ -37,7 +37,6 @@ public class LevelheightParameterListener extends ParameterListenerBase
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 		}
-		System.out.println(text);
 		try {
 			levelParameters.setLevelHeight(Integer.parseInt(text));
 		} catch (NumberFormatException e1) {

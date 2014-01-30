@@ -36,7 +36,6 @@ public class LevelNumOfWaypointsParameterListener extends ParameterListenerBase
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 		}
-		System.out.println(text);
 		try {
 			levelParameters.setNumOfWaypoints(Integer.parseInt(text));
 		} catch (NumberFormatException e1) {

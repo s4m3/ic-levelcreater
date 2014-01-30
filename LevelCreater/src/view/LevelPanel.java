@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import model.LOCircle;
 import model.LOPolygon;
 import model.Level;
 import model.LevelObject;
@@ -21,6 +23,9 @@ public class LevelPanel extends JPanel {
 	public LevelPanel(Level level) {
 		super();
 		this.level = level;
+		this.setPreferredSize(new Dimension(level.getLevelParameters()
+				.getLevelWidth(), level.getLevelParameters().getLevelHeight()));
+		this.setLayout(null);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -45,6 +50,8 @@ public class LevelPanel extends JPanel {
 			g2.setColor(levelObject.getObjectColor());
 			if (levelObject instanceof LOPolygon) {
 				g2.fillPolygon(((LOPolygon) levelObject).getPolygon());
+			} else if (levelObject instanceof LOCircle) {
+				g2.fill(((LOCircle) levelObject).getEllipse());
 			}
 		}
 	}

@@ -40,7 +40,7 @@ public class LevelCreater extends JFrame {
 	public LevelCreater() {
 		this.setTitle("Level Creater");
 		this.setSize(defaultDimension);
-		this.setLocation(200, 100);
+		this.setLocation(100, 100);
 		levelParameters = new LevelParameters();
 	}
 
