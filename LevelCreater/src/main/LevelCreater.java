@@ -14,8 +14,10 @@ import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
+import javax.swing.text.PlainDocument;
 
 import layout.SpringUtilities;
+import model.LevelParameterDefaults;
 import model.LevelParameters;
 import actionlisteners.CreateButtonListener;
 import actionlisteners.LevelNumOfWaypointsParameterListener;
@@ -23,6 +25,7 @@ import actionlisteners.LevelheightParameterListener;
 import actionlisteners.LevelnameParameterListener;
 import actionlisteners.LevelwidthParameterListener;
 import actionlisteners.ParameterListenerBase;
+import filters.IntegerFilter;
 
 public class LevelCreater extends JFrame {
 
@@ -63,14 +66,18 @@ public class LevelCreater extends JFrame {
 		// Create and populate the panel.
 		JPanel parameterPanel = new JPanel(new SpringLayout());
 
-		addParameter("Levelname", parameterPanel,
-				new LevelnameParameterListener(levelParameters));
-		addParameter("Width", parameterPanel, new LevelwidthParameterListener(
-				levelParameters));
-		addParameter("Height", parameterPanel,
-				new LevelheightParameterListener(levelParameters));
-		addParameter("Number of Waypoints", parameterPanel,
-				new LevelNumOfWaypointsParameterListener(levelParameters));
+		addParameter("Levelname", LevelParameterDefaults.levelName,
+				parameterPanel,
+				new LevelnameParameterListener(levelParameters), false);
+		addParameter("Width", LevelParameterDefaults.levelWidth,
+				parameterPanel,
+				new LevelwidthParameterListener(levelParameters), true);
+		addParameter("Height", LevelParameterDefaults.levelHeight,
+				parameterPanel, new LevelheightParameterListener(
+						levelParameters), true);
+		addParameter("Number of Waypoints",
+				LevelParameterDefaults.numOfWaypoints, parameterPanel,
+				new LevelNumOfWaypointsParameterListener(levelParameters), true);
 
 		// Lay out the panel.
 		SpringUtilities.makeCompactGrid(parameterPanel, numPairs, 2, // rows,//
@@ -89,13 +96,19 @@ public class LevelCreater extends JFrame {
 
 	}
 
-	private void addParameter(String parameterName, JPanel parameterPanel,
-			ParameterListenerBase listener) {
+	private void addParameter(String parameterName, Object defaultValue,
+			JPanel parameterPanel, ParameterListenerBase listener,
+			boolean isIntegerFiltered) {
 		JLabel l = new JLabel(parameterName, JLabel.TRAILING);
 		parameterPanel.add(l);
 		JTextField textField = new JTextField(10);
+		if (isIntegerFiltered) {
+			PlainDocument doc = (PlainDocument) textField.getDocument();
+			doc.setDocumentFilter(new IntegerFilter());
+		}
 		textField.getDocument().addDocumentListener(listener);
 		l.setLabelFor(textField);
+		textField.setText(defaultValue.toString());
 		parameterPanel.add(textField);
 	}
 

@@ -3,6 +3,7 @@ package actionlisteners;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import model.Level;
 import model.LevelParameters;
 import view.LevelFrame;
 
@@ -17,9 +18,11 @@ public class CreateButtonListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		LevelFrame level = new LevelFrame(levelParameters);
+		Level level = new Level(levelParameters);
+		level.createLevel();
+		LevelFrame levelFrame = new LevelFrame(level);
 		// level.pack();
-		level.setVisible(true);
+		levelFrame.setVisible(true);
 
 	}
 
