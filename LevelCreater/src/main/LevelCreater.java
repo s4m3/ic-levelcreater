@@ -19,6 +19,7 @@ import javax.swing.text.PlainDocument;
 import layout.SpringUtilities;
 import model.LevelParameterDefaults;
 import model.LevelParameters;
+import model.MapHandlerTest;
 import actionlisteners.CreateButtonListener;
 import actionlisteners.LevelNumOfWaypointsParameterListener;
 import actionlisteners.LevelheightParameterListener;
@@ -144,6 +145,11 @@ public class LevelCreater extends JFrame {
 				createAndShowGUI();
 			}
 		});
+
+		// TODO: testing purpose
+		MapHandlerTest mht = new MapHandlerTest(200, 200, 40);
+		mht.makeCaverns();
+		mht.printMap();
 
 	}
 
