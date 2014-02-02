@@ -1,19 +1,66 @@
 package model;
 
 import java.awt.Polygon;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
+import javax.swing.SwingWorker;
+
+import main.LevelCreater;
 import enums.StandardWall;
 
-public class Level {
+public class Level extends SwingWorker<Void, Void>{
 
 	private ArrayList<LevelObject> levelObjectList;
 	private LevelParameters levelParameters;
+	private ArrayList<String> statusUpdates;
 
 	public Level(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
 		this.levelParameters = levelParameters;
+		statusUpdates = new ArrayList<String>();
 	}
+	
+	@Override
+	protected Void doInBackground() throws Exception {
+		setProgress(0);
+		createLevel();
+		setProgress(30);
+		// TODO: delete... testing purpose
+		MapHandlerTest mht = new MapHandlerTest(200, 200, 44);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(40);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(50);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(60);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(70);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(80);
+		mht.makeCaverns();
+		statusUpdates.add("cavern creation done");
+		setProgress(90);
+		mht.printMap();
+		statusUpdates.add("map printing done");
+		setProgress(100);
+		return null;
+	}
+	
+    /*
+     * Executed in event dispatching thread
+     */
+    @Override
+    public void done() {
+        Toolkit.getDefaultToolkit().beep();
+        LevelCreater.getInstance().createButton.setEnabled(true);
+        LevelCreater.getInstance().setCursor(null); //turn off the wait cursor
+    }
 
 	public void createLevel() {
 		createFloor();
@@ -80,5 +127,11 @@ public class Level {
 	public LevelParameters getLevelParameters() {
 		return levelParameters;
 	}
+
+	public ArrayList<String> getStatusUpdates() {
+		return statusUpdates;
+	}
+	
+	
 
 }

@@ -9,6 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
@@ -35,18 +38,30 @@ public class LevelCreater extends JFrame {
 	 */
 	private static final long serialVersionUID = -1728955245801240639L;
 	private static final Dimension defaultDimension = new Dimension(800, 600);
+	private static LevelCreater instance = null;
 
 	private LevelParameters levelParameters;
 
-	public LevelCreater() {
+	public JProgressBar progressBar;
+	public JButton createButton;
+	public JTextArea outputTextField;
+	
+	private LevelCreater() {
 		this.setTitle("Level Creater");
 		this.setSize(defaultDimension);
 		this.setLocation(100, 100);
 		levelParameters = new LevelParameters();
 	}
+	
+	public static LevelCreater getInstance() {
+        if (instance == null) {
+            instance = new LevelCreater();
+        }
+        return instance;
+    }
 
 	private static void createAndShowGUI() {
-		LevelCreater frame = new LevelCreater();
+		LevelCreater frame = LevelCreater.getInstance();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addComponentsToPane(frame.getContentPane());
 		frame.pack();
@@ -90,10 +105,31 @@ public class LevelCreater extends JFrame {
 		parameterPanel.setBorder(paneEdge);
 		pane.add(parameterPanel, BorderLayout.CENTER);
 
-		JButton createButton = new JButton("CREATE");
+		JPanel southPanel = new JPanel(new BorderLayout());
+		
+		JLabel progressLabel = new JLabel("Progress:");
+		southPanel.add(progressLabel, BorderLayout.NORTH);
+		
+		progressBar = new JProgressBar(0, 100);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        southPanel.add(progressBar, BorderLayout.WEST);
+		
+		createButton = new JButton("CREATE");
 		createButton.addActionListener(new CreateButtonListener(this
 				.getLevelParameters()));
-		pane.add(createButton, BorderLayout.SOUTH);
+		
+		outputTextField = new JTextArea();
+		outputTextField.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+		outputTextField.setText("Logger...");
+		outputTextField.setEditable(false);
+		JScrollPane outputTextScrollPane = new JScrollPane(outputTextField);
+		outputTextScrollPane.setPreferredSize(new Dimension(100, 100));
+		outputTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		southPanel.add(outputTextScrollPane, BorderLayout.SOUTH);
+		
+		southPanel.add(createButton, BorderLayout.EAST);
+		pane.add(southPanel, BorderLayout.SOUTH);
 
 	}
 
@@ -145,11 +181,6 @@ public class LevelCreater extends JFrame {
 				createAndShowGUI();
 			}
 		});
-
-		// TODO: testing purpose
-		MapHandlerTest mht = new MapHandlerTest(200, 200, 40);
-		mht.makeCaverns();
-		mht.printMap();
 
 	}
 
