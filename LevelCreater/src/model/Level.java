@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class Level extends SwingWorker<Void, Void>{
 	private ArrayList<LevelObject> levelObjectList;
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
-
+	private MapHandlerTest mht;
+	
 	public Level(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
 		this.levelParameters = levelParameters;
@@ -26,8 +28,8 @@ public class Level extends SwingWorker<Void, Void>{
 		setProgress(0);
 		createLevel();
 		setProgress(30);
-		// TODO: delete... testing purpose
-		MapHandlerTest mht = new MapHandlerTest(200, 200, 44);
+		// TODO: update... testing purpose
+		mht = new MapHandlerTest(levelParameters.getLevelWidth(), levelParameters.getLevelHeight(), 44);
 		mht.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(40);
@@ -46,7 +48,8 @@ public class Level extends SwingWorker<Void, Void>{
 		mht.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(90);
-		mht.printMap();
+		//mht.printMap();
+		//createTestMap(mht.map);
 		statusUpdates.add("map printing done");
 		setProgress(100);
 		return null;
@@ -66,8 +69,23 @@ public class Level extends SwingWorker<Void, Void>{
 		createFloor();
 		createOutsideWalls();
 		createRandomWaypoints();
+		//createTestMap(mht.map);
 
 		// createTestObject();
+	}
+	
+	public void createTestMap(int[][] map) {
+		int mapHeight = levelParameters.getLevelHeight();
+		int mapWidth = levelParameters.getLevelWidth();
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				if(map[column][row] == 1) {
+					System.out.println(column + " " + row);
+					LOWall wall = new LOWall(new Point(column, row), 10, 10);
+					this.addLevelObject(wall);
+				}
+			}
+		}
 	}
 
 	private void createTestObject() {

@@ -115,7 +115,6 @@ public class MapHandlerTest {
 
 	public void printMap() {
 		System.out.println(mapToString());
-		;
 	}
 
 	private String mapToString() {
