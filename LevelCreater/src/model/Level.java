@@ -48,8 +48,9 @@ public class Level extends SwingWorker<Void, Void>{
 		mht.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(90);
-		mht.sequentialLabeling(/*mht.map*/);
-		mht.printMap();
+		int test[][] = mht.regionLabeling(mht.map);
+		//mht.sequentialLabeling(/*mht.map*/);
+		mht.printMap(test);
 		//createTestMap(mht.map);
 		statusUpdates.add("map printing done");
 		setProgress(100);
