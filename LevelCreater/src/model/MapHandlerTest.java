@@ -1,6 +1,12 @@
 package model;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 
 public class MapHandlerTest {
@@ -128,7 +134,7 @@ public class MapHandlerTest {
 
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
-				returnString += mapSymbols.get(map[column][row]);
+				returnString += map[column][row];//mapSymbols.get(map[column][row]);
 			}
 			returnString += "\n";
 		}
@@ -181,5 +187,114 @@ public class MapHandlerTest {
 		}
 		return 0;
 	}
+	
+	public void sequentialLabeling(/*int[][] map*/) {
+		//value of the next label to be assigned
+		int m = 2;
+		Map<Integer, Integer> collisions = new HashMap<Integer, Integer>();
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				if(map[column][row] == 1) {
+					int[] labels = getNeighborLabels(column, row);
+					if(allBackgroundPixels(labels)) {
+						System.out.println("here");
+						map[column][row] = m;
+						m++;
+					} else if(exactlyOneLargeNeighbor(labels)){
+						System.out.println("here2");
+						int nk = -100; //TODO: better value, this is for debugging (or no value)
+						for (int l : labels) {
+							if(l>1) nk = l;
+						}
+						map[column][row] = nk;
+					} else if(severalLargeNeighbors(labels)) {
+						System.out.println("here3");
+						int nk = -100; //TODO: better value, this is for debugging (or no value)
+						for (int l : labels) {
+							if(l>1) nk = l;
+						}
+						map[column][row] = nk;
+						//TODO:register label collisions
+					}
+				}
+			}	
+		}
+	}
+	
+	private boolean severalLargeNeighbors(int[] labels) {
+		int neighborCount = 0;
+		for (int i : labels) {
+			if(i>1) 
+				neighborCount++;
+		}
+		if(neighborCount > 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean exactlyOneLargeNeighbor(int[] labels) {
+		int neighborCount = 0;
+		for (int i : labels) {
+			if(i>1) 
+				neighborCount++;
+		}
+		if(neighborCount == 1) 
+			return true;
+		else
+			return false;
+	}
+	
+	private boolean allBackgroundPixels(int[] labels) {
+		int pixelLabel = 0;
+		for (int label : labels) {
+			if(label > pixelLabel) 
+				return false;
+		}
+		return true;
+	}
+	
+//	public int[] getNeighborLabels(int x, int y, int scopeX, int scopeY) {
+//		int[] result = new int[8];
+//		Arrays.fill(result, -1);
+//		int startX = x - scopeX;
+//		int startY = y - scopeY;
+//		int endX = x + scopeX;
+//		int endY = y + scopeY;
+//
+//		int iX = startX;
+//		int iY = startY;
+//
+//		int labelCounter = 0;
+//		for (iY = startY; iY <= endY; iY++) {
+//			for (iX = startX; iX <= endX; iX++) {
+//				if (!(iX == x && iY == y)) {
+//					result[labelCounter] = getLabel(iX, iY);
+//					labelCounter ++;
+//				}
+//			}
+//		}
+//		return result;
+//	}
+	
+	public int[] getNeighborLabels(int x, int y) {
+		int[] result = new int[4];
+		Arrays.fill(result, -1);
+		result[0] = getLabel(x-1, y-1);
+		result[0] = getLabel(x, y-1);
+		result[0] = getLabel(x+1, y-1);
+		result[0] = getLabel(x-1, y);
+		return result;
+	}
+	
+	
+	
+	private int getLabel(int x, int y) {
+		if(isOutOfBounds(x, y))
+			return 0;
+		return map[x][y];
+	}
+	
 
 }
