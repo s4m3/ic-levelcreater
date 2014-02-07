@@ -51,8 +51,9 @@ public class Level extends SwingWorker<Void, Void> {
 		mht.printMap();
 		setProgress(90);
 		int test[][] = mht.regionLabeling(mht.map);
-		// mht.sequentialLabeling(/*mht.map*/);
 		mht.printMap(test);
+		int test2[][] = mht.convertRegionsToContour(test, 2);
+		mht.printMap(test2);
 		// createTestMap(mht.map);
 		statusUpdates.add("map printing done");
 		setProgress(100);

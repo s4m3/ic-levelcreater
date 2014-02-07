@@ -223,11 +223,13 @@ public class MapHandlerTest {
 
 	public int[][] regionLabeling(int[][] newMap) {
 		int[][] map = cloneArray(newMap);
+		int mapHeight = map.length;
+		int mapWidth = map[0].length;
 		int m = 2;
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
 				if (map[column][row] == 1) {
-					floodFill(map, column, row, m);
+					floodFill(map, column, row, m, mapWidth, mapHeight);
 					m++;
 				}
 			}
@@ -244,7 +246,8 @@ public class MapHandlerTest {
 		}
 	}
 
-	private void floodFill(int[][] map, int column, int row, int label) {
+	private void floodFill(int[][] map, int column, int row, int label,
+			int mapWidth, int mapHeight) {
 		LinkedList<Node> q = new LinkedList<Node>(); // queue
 		q.addFirst(new Node(column, row));
 		while (!q.isEmpty()) {
@@ -351,4 +354,52 @@ public class MapHandlerTest {
 		return map[x][y];
 	}
 
+	public int[][] convertRegionsToContour(int[][] input, int initialLabel) {
+		int map[][] = cloneArray(input);
+		int mapHeight = map.length;
+		int mapWidth = map[0].length;
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				// if not a background pixel and has top bottom left and right
+				// neighbor, it is a inner pixel
+				if (map[column][row] != 0) {
+					if (isInnerPixel(column, row, map))
+						map[column][row] = -1;
+				}
+			}
+		}
+
+		for (int column2 = 0, row2 = 0; row2 < mapHeight; row2++) {
+			for (column2 = 0; column2 < mapWidth; column2++) {
+				if (map[column2][row2] == -1) {
+					map[column2][row2] = 0;
+				}
+			}
+		}
+
+		return map;
+	}
+
+	private boolean isInnerPixel(int column, int row, int[][] map) {
+		boolean innerPixel = true;
+		// Out of bounds? then no inner pixel
+		if (isOutOfBounds(column, row - 1) || isOutOfBounds(column, row + 1)
+				|| isOutOfBounds(column - 1, row)
+				|| isOutOfBounds(column + 1, row))
+			return false;
+
+		// TOP
+		if (map[column][row - 1] == 0)
+			innerPixel = false;
+		// BOTTOM
+		if (map[column][row + 1] == 0)
+			innerPixel = false;
+		// LEFT
+		if (map[column - 1][row] == 0)
+			innerPixel = false;
+		// RIGHT
+		if (map[column + 1][row] == 0)
+			innerPixel = false;
+		return innerPixel;
+	}
 }
