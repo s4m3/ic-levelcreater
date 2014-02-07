@@ -10,26 +10,27 @@ import javax.swing.SwingWorker;
 import main.LevelCreater;
 import enums.StandardWall;
 
-public class Level extends SwingWorker<Void, Void>{
+public class Level extends SwingWorker<Void, Void> {
 
 	private ArrayList<LevelObject> levelObjectList;
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
 	private MapHandlerTest mht;
-	
+
 	public Level(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
 		this.levelParameters = levelParameters;
 		statusUpdates = new ArrayList<String>();
 	}
-	
+
 	@Override
 	protected Void doInBackground() throws Exception {
 		setProgress(0);
 		createLevel();
 		setProgress(30);
 		// TODO: update... testing purpose
-		mht = new MapHandlerTest(levelParameters.getLevelWidth(), levelParameters.getLevelHeight(), 44);
+		mht = new MapHandlerTest(levelParameters.getLevelWidth(),
+				levelParameters.getLevelHeight(), 44);
 		mht.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(40);
@@ -47,41 +48,42 @@ public class Level extends SwingWorker<Void, Void>{
 		setProgress(80);
 		mht.makeCaverns();
 		statusUpdates.add("cavern creation done");
+		mht.printMap();
 		setProgress(90);
 		int test[][] = mht.regionLabeling(mht.map);
-		//mht.sequentialLabeling(/*mht.map*/);
+		// mht.sequentialLabeling(/*mht.map*/);
 		mht.printMap(test);
-		//createTestMap(mht.map);
+		// createTestMap(mht.map);
 		statusUpdates.add("map printing done");
 		setProgress(100);
 		return null;
 	}
-	
-    /*
-     * Executed in event dispatching thread
-     */
-    @Override
-    public void done() {
-        Toolkit.getDefaultToolkit().beep();
-        LevelCreater.getInstance().createButton.setEnabled(true);
-        LevelCreater.getInstance().setCursor(null); //turn off the wait cursor
-    }
+
+	/*
+	 * Executed in event dispatching thread
+	 */
+	@Override
+	public void done() {
+		Toolkit.getDefaultToolkit().beep();
+		LevelCreater.getInstance().createButton.setEnabled(true);
+		LevelCreater.getInstance().setCursor(null); // turn off the wait cursor
+	}
 
 	public void createLevel() {
 		createFloor();
 		createOutsideWalls();
 		createRandomWaypoints();
-		//createTestMap(mht.map);
+		// createTestMap(mht.map);
 
 		// createTestObject();
 	}
-	
+
 	public void createTestMap(int[][] map) {
 		int mapHeight = levelParameters.getLevelHeight();
 		int mapWidth = levelParameters.getLevelWidth();
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
-				if(map[column][row] == 1) {
+				if (map[column][row] == 1) {
 					System.out.println(column + " " + row);
 					LOWall wall = new LOWall(new Point(column, row), 10, 10);
 					this.addLevelObject(wall);
@@ -151,7 +153,5 @@ public class Level extends SwingWorker<Void, Void>{
 	public ArrayList<String> getStatusUpdates() {
 		return statusUpdates;
 	}
-	
-	
 
 }
