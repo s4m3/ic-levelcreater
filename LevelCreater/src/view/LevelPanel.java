@@ -46,6 +46,7 @@ public class LevelPanel extends JPanel {
 	public void paintLevel(Graphics2D g2) {
 		ArrayList<LevelObject> levelObjs = this.level.getLevelObjectList();
 
+		System.out.println(levelObjs.size());
 		for (LevelObject levelObject : levelObjs) {
 			g2.setColor(levelObject.getObjectColor());
 			if (levelObject instanceof LOPolygon) {

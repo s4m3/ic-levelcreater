@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
 
 import enums.StandardWall;
@@ -9,6 +10,14 @@ public class LOWall extends LOPolygon {
 
 	public LOWall() {
 		this.objectColor = Color.DARK_GRAY;
+	}
+	
+	public LOWall(Point position, int width, int height) {
+		this.objectColor = Color.DARK_GRAY;
+		this.position = position;
+		int[] xs = { position.x, position.x + width, position.x + width, position.x };
+		int[] ys = { position.y, position.y, position.y + height, position.y + height };
+		this.polygon = new Polygon(xs, ys, xs.length);
 	}
 
 	public LOWall(StandardWall wallType, int levelWidth, int levelHeigth,

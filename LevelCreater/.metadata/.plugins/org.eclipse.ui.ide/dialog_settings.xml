@@ -9,6 +9,7 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\Users\Simon\Hochschule\HTW Berlin\6. Semester\ic-levelcreater\LevelCreater"/>
 			<item value="/Users/simon/Documents/HTW/5. Semester/IC LevelCreater/ic-levelcreater/LevelCreater"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
