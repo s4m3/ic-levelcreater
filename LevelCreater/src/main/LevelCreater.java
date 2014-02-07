@@ -147,7 +147,14 @@ public class LevelCreater extends JFrame {
 		});
 
 		// TODO: testing purpose
-		MapHandlerTest mht = new MapHandlerTest(200, 200, 40);
+		MapHandlerTest mht = new MapHandlerTest(100, 100, 40);
+		mht.makeCaverns();
+		mht.makeCaverns();
+		mht.makeCaverns();
+		mht.makeCaverns();
+		mht.makeCaverns();
+		mht.makeCaverns();
+		mht.makeCaverns();
 		mht.makeCaverns();
 		mht.printMap();
 
