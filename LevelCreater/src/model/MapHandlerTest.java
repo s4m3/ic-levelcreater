@@ -151,11 +151,6 @@ public class MapHandlerTest {
 		String returnString = "Width: " + mapWidth + "\tHeight: " + mapHeight
 				+ "\t" + percentAreWalls + "% Walls \n";
 
-		ArrayList<String> mapSymbols = new ArrayList<String>();
-		mapSymbols.add(".");
-		mapSymbols.add("#");
-		mapSymbols.add("+");
-
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
 				returnString += map[column][row];// mapSymbols.get(map[column][row]);
@@ -237,106 +232,26 @@ public class MapHandlerTest {
 		return map;
 	}
 
-	class Node {
-		int x, y;
 
-		Node(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
 
 	private void floodFill(int[][] map, int column, int row, int label,
 			int mapWidth, int mapHeight) {
-		LinkedList<Node> q = new LinkedList<Node>(); // queue
-		q.addFirst(new Node(column, row));
+		LinkedList<MapPoint> q = new LinkedList<MapPoint>(); // queue
+		q.addFirst(new MapPoint(column, row));
 		while (!q.isEmpty()) {
-			Node n = q.removeLast();
+			MapPoint n = q.removeLast();
 			if ((n.x >= 0) && (n.x < mapWidth) && (n.y >= 0)
 					&& (n.y < mapHeight) && map[n.x][n.y] == 1) {
 				map[n.x][n.y] = label;
-				q.addFirst(new Node(n.x + 1, n.y));
-				q.addFirst(new Node(n.x, n.y + 1));
-				q.addFirst(new Node(n.x, n.y - 1));
-				q.addFirst(new Node(n.x - 1, n.y));
+				q.addFirst(new MapPoint(n.x + 1, n.y));
+				q.addFirst(new MapPoint(n.x, n.y + 1));
+				q.addFirst(new MapPoint(n.x, n.y - 1));
+				q.addFirst(new MapPoint(n.x - 1, n.y));
 			}
 		}
 	}
 
-	// probably too expensive
-	public void sequentialLabeling(/* int[][] map */) {
-		// value of the next label to be assigned
-		int m = 2;
-		Map<Integer, Integer> collisions = new HashMap<Integer, Integer>();
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				if (map[column][row] == 1) {
-					int[] labels = getNeighborLabels(column, row);
-					if (allBackgroundPixels(labels)) {
-						map[column][row] = m;
-						m++;
-					} else if (exactlyOneLargeNeighbor(labels)) {
-						int nk = -100; // TODO: better value, this is for
-										// debugging (or no value)
-						for (int l : labels) {
-							if (l > 1)
-								nk = l;
-						}
-						map[column][row] = nk;
-					} else if (severalLargeNeighbors(labels)) {
-						int nk = -100; // TODO: better value, this is for
-										// debugging (or no value)
-						for (int l : labels) {
-							if (l > 1)
-								nk = l;
-						}
-						map[column][row] = nk;
-						for (int otherLabel : labels) {
-							if (otherLabel > 1 && otherLabel != nk) {
-								collisions.put(otherLabel, nk);
-							}
-						}
-					}
-				}
-			}
-		}
-		// resolve label collisions
-
-	}
-
-	private boolean severalLargeNeighbors(int[] labels) {
-		int neighborCount = 0;
-		for (int i : labels) {
-			if (i > 1)
-				neighborCount++;
-		}
-		if (neighborCount > 1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean exactlyOneLargeNeighbor(int[] labels) {
-		int neighborCount = 0;
-		for (int i : labels) {
-			if (i > 1)
-				neighborCount++;
-		}
-		if (neighborCount == 1)
-			return true;
-		else
-			return false;
-	}
-
-	private boolean allBackgroundPixels(int[] labels) {
-		int pixelLabel = 0;
-		for (int label : labels) {
-			if (label > pixelLabel)
-				return false;
-		}
-		return true;
-	}
+	
 
 	public int[] getNeighborLabels(int x, int y) {
 		int[] result = new int[4];

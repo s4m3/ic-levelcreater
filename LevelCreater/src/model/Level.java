@@ -55,6 +55,27 @@ public class Level extends SwingWorker<Void, Void> {
 		int test2[][] = mht.convertRegionsToContour(test, 2);
 		mht.printMap(test2);
 		// createTestMap(mht.map);
+		
+		//TEST PPR
+		PolygonPointReducer ppr = new PolygonPointReducer();
+		ArrayList<MapPoint> shape = new ArrayList<MapPoint>();
+		shape.add(new MapPoint(0, 100));
+		shape.add(new MapPoint(20, 0));
+		shape.add(new MapPoint(40, 300));
+		shape.add(new MapPoint(60, 0));
+		shape.add(new MapPoint(80, 20));
+		shape.add(new MapPoint(100, 30));
+		shape.add(new MapPoint(120, 50));
+		shape.add(new MapPoint(140, 200));
+		shape.add(new MapPoint(200, 0));
+		for (MapPoint mapPoint : shape) {
+			System.out.println(mapPoint.x +":"+ mapPoint.y);
+		}
+		ArrayList<MapPoint> reduced = ppr.reduceWithTolerance(shape, 50);
+		System.out.println("after");
+		for (MapPoint mapPoint : reduced) {
+			System.out.println(mapPoint.x +":"+ mapPoint.y);
+		}
 		statusUpdates.add("map printing done");
 		setProgress(100);
 		return null;
