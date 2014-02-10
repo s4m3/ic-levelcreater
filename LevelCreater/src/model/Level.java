@@ -56,6 +56,13 @@ public class Level extends SwingWorker<Void, Void> {
 		mht.printMap(test2);
 		// createTestMap(mht.map);
 		
+		//TEST CONTOUR TRACER
+		ContourTracer ct = new ContourTracer(test2);
+		//ct.traceContours();
+		//ArrayList<ArrayList<MapPoint>> pointList = ct.getContours();
+		
+		System.out.println("done");
+		
 		//TEST PPR
 		PolygonPointReducer ppr = new PolygonPointReducer();
 		ArrayList<MapPoint> shape = new ArrayList<MapPoint>();
