@@ -72,7 +72,8 @@ public class ContourTracer {
 		for (int i = 0; i < 7; i++) {
 			int x = pt.x + delta[dir][0];
 			int y = pt.y + delta[dir][1];
-			if (map[y][x] == 0) { // TODO: is this correct x and y???
+			if (map[x][y] == 0) { // TODO: is this correct x and y???
+				map[x][y] = -1;
 				dir = (dir + 1) % 8;
 			} else {
 				pt.x = x;

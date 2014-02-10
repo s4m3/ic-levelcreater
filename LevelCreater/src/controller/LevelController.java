@@ -65,7 +65,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		
 		//TEST CONTOUR TRACER
 		ContourTracer ct = new ContourTracer(test2);
-		//ct.traceContours();
+		ct.traceContours();
 		//ArrayList<ArrayList<MapPoint>> pointList = ct.getContours();
 		
 		System.out.println("done");
