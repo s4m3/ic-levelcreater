@@ -14,4 +14,8 @@ public class LOPolygon extends LevelObject {
 		return polygon;
 	}
 
+	public void setPolygon(Polygon polygon) {
+		this.polygon = polygon;
+	}
+
 }

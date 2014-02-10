@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import controller.LevelController;
 import model.LOCircle;
 import model.LOPolygon;
-import model.Level;
 import model.LevelObject;
 
 public class LevelPanel extends JPanel {
@@ -18,9 +18,9 @@ public class LevelPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 3171735915272793867L;
-	private Level level;
+	private LevelController level;
 
-	public LevelPanel(Level level) {
+	public LevelPanel(LevelController level) {
 		super();
 		this.level = level;
 		this.setPreferredSize(new Dimension(level.getLevelParameters()
@@ -46,7 +46,7 @@ public class LevelPanel extends JPanel {
 	public void paintLevel(Graphics2D g2) {
 		ArrayList<LevelObject> levelObjs = this.level.getLevelObjectList();
 
-		System.out.println(levelObjs.size());
+		//System.out.println(levelObjs.size());
 		for (LevelObject levelObject : levelObjs) {
 			g2.setColor(levelObject.getObjectColor());
 			if (levelObject instanceof LOPolygon) {

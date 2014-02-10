@@ -11,9 +11,9 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 
-import model.Level;
+import controller.LevelController;
+import controller.actionlistener.SaveLevelMenuItemListener;
 import model.LevelParameters;
-import actionlisteners.SaveLevelMenuItemListener;
 
 public class LevelFrame extends JFrame {
 
@@ -22,7 +22,7 @@ public class LevelFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = -6379564719134837001L;
 
-	public LevelFrame(Level level) {
+	public LevelFrame(LevelController level) {
 		LevelParameters lp = level.getLevelParameters();
 		this.setTitle(lp.getLevelName());
 		// this.setSize(lp.getLevelWidth(), lp.getLevelHeight() + 40/* + menubar

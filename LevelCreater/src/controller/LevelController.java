@@ -1,4 +1,4 @@
-package model;
+package controller;
 
 import java.awt.Point;
 import java.awt.Polygon;
@@ -8,16 +8,23 @@ import java.util.ArrayList;
 import javax.swing.SwingWorker;
 
 import main.LevelCreater;
+import model.LOFloor;
+import model.LOPolygon;
+import model.LOWall;
+import model.LOWaypoint;
+import model.LevelObject;
+import model.LevelParameters;
+import model.MapPoint;
 import enums.StandardWall;
 
-public class Level extends SwingWorker<Void, Void> {
+public class LevelController extends SwingWorker<Void, Void> {
 
 	private ArrayList<LevelObject> levelObjectList;
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
-	private MapHandlerTest mht;
+	private CellularMapCreater cmc;
 
-	public Level(LevelParameters levelParameters) {
+	public LevelController(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
 		this.levelParameters = levelParameters;
 		statusUpdates = new ArrayList<String>();
@@ -29,31 +36,31 @@ public class Level extends SwingWorker<Void, Void> {
 		createLevel();
 		setProgress(30);
 		// TODO: update... testing purpose
-		mht = new MapHandlerTest(levelParameters.getLevelWidth(),
+		cmc = new CellularMapCreater(levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight(), 44);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(40);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(50);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(60);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(70);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		setProgress(80);
-		mht.makeCaverns();
+		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
-		mht.printMap();
+		cmc.printMap();
 		setProgress(90);
-		int test[][] = mht.regionLabeling(mht.map);
-		mht.printMap(test);
-		int test2[][] = mht.convertRegionsToContour(test, 2);
-		mht.printMap(test2);
+		int test[][] = cmc.regionLabeling(cmc.map);
+		cmc.printMap(test);
+		int test2[][] = cmc.convertRegionsToContour(test, 2);
+		cmc.printMap(test2);
 		// createTestMap(mht.map);
 		
 		//TEST CONTOUR TRACER
@@ -126,7 +133,7 @@ public class Level extends SwingWorker<Void, Void> {
 		int[] xpoints = { -20, -10, -50, 100 };
 		int[] ypoints = { -100, -23, 200, 400 };
 
-		test.polygon = new Polygon(xpoints, ypoints, xpoints.length);
+		test.setPolygon(new Polygon(xpoints, ypoints, xpoints.length));
 		this.addLevelObject(test);
 	}
 

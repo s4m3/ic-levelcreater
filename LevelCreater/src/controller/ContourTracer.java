@@ -1,6 +1,8 @@
-package model;
+package controller;
 
 import java.util.ArrayList;
+
+import model.MapPoint;
 
 public class ContourTracer {
 	// TODO: proper constructor, isoutofbounds, usage

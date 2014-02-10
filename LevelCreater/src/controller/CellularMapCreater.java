@@ -1,4 +1,4 @@
-package model;
+package controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-public class MapHandlerTest {
+import model.MapPoint;
+
+public class CellularMapCreater {
 
 	Random rand = new Random();
 
@@ -21,7 +23,7 @@ public class MapHandlerTest {
 	// ALL_BACKGROUND, ONE, MANY
 	// }
 
-	public MapHandlerTest() {
+	public CellularMapCreater() {
 		mapWidth = 40;
 		mapHeight = 21;
 		percentAreWalls = 40;
@@ -29,7 +31,7 @@ public class MapHandlerTest {
 		randomFillMap();
 	}
 
-	public MapHandlerTest(int width, int height, int percentAreWalls) {
+	public CellularMapCreater(int width, int height, int percentAreWalls) {
 		this.mapWidth = width;
 		this.mapHeight = height;
 		this.percentAreWalls = percentAreWalls;
@@ -37,7 +39,7 @@ public class MapHandlerTest {
 		randomFillMap();
 	}
 
-	public MapHandlerTest(int mapWidth, int mapHeight, int[][] map,
+	public CellularMapCreater(int mapWidth, int mapHeight, int[][] map,
 			int percentWalls) {
 		this.mapWidth = mapWidth;
 		this.mapHeight = mapHeight;

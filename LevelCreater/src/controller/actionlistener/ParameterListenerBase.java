@@ -1,4 +1,4 @@
-package actionlisteners;
+package controller.actionlistener;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

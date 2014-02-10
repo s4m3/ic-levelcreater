@@ -1,16 +1,15 @@
-package actionlisteners;
+package controller.actionlistener;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-import model.LevelParameterDefaults;
 import model.LevelParameters;
 
-public class LevelwidthParameterListener extends ParameterListenerBase
-		implements DocumentListener {
+public class LevelnameParameterListener extends ParameterListenerBase implements
+		DocumentListener {
 
-	public LevelwidthParameterListener(LevelParameters levelParameters) {
+	public LevelnameParameterListener(LevelParameters levelParameters) {
 		super(levelParameters);
 	}
 
@@ -36,10 +35,13 @@ public class LevelwidthParameterListener extends ParameterListenerBase
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 		}
-		try {
-			levelParameters.setLevelWidth(Integer.parseInt(text));
-		} catch (NumberFormatException e1) {
-			levelParameters.setLevelWidth(LevelParameterDefaults.levelWidth);
-		}
+		levelParameters.setLevelName(text);
+		// java.awt.EventQueue.invokeLater(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// levelParameters.setLevelName(e.toString());
+		// }
+		// });
 	}
 }

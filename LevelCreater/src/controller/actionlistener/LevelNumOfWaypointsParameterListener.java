@@ -1,6 +1,5 @@
-package actionlisteners;
+package controller.actionlistener;
 
-import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -8,10 +7,10 @@ import javax.swing.text.BadLocationException;
 import model.LevelParameterDefaults;
 import model.LevelParameters;
 
-public class LevelheightParameterListener extends ParameterListenerBase
+public class LevelNumOfWaypointsParameterListener extends ParameterListenerBase
 		implements DocumentListener {
 
-	public LevelheightParameterListener(LevelParameters levelParameters) {
+	public LevelNumOfWaypointsParameterListener(LevelParameters levelParameters) {
 		super(levelParameters);
 	}
 
@@ -38,13 +37,10 @@ public class LevelheightParameterListener extends ParameterListenerBase
 			e1.printStackTrace();
 		}
 		try {
-			levelParameters.setLevelHeight(Integer.parseInt(text));
+			levelParameters.setNumOfWaypoints(Integer.parseInt(text));
 		} catch (NumberFormatException e1) {
-			text = "" + LevelParameterDefaults.levelHeight;
-			levelParameters.setLevelHeight(LevelParameterDefaults.levelHeight);
-			JOptionPane
-					.showMessageDialog(null, "Invalid input. Default is set");
-
+			levelParameters
+					.setNumOfWaypoints(LevelParameterDefaults.numOfWaypoints);
 		}
 	}
 }

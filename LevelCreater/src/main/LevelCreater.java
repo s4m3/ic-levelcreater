@@ -19,16 +19,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
 import javax.swing.text.PlainDocument;
 
+import controller.CellularMapCreater;
+import controller.actionlistener.CreateButtonListener;
+import controller.actionlistener.LevelNumOfWaypointsParameterListener;
+import controller.actionlistener.LevelheightParameterListener;
+import controller.actionlistener.LevelnameParameterListener;
+import controller.actionlistener.LevelwidthParameterListener;
+import controller.actionlistener.ParameterListenerBase;
 import layout.SpringUtilities;
 import model.LevelParameterDefaults;
 import model.LevelParameters;
-import model.MapHandlerTest;
-import actionlisteners.CreateButtonListener;
-import actionlisteners.LevelNumOfWaypointsParameterListener;
-import actionlisteners.LevelheightParameterListener;
-import actionlisteners.LevelnameParameterListener;
-import actionlisteners.LevelwidthParameterListener;
-import actionlisteners.ParameterListenerBase;
 import filters.IntegerFilter;
 
 public class LevelCreater extends JFrame {

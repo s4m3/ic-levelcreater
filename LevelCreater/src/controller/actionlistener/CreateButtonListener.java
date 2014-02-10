@@ -1,4 +1,4 @@
-package actionlisteners;
+package controller.actionlistener;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -6,8 +6,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import controller.LevelController;
 import main.LevelCreater;
-import model.Level;
 import model.LevelParameters;
 import view.LevelFrame;
 
@@ -15,7 +15,7 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
 
 	private LevelParameters levelParameters;
 
-	public Level level;
+	public LevelController level;
 	
 	public CreateButtonListener(LevelParameters source) {
 		super();
@@ -28,7 +28,7 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
 		lc.createButton.setEnabled(false);
 		lc.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		lc.outputTextField.setText("Creating Level...\n");
-		level = new Level(levelParameters);
+		level = new LevelController(levelParameters);
 		level.addPropertyChangeListener(this);
 		level.execute();
 		LevelFrame levelFrame = new LevelFrame(level);
