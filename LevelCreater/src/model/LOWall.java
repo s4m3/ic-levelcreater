@@ -19,6 +19,11 @@ public class LOWall extends LOPolygon {
 		int[] ys = { position.y, position.y, position.y + height, position.y + height };
 		this.polygon = new Polygon(xs, ys, xs.length);
 	}
+	
+	public LOWall(Polygon shape) {
+		this.objectColor = Color.DARK_GRAY;
+		this.polygon = shape;
+	}
 
 	public LOWall(StandardWall wallType, int levelWidth, int levelHeigth,
 			int wallDepth) {

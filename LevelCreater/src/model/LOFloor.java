@@ -11,5 +11,10 @@ public class LOFloor extends LOPolygon {
 		int[] ys = { 0, 0, levelHeight, levelHeight };
 		this.polygon = new Polygon(xs, ys, xs.length);
 	}
+	
+	public LOFloor(Polygon polygon) {
+		this.objectColor = new Color(51, 153, 51);
+		this.polygon = polygon;
+	}
 
 }

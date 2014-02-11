@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ public class LevelPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 3171735915272793867L;
+	private static final int scale = 10;
 	private LevelController level;
 
 	public LevelPanel(LevelController level) {
@@ -45,8 +47,11 @@ public class LevelPanel extends JPanel {
 
 	public void paintLevel(Graphics2D g2) {
 		ArrayList<LevelObject> levelObjs = this.level.getLevelObjectList();
-
-		//System.out.println(levelObjs.size());
+		AffineTransform scaleMatrix = new AffineTransform();
+        scaleMatrix.scale(scale, scale);
+		this.setPreferredSize(new Dimension(level.getLevelParameters()
+				.getLevelWidth() * scale, level.getLevelParameters().getLevelHeight() * scale));
+        g2.setTransform(scaleMatrix);
 		for (LevelObject levelObject : levelObjs) {
 			g2.setColor(levelObject.getObjectColor());
 			if (levelObject instanceof LOPolygon) {

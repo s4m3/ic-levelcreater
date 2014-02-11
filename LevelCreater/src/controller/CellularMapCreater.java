@@ -100,7 +100,7 @@ public class CellularMapCreater {
 
 	private boolean isWall(int x, int y) {
 		// Consider out-of-bound a wall
-		if (isOutOfBounds(x, y)) {
+		if (isWallOutOfBounds(x, y)) {
 			return true;
 		}
 
@@ -114,6 +114,15 @@ public class CellularMapCreater {
 		return false;
 	}
 
+	private boolean isWallOutOfBounds(int x, int y) {
+		if (x < 3 || y < 3) {
+			return true;
+		} else if (x > mapWidth - 4 || y > mapHeight - 4) {
+			return true;
+		}
+		return false;
+	}
+	
 	private boolean isOutOfBounds(int x, int y) {
 		if (x < 0 || y < 0) {
 			return true;
@@ -220,16 +229,21 @@ public class CellularMapCreater {
 
 	public int[][] regionLabeling(int[][] newMap) {
 		int[][] map = cloneArray(newMap);
-		int mapHeight = map.length;
-		int mapWidth = map[0].length;
+		int mapHeight = map[0].length;
+		int mapWidth = map.length;
 		int m = 2;
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				if (map[column][row] == 1) {
-					floodFill(map, column, row, m, mapWidth, mapHeight);
-					m++;
+		try {
+			for (int column = 0, row = 0; row < mapHeight; row++) {
+				for (column = 0; column < mapWidth; column++) {
+					if (map[column][row] == 1) {
+						floodFill(map, column, row, m, mapWidth, mapHeight);
+						m++;
+					}
 				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return map;
 	}
@@ -266,15 +280,32 @@ public class CellularMapCreater {
 	}
 
 	private int getLabel(int x, int y) {
-		if (isOutOfBounds(x, y))
+		if (isWallOutOfBounds(x, y))
 			return 0;
 		return map[x][y];
 	}
+	
+	public ArrayList<MapPoint> makeEntrance(int[][] input) {
+		ArrayList<MapPoint> pointList = new ArrayList<MapPoint>();
+		int middleY = input[0].length / 2;
+		int i=0;
+		boolean done = false;
+		while(!done) {
+			if(input[middleY][i] != 0) {
+				input[middleY][i] = 0;
+				MapPoint p = new MapPoint(i, middleY);
+				pointList.add(p);
+				i++;
+			} else {
+				done = true;
+			}
+		}
+		return pointList;
+	}
 
-	public int[][] convertRegionsToContour(int[][] input, int initialLabel) {
-		int map[][] = cloneArray(input);
-		int mapHeight = map.length;
-		int mapWidth = map[0].length;
+	public void convertRegionsToContour(int[][] map, int initialLabel) {
+		int mapHeight = map[0].length;
+		int mapWidth = map.length;
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
 				// if not a background pixel and has top bottom left and right
@@ -293,8 +324,6 @@ public class CellularMapCreater {
 				}
 			}
 		}
-
-		return map;
 	}
 
 	private boolean isInnerPixel(int column, int row, int[][] map) {

@@ -2,43 +2,116 @@ package controller;
 
 import java.util.ArrayList;
 
+import model.Contour;
 import model.MapPoint;
 
 public class ContourTracer {
-	// TODO: proper constructor, isoutofbounds, usage
+	static final byte FOREGROUND = 1;
+	static final byte BACKGROUND = 0;
 
 	private int[][] map;
-	private ArrayList<ArrayList<MapPoint>> contours;
+	private int[][] labelArray;
+	private int[][] pixelArray;
+	private ArrayList<Contour> contours;
+
+	int width;
+	int height;
+	
+	int regionId = 0;
 
 	public ContourTracer(int[][] map) {
 		this.map = map;
-		contours = new ArrayList<ArrayList<MapPoint>>();
+		this.width = map.length;
+		this.height = map[0].length;
+		this.makeAuxArrays();
 	}
-	
-	public void traceContours() {
-		int label = 2;
-		int mapHeight = map.length;
-		int mapWidth = map[0].length;
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				if(map[column][row] == label) {
-					ArrayList<MapPoint> pointList = traceContour(column, row, label, 1);
-					this.contours.add(pointList);
-					label++;
+
+	void makeAuxArrays() {
+		int h = this.height;
+		int w = this.width;
+		pixelArray = new int[w + 2][h + 2];
+		labelArray = new int[w + 2][h + 2];
+		// initialize auxiliary arrays
+		try {
+			for (int v = 1; v < h + 1; v++) {
+				for (int u = 1; u < w + 1; u++) {
+					if (map[u - 1][v - 1] == 0)
+						pixelArray[u][v] = BACKGROUND;
+					else
+						pixelArray[u][v] = FOREGROUND;
 				}
 			}
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
 		}
 	}
 
+	void findAllContours() {
+		contours = new ArrayList<Contour>();
+		int label = 0;
+		// current label
+		// scan top to bottom, left to right
+		for (int v = 1; v < pixelArray.length - 1; v++) {
+			label = 0; // no label
+			for (int u = 1; u < pixelArray[v].length - 1; u++) {
+				if (pixelArray[v][u] == FOREGROUND) {
+					if (label != 0) {
+						// keep using the same label
+						labelArray[v][u] = label;
+					} else {
+						label = labelArray[v][u];
+						if (label == 0) {
+							// unlabeled—new outer contour
+							regionId = regionId + 1;
+							label = regionId;
+							Contour oc = traceContour(u, v, label, 0);
+							contours.add(oc);
+							labelArray[v][u] = label;
+						}
+					}
+				} else {
+					// background pixel
+					if (label != 0) {
+						if (labelArray[v][u] == 0) {
+							// unlabeled—new inner contour
+							Contour ic = traceContour(u - 1, v, label, 0);
+							contours.add(ic);
+						}
+						label = 0;
+					}
+				}
+			}
+		}
+		// shift back to original coordinates
+		Contour.moveContoursBy(contours, -1, -1);
+		System.out.println("done");
+	}
+
+//	public void traceContour() {
+//		Contour cont = new Contour(label)
+//		int label = 0;
+//		int mapHeight = map.length;
+//		int mapWidth = map[0].length;
+//		for (int column = 0, row = 0; row < mapHeight; row++) {
+//			for (column = 0; column < mapWidth; column++) {
+//				if (map[column][row] == label) {
+//					ArrayList<MapPoint> pointList = traceContour(column, row,label, 0);
+//					this.contours.add(pointList);
+//					label++;
+//				}
+//			}
+//		}
+//	}
+
 	// trace one contour starting at (xS,yS) in direction dS
-	private ArrayList<MapPoint> traceContour(int xS, int yS, int label, int dS) {
-		ArrayList<MapPoint> cont = new ArrayList<MapPoint>();
+	private Contour traceContour(int xS, int yS, int label, int dS) {
+		Contour cont = new Contour(label);
 		int xT, yT; // T = successor of starting point (xS,yS)
 		int xP, yP; // P = previous contour point
 		int xC, yC; // C = current contour point
 		MapPoint pt = new MapPoint(xS, yS);
 		int dNext = findNextPoint(pt, dS);
-		cont.add(pt);
+		cont.addPoint(pt);
 		xP = xS;
 		yP = yS;
 		xC = xT = pt.x;
@@ -47,7 +120,7 @@ public class ContourTracer {
 		boolean done = (xS == xT && yS == yT); // true if isolated pixel
 
 		while (!done) {
-			// labelArray[yC][xC] = label;
+			labelArray[yC][xC] = label;
 			pt = new MapPoint(xC, yC);
 			int dSearch = (dNext + 6) % 8;
 			dNext = findNextPoint(pt, dSearch);
@@ -58,7 +131,7 @@ public class ContourTracer {
 			// are we back at the starting position?
 			done = (xP == xS && yP == yS && xC == xT && yC == yT);
 			if (!done) {
-				cont.add(pt);
+				cont.addPoint(pt);
 			}
 		}
 		return cont;
@@ -72,31 +145,20 @@ public class ContourTracer {
 		for (int i = 0; i < 7; i++) {
 			int x = pt.x + delta[dir][0];
 			int y = pt.y + delta[dir][1];
-			if (map[x][y] == 0) { // TODO: is this correct x and y???
-				map[x][y] = -1;
+			if (pixelArray[y][x] == BACKGROUND) {
+				labelArray[y][x] = -1;
 				dir = (dir + 1) % 8;
 			} else {
 				pt.x = x;
 				pt.y = y;
 				break;
 			}
-			// if (pixelArray[y][x] == BACKGROUND) {
-			// // mark surrounding background pixels
-			// labelArray[y][x] = -1;
-			// dir = (dir + 1) % 8;
-			// } else { // found a nonbackground pixel
-			// pt.x = x;
-			// pt.y = y;
-			// break;
-			// }
 		}
 		return dir;
 	}
 
-	public ArrayList<ArrayList<MapPoint>> getContours() {
+	public ArrayList<Contour> getContours() {
 		return contours;
 	}
-	
-	
 
 }

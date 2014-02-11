@@ -31,9 +31,6 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
 		level = new LevelController(levelParameters);
 		level.addPropertyChangeListener(this);
 		level.execute();
-		LevelFrame levelFrame = new LevelFrame(level);
-		// level.pack();
-		levelFrame.setVisible(true);
 
 	}
 
@@ -43,8 +40,16 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
             int progress = (Integer) evt.getNewValue();
             LevelCreater lc = LevelCreater.getInstance();
             lc.progressBar.setValue(progress);
-            if(level.getStatusUpdates().size() > 0)
+            if(level.getStatusUpdates().size() > 0) {
             	lc.outputTextField.append(level.getStatusUpdates().get(level.getStatusUpdates().size()-1) + "\n");
+            	level.getStatusUpdates().remove(level.getStatusUpdates().size() - 1);
+            }
+            
+            if(progress >= 100) {
+        		LevelFrame levelFrame = new LevelFrame(level);
+        		// level.pack();
+        		levelFrame.setVisible(true);
+            }
         } 
 		
 	}

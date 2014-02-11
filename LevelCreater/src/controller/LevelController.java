@@ -4,10 +4,13 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 
 import main.LevelCreater;
+import model.Contour;
 import model.LOFloor;
 import model.LOPolygon;
 import model.LOWall;
@@ -23,6 +26,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
 	private CellularMapCreater cmc;
+	private int scale = 1;
 
 	public LevelController(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
@@ -39,58 +43,111 @@ public class LevelController extends SwingWorker<Void, Void> {
 		cmc = new CellularMapCreater(levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight(), 44);
 		cmc.makeCaverns();
-		statusUpdates.add("cavern creation done");
 		setProgress(40);
 		cmc.makeCaverns();
-		statusUpdates.add("cavern creation done");
+		setProgress(45);
+		cmc.makeCaverns();
 		setProgress(50);
 		cmc.makeCaverns();
-		statusUpdates.add("cavern creation done");
+		setProgress(55);
+		cmc.makeCaverns();
 		setProgress(60);
 		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
-		setProgress(70);
-		cmc.makeCaverns();
-		statusUpdates.add("cavern creation done");
-		setProgress(80);
-		cmc.makeCaverns();
-		statusUpdates.add("cavern creation done");
-		cmc.printMap();
-		setProgress(90);
+		//cmc.printMap();
 		int test[][] = cmc.regionLabeling(cmc.map);
-		cmc.printMap(test);
-		int test2[][] = cmc.convertRegionsToContour(test, 2);
-		cmc.printMap(test2);
+		setProgress(60);
+		statusUpdates.add("region labeling done");
+		//cmc.printMap(test);
+//		ContourTracer ct = new ContourTracer(test);
+//		ct.findAllContours();
+		
+		//to have a closed outside polygon, close the polygon in the middle
+		ArrayList<MapPoint> entrance = cmc.makeEntrance(test);
+		//after opening the polygon, make a entrance polygon that closes that spot
+		createEntranceClosingPolygon(entrance);
+		//cmc.printMap(test);
+		cmc.convertRegionsToContour(test, 2);
+		//cmc.printMap(test);
+		
+//		cmc.printMap(test2);
 		// createTestMap(mht.map);
 		
 		//TEST CONTOUR TRACER
-		ContourTracer ct = new ContourTracer(test2);
-		ct.traceContours();
-		//ArrayList<ArrayList<MapPoint>> pointList = ct.getContours();
+//		int[][] multi = new int[][]{
+//				  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 }
+//				};
+//		ContourTracer ct2 = new ContourTracer(multi);
+//		ct2.findAllContours();
+//		ArrayList<Contour> contourList2 = ct2.getContours();
+//		Contour testC = contourList2.get(0);
+//		List<MapPoint> points2 = testC.getPoints();
+//		for (MapPoint mapPoint : points2) {
+//			System.out.println(mapPoint.x +":"+ mapPoint.y);
+//		}
+//		LOWall wallp = new LOWall((Polygon) testC.makePolygon());
+//		this.addLevelObject(wallp);
+		//////////////
 		
-		System.out.println("done");
+		ContourTracer ct = new ContourTracer(test);
+		ct.findAllContours();
+		ArrayList<Contour> contourList = ct.getContours();
+		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
+		PolygonPointReducer ppr = new PolygonPointReducer();
+		
+//		for (Contour contour : contourList) {
+//			LOWall wallPoly = new LOWall((Polygon) contour.makePolygon());
+//			this.addLevelObject(wallPoly);
+//		}
+		setProgress(90);
+		for (Contour contour : contourList) {
+			ArrayList<MapPoint> points = (ArrayList<MapPoint>) contour.getPoints();
+			ArrayList<MapPoint> updatedPoints = ppr.reduceWithTolerance(points, 1);
+			contour.setPoints(updatedPoints);
+			updatedContours.add(contour);
+		}
+		
+//		System.out.println(updatedContours.size());
+		for (Contour contour : updatedContours) {
+			//System.out.println("label: " + contour.getLabel());
+			LOPolygon poly = new LOWall((Polygon) contour.makePolygon());
+			this.addLevelObject(poly);
+		}
+		
+		
+		
+//		for (ArrayList<MapPoint> pointList : pointLists) {
+//			System.out.println("new pointList:");
+//			for (MapPoint mapPoint : pointList) {
+//				System.out.println("Point " +mapPoint.x+":"+ mapPoint.y);
+//			}
+//		}
+		
 		
 		//TEST PPR
-		PolygonPointReducer ppr = new PolygonPointReducer();
-		ArrayList<MapPoint> shape = new ArrayList<MapPoint>();
-		shape.add(new MapPoint(0, 100));
-		shape.add(new MapPoint(20, 0));
-		shape.add(new MapPoint(40, 300));
-		shape.add(new MapPoint(60, 0));
-		shape.add(new MapPoint(80, 20));
-		shape.add(new MapPoint(100, 30));
-		shape.add(new MapPoint(120, 50));
-		shape.add(new MapPoint(140, 200));
-		shape.add(new MapPoint(200, 0));
-		for (MapPoint mapPoint : shape) {
-			System.out.println(mapPoint.x +":"+ mapPoint.y);
-		}
-		ArrayList<MapPoint> reduced = ppr.reduceWithTolerance(shape, 50);
-		System.out.println("after");
-		for (MapPoint mapPoint : reduced) {
-			System.out.println(mapPoint.x +":"+ mapPoint.y);
-		}
-		statusUpdates.add("map printing done");
+
+//		ArrayList<MapPoint> shape = new ArrayList<MapPoint>();
+//		shape.add(new MapPoint(0, 100));
+//		shape.add(new MapPoint(20, 0));
+//		shape.add(new MapPoint(40, 300));
+//		shape.add(new MapPoint(60, 0));
+//		shape.add(new MapPoint(80, 20));
+//		shape.add(new MapPoint(100, 30));
+//		shape.add(new MapPoint(120, 50));
+//		shape.add(new MapPoint(140, 200));
+//		shape.add(new MapPoint(200, 0));
+//		for (MapPoint mapPoint : shape) {
+//			System.out.println(mapPoint.x +":"+ mapPoint.y);
+//		}
+//		ArrayList<MapPoint> reduced = ppr.reduceWithTolerance(shape, 50);
+//		System.out.println("after");
+//		for (MapPoint mapPoint : reduced) {
+//			System.out.println(mapPoint.x +":"+ mapPoint.y);
+//		}
 		setProgress(100);
 		return null;
 	}
@@ -107,8 +164,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	public void createLevel() {
 		createFloor();
-		createOutsideWalls();
-		createRandomWaypoints();
+		//createOutsideWalls();
+		//createRandomWaypoints();
 		// createTestMap(mht.map);
 
 		// createTestObject();
@@ -136,10 +193,35 @@ public class LevelController extends SwingWorker<Void, Void> {
 		test.setPolygon(new Polygon(xpoints, ypoints, xpoints.length));
 		this.addLevelObject(test);
 	}
+	
+	private void createEntranceClosingPolygon(ArrayList<MapPoint> points) {
+		
+		int m = points.size();
+		int[] xPoints = new int[4];
+		int[] yPoints = new int[4];
+		
+		xPoints[0] = points.get(0).x;
+		yPoints[0] = points.get(0).y-2;
+		
+		xPoints[1] = points.get(0).x;
+		yPoints[1] = points.get(m-1).y + 2;
+		
+		xPoints[2] = points.get(m-1).x;
+		yPoints[2] = points.get(m-1).y + 2;
+		
+		xPoints[3] = points.get(m-1).x;
+		yPoints[3] = points.get(0).y-2;
+		
+		for (int i = 0; i < yPoints.length; i++) {
+			System.out.println(xPoints[i] +":"+yPoints[i]);
+		}
+		LOWall wall = new LOWall(new Polygon(xPoints, yPoints, xPoints.length));
+		this.addLevelObject(wall);
+	}
 
 	private void createFloor() {
-		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight());
+		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth() * scale,
+				levelParameters.getLevelHeight() * scale);
 		this.addLevelObject(levelFloor);
 
 	}
