@@ -8,7 +8,7 @@ public class LOPolygon extends LevelObject {
 	protected Polygon polygon;
 
 	public LOPolygon() {
-		this.objectColor = Color.WHITE;
+		this.objectColor = Color.BLACK;
 	}
 
 	public Polygon getPolygon() {

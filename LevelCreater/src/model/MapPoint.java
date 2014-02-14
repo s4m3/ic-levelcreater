@@ -13,4 +13,10 @@ public class MapPoint {
 		this.y += dy;
 	}
 	
+	public void switchXandY() {
+		int oldX = this.x;
+		this.x = this.y;
+		this.y = oldX;
+	}
+	
 }

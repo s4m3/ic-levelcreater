@@ -161,4 +161,10 @@ public class ContourTracer {
 		return contours;
 	}
 
+	public void switchContourPointsXandY() {
+		for (Contour contour : contours) {
+			contour.switchPointsXandY();
+		}
+	}
+
 }

@@ -54,20 +54,24 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(60);
 		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
-		//cmc.printMap();
+		cmc.printMap();
 		int test[][] = cmc.regionLabeling(cmc.map);
 		setProgress(60);
 		statusUpdates.add("region labeling done");
 		//cmc.printMap(test);
 //		ContourTracer ct = new ContourTracer(test);
 //		ct.findAllContours();
-		
+//		createTestObject();
 		//to have a closed outside polygon, close the polygon in the middle
 		ArrayList<MapPoint> entrance = cmc.makeEntrance(test);
+		cmc.printMap(test);
+		setProgress(65);
 		//after opening the polygon, make a entrance polygon that closes that spot
 		createEntranceClosingPolygon(entrance);
+		setProgress(70);
 		//cmc.printMap(test);
 		cmc.convertRegionsToContour(test, 2);
+		setProgress(75);
 		//cmc.printMap(test);
 		
 //		cmc.printMap(test2);
@@ -76,11 +80,13 @@ public class LevelController extends SwingWorker<Void, Void> {
 		//TEST CONTOUR TRACER
 //		int[][] multi = new int[][]{
 //				  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 }
+//				  { 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0 },
+//				  { 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0 }
 //				};
+//		
+//		System.out.println("value: " + multi[1][2]);
 //		ContourTracer ct2 = new ContourTracer(multi);
 //		ct2.findAllContours();
 //		ArrayList<Contour> contourList2 = ct2.getContours();
@@ -95,10 +101,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 		
 		ContourTracer ct = new ContourTracer(test);
 		ct.findAllContours();
+		setProgress(80);
+		ct.switchContourPointsXandY();
 		ArrayList<Contour> contourList = ct.getContours();
 		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
 		PolygonPointReducer ppr = new PolygonPointReducer();
-		
+		setProgress(85);
 //		for (Contour contour : contourList) {
 //			LOWall wallPoly = new LOWall((Polygon) contour.makePolygon());
 //			this.addLevelObject(wallPoly);
@@ -106,10 +114,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(90);
 		for (Contour contour : contourList) {
 			ArrayList<MapPoint> points = (ArrayList<MapPoint>) contour.getPoints();
-			ArrayList<MapPoint> updatedPoints = ppr.reduceWithTolerance(points, 1);
+			ArrayList<MapPoint> updatedPoints = ppr.reduceWithTolerance(points, 0);
 			contour.setPoints(updatedPoints);
 			updatedContours.add(contour);
 		}
+		
+		setProgress(95);
 		
 //		System.out.println(updatedContours.size());
 		for (Contour contour : updatedContours) {
@@ -187,8 +197,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	private void createTestObject() {
 		LOPolygon test = new LOPolygon();
-		int[] xpoints = { -20, -10, -50, 100 };
-		int[] ypoints = { -100, -23, 200, 400 };
+		int[] xpoints = { 0, 20, 20, 0 };
+		int[] ypoints = { 0, 0, 20, 20 };
 
 		test.setPolygon(new Polygon(xpoints, ypoints, xpoints.length));
 		this.addLevelObject(test);
@@ -203,14 +213,14 @@ public class LevelController extends SwingWorker<Void, Void> {
 		xPoints[0] = points.get(0).x;
 		yPoints[0] = points.get(0).y-2;
 		
-		xPoints[1] = points.get(0).x;
-		yPoints[1] = points.get(m-1).y + 2;
+		xPoints[1] = points.get(m-1).x;
+		yPoints[1] = points.get(m-1).y - 2;
 		
 		xPoints[2] = points.get(m-1).x;
 		yPoints[2] = points.get(m-1).y + 2;
 		
-		xPoints[3] = points.get(m-1).x;
-		yPoints[3] = points.get(0).y-2;
+		xPoints[3] = points.get(0).x;
+		yPoints[3] = points.get(0).y+2;
 		
 		for (int i = 0; i < yPoints.length; i++) {
 			System.out.println(xPoints[i] +":"+yPoints[i]);

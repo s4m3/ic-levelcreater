@@ -30,6 +30,8 @@ public class IntegerFilter extends DocumentFilter {
 	}
 
 	private boolean test(String text) {
+		if(text.isEmpty())
+			return true;
 		try {
 			Integer.parseInt(text);
 			return true;

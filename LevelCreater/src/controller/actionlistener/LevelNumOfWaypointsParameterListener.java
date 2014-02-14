@@ -40,7 +40,7 @@ public class LevelNumOfWaypointsParameterListener extends ParameterListenerBase
 			levelParameters.setNumOfWaypoints(Integer.parseInt(text));
 		} catch (NumberFormatException e1) {
 			levelParameters
-					.setNumOfWaypoints(LevelParameterDefaults.numOfWaypoints);
+					.setNumOfWaypoints(LevelParameterDefaults.NUM_WAYPOINTS);
 		}
 	}
 }

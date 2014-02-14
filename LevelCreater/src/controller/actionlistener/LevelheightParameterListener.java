@@ -38,12 +38,13 @@ public class LevelheightParameterListener extends ParameterListenerBase
 			e1.printStackTrace();
 		}
 		try {
-			levelParameters.setLevelHeight(Integer.parseInt(text));
+			if(text.length() > 0)
+				levelParameters.setLevelHeight(Integer.parseInt(text));
+			else 
+				levelParameters.setLevelHeight(0);
 		} catch (NumberFormatException e1) {
-			text = "" + LevelParameterDefaults.levelHeight;
-			levelParameters.setLevelHeight(LevelParameterDefaults.levelHeight);
-			JOptionPane
-					.showMessageDialog(null, "Invalid input. Default is set");
+			levelParameters.setLevelHeight(LevelParameterDefaults.LEVEL_HEIGHT);
+			JOptionPane.showMessageDialog(null, "Invalid input. Default is set ("+LevelParameterDefaults.LEVEL_HEIGHT+")");
 
 		}
 	}

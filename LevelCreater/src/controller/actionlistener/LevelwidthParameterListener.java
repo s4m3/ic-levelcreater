@@ -1,5 +1,6 @@
 package controller.actionlistener;
 
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -37,9 +38,13 @@ public class LevelwidthParameterListener extends ParameterListenerBase
 			e1.printStackTrace();
 		}
 		try {
-			levelParameters.setLevelWidth(Integer.parseInt(text));
+			if(text.length() > 0)
+				levelParameters.setLevelWidth(Integer.parseInt(text));
+			else
+				levelParameters.setLevelWidth(0);
 		} catch (NumberFormatException e1) {
-			levelParameters.setLevelWidth(LevelParameterDefaults.levelWidth);
+			levelParameters.setLevelWidth(LevelParameterDefaults.LEVEL_WIDTH);
+			JOptionPane.showMessageDialog(null, "Invalid input. Default is set ("+LevelParameterDefaults.LEVEL_WIDTH+")");
 		}
 	}
 }

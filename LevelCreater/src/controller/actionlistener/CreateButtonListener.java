@@ -6,32 +6,61 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.JOptionPane;
+
 import controller.LevelController;
 import main.LevelCreater;
+import model.LevelParameterDefaults;
 import model.LevelParameters;
 import view.LevelFrame;
 
 public class CreateButtonListener implements ActionListener, PropertyChangeListener{
 
-	private LevelParameters levelParameters;
-
 	public LevelController level;
-	
-	public CreateButtonListener(LevelParameters source) {
-		super();
-		this.levelParameters = source;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(!allParametersOk()) {
+			JOptionPane.showMessageDialog(null, getParameterMessage());
+			return;
+		}
+
 		LevelCreater lc = LevelCreater.getInstance();
 		lc.createButton.setEnabled(false);
 		lc.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		lc.outputTextField.setText("Creating Level...\n");
-		level = new LevelController(levelParameters);
+		level = new LevelController(lc.getLevelParameters());
 		level.addPropertyChangeListener(this);
 		level.execute();
 
+	}
+	
+	private String getParameterMessage() {
+		LevelParameters paras = LevelCreater.getInstance().getLevelParameters();
+		String text = "Invalid Parameters! \n";
+		text += "Level width must be between" +LevelParameterDefaults.LEVEL_WIDTH_MIN+" and " +LevelParameterDefaults.LEVEL_WIDTH_MAX+ ". (Currently:" +paras.getLevelWidth()+")\n";
+		text += "Level height must be between" +LevelParameterDefaults.LEVEL_HEIGHT_MIN+" and " +LevelParameterDefaults.LEVEL_HEIGHT_MAX+ ". (Currently:" +paras.getLevelHeight()+")\n";
+		text += "Amount of waypoints must be between" +LevelParameterDefaults.NUM_WAYPOINTS_MIN+" and " +LevelParameterDefaults.NUM_WAYPOINTS_MAX+ ". (Currently:" +paras.getNumOfWaypoints()+")\n";
+		return text;
+	}
+
+	private boolean allParametersOk() {
+		boolean parametersOk = true;
+		LevelParameters paras = LevelCreater.getInstance().getLevelParameters();
+		
+		int parameter = paras.getLevelHeight();
+		if(parameter < LevelParameterDefaults.LEVEL_HEIGHT_MIN || parameter > LevelParameterDefaults.LEVEL_HEIGHT_MAX)
+			parametersOk = false;
+		
+		parameter = paras.getLevelWidth();
+		if(parameter < LevelParameterDefaults.LEVEL_WIDTH_MIN || parameter > LevelParameterDefaults.LEVEL_WIDTH_MAX)
+			parametersOk = false;
+		
+		parameter = paras.getNumOfWaypoints();
+		if(parameter < LevelParameterDefaults.NUM_WAYPOINTS_MIN || parameter > LevelParameterDefaults.NUM_WAYPOINTS_MAX)
+			parametersOk = false;
+		
+		return parametersOk;
 	}
 
 	@Override

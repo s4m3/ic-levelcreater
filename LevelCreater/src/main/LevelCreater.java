@@ -85,14 +85,14 @@ public class LevelCreater extends JFrame {
 		addParameter("Levelname", LevelParameterDefaults.levelName,
 				parameterPanel,
 				new LevelnameParameterListener(levelParameters), false);
-		addParameter("Width", LevelParameterDefaults.levelWidth,
+		addParameter("Width", LevelParameterDefaults.LEVEL_WIDTH,
 				parameterPanel,
 				new LevelwidthParameterListener(levelParameters), true);
-		addParameter("Height", LevelParameterDefaults.levelHeight,
+		addParameter("Height", LevelParameterDefaults.LEVEL_HEIGHT,
 				parameterPanel, new LevelheightParameterListener(
 						levelParameters), true);
 		addParameter("Number of Waypoints",
-				LevelParameterDefaults.numOfWaypoints, parameterPanel,
+				LevelParameterDefaults.NUM_WAYPOINTS, parameterPanel,
 				new LevelNumOfWaypointsParameterListener(levelParameters), true);
 
 		// Lay out the panel.
@@ -116,8 +116,7 @@ public class LevelCreater extends JFrame {
         southPanel.add(progressBar, BorderLayout.WEST);
 		
 		createButton = new JButton("CREATE");
-		createButton.addActionListener(new CreateButtonListener(this
-				.getLevelParameters()));
+		createButton.addActionListener(new CreateButtonListener());
 		
 		outputTextField = new JTextArea();
 		outputTextField.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));

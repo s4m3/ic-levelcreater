@@ -85,6 +85,12 @@ public class Contour {
 	public int getLabel() {
 		return label;
 	}
+
+	public void switchPointsXandY() {
+		for (MapPoint mapPoint : points) {
+			mapPoint.switchXandY();
+		}
+	}
 	
 	
 	

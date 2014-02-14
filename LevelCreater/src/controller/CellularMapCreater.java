@@ -288,11 +288,13 @@ public class CellularMapCreater {
 	public ArrayList<MapPoint> makeEntrance(int[][] input) {
 		ArrayList<MapPoint> pointList = new ArrayList<MapPoint>();
 		int middleY = input[0].length / 2;
+		System.out.println("middleY:" + middleY);
+		int width = input.length;
 		int i=0;
 		boolean done = false;
 		while(!done) {
-			if(input[middleY][i] != 0) {
-				input[middleY][i] = 0;
+			if(input[i][middleY] != 0 && i < width) {
+				input[i][middleY] = 0;
 				MapPoint p = new MapPoint(i, middleY);
 				pointList.add(p);
 				i++;
