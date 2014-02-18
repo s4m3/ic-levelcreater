@@ -55,7 +55,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		cmc.makeCaverns();
 		statusUpdates.add("cavern creation done");
 		cmc.printMap();
-		int test[][] = cmc.regionLabeling(cmc.map);
+		int createdMap[][] = cmc.regionLabeling(cmc.map);
 		setProgress(60);
 		statusUpdates.add("region labeling done");
 		//cmc.printMap(test);
@@ -63,14 +63,14 @@ public class LevelController extends SwingWorker<Void, Void> {
 //		ct.findAllContours();
 //		createTestObject();
 		//to have a closed outside polygon, close the polygon in the middle
-		ArrayList<MapPoint> entrance = cmc.makeEntrance(test);
-		cmc.printMap(test);
+		ArrayList<MapPoint> entrance = cmc.makeEntrance(createdMap);
+		cmc.printMap(createdMap);
 		setProgress(65);
 		//after opening the polygon, make a entrance polygon that closes that spot
 		createEntranceClosingPolygon(entrance);
 		setProgress(70);
 		//cmc.printMap(test);
-		cmc.convertRegionsToContour(test, 2);
+		cmc.convertRegionsToContour(createdMap, 2);
 		setProgress(75);
 		//cmc.printMap(test);
 		
@@ -99,9 +99,11 @@ public class LevelController extends SwingWorker<Void, Void> {
 //		this.addLevelObject(wallp);
 		//////////////
 		
-		ContourTracer ct = new ContourTracer(test);
+		ContourTracer ct = new ContourTracer(createdMap);
 		ct.findAllContours();
 		setProgress(80);
+		
+		//contour tracer changes x and y, therefore x and y need to be switched again
 		ct.switchContourPointsXandY();
 		ArrayList<Contour> contourList = ct.getContours();
 		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
@@ -119,7 +121,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 			updatedContours.add(contour);
 		}
 		
-		setProgress(95);
+		setProgress(91);
 		
 //		System.out.println(updatedContours.size());
 		for (Contour contour : updatedContours) {
@@ -128,7 +130,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 			this.addLevelObject(poly);
 		}
 		
-		
+		WaypointController wpController = new WaypointController(createdMap, this.getLevelObjectList());
+		this.addLevelObjects(wpController.createWaypoints(levelParameters.getNumOfWaypoints()));
 		
 //		for (ArrayList<MapPoint> pointList : pointLists) {
 //			System.out.println("new pointList:");
@@ -222,9 +225,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 		xPoints[3] = points.get(0).x;
 		yPoints[3] = points.get(0).y+2;
 		
-		for (int i = 0; i < yPoints.length; i++) {
-			System.out.println(xPoints[i] +":"+yPoints[i]);
-		}
+//		for (int i = 0; i < yPoints.length; i++) {
+//			System.out.println(xPoints[i] +":"+yPoints[i]);
+//		}
 		LOWall wall = new LOWall(new Polygon(xPoints, yPoints, xPoints.length));
 		this.addLevelObject(wall);
 	}
@@ -256,18 +259,13 @@ public class LevelController extends SwingWorker<Void, Void> {
 		this.addLevelObject(rightWall);
 	}
 
-	// testing purpose TODO: delete?
-	public void createRandomWaypoints() {
-		for (int i = 0; i < levelParameters.getNumOfWaypoints(); i++) {
-			LOWaypoint wp = new LOWaypoint(true, 10, 10,
-					levelParameters.getLevelWidth(),
-					levelParameters.getLevelHeight());
-			this.addLevelObject(wp);
-		}
-	}
 
 	public void addLevelObject(LevelObject lo) {
 		this.levelObjectList.add(lo);
+	}
+	
+	public void addLevelObjects(List<LevelObject> loList) {
+		this.levelObjectList.addAll(loList);
 	}
 
 	public ArrayList<LevelObject> getLevelObjectList() {
