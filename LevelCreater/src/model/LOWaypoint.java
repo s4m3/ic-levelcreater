@@ -27,6 +27,7 @@ public class LOWaypoint extends LOCircle {
 		int xStart, xEnd, yStart, yEnd;
 		int xSplit; 
 		int ySplit;
+		int faktor = 0;
 		//split level into sectors depending on total number of waypoints as follows
 		//-----
 		//|1|2|
@@ -44,15 +45,13 @@ public class LOWaypoint extends LOCircle {
 		//select sector by current waypoint number
 		if(oneDirectionSplitting) {
 			if(verticalSplittingFavored) {
-				ySplit = totalNumOfWayPoints;
 				xStart = 0;
 				xEnd = levelWidth;
-				yStart = (currentWayPointNum - 1) * (levelHeight / ySplit);
-				yEnd = currentWayPointNum * (levelHeight / ySplit);
+				yStart = currentWayPointNum * (levelHeight / totalNumOfWayPoints);
+				yEnd = (currentWayPointNum + 1) * (levelHeight / totalNumOfWayPoints);
 			} else {
-				xSplit = totalNumOfWayPoints;
-				xStart = (currentWayPointNum - 1) * (levelWidth / xSplit);
-				xEnd = currentWayPointNum * (levelWidth / xSplit);
+				xStart = currentWayPointNum * (levelWidth / totalNumOfWayPoints);
+				xEnd = (currentWayPointNum + 1) * (levelWidth / totalNumOfWayPoints);
 				yStart = 0;
 				yEnd = levelWidth;
 			}
@@ -62,18 +61,23 @@ public class LOWaypoint extends LOCircle {
 				ySplit = totalNumOfWayPoints / 2;
 			} else {
 				if(verticalSplittingFavored) {
-					xSplit = totalNumOfWayPoints / 2;
-					ySplit = totalNumOfWayPoints / 2 + (totalNumOfWayPoints % 2);
-				} else {
-					xSplit = totalNumOfWayPoints / 2 + (totalNumOfWayPoints % 2);
 					ySplit = totalNumOfWayPoints / 2;
+					xSplit = totalNumOfWayPoints / ySplit;
+					ySplit += totalNumOfWayPoints % 2 == 1 ? 1 : 0;
+					faktor = xSplit - ySplit;
+				} else {
+					xSplit = totalNumOfWayPoints / 2;
+					ySplit = totalNumOfWayPoints / xSplit;
+					xSplit += totalNumOfWayPoints % 2 == 1 ? 1 : 0;
+					faktor = xSplit - ySplit;
 				}
 			}
-			//TODO: this is wrong DEBUG!!!! i.e. 4 waypoints, ab wp 2> x=50 y=100
-			xStart = (currentWayPointNum / xSplit) * (levelWidth / xSplit);
-			xEnd = (currentWayPointNum / xSplit + 1) * (levelWidth / xSplit);
-			yStart = (currentWayPointNum / ySplit) * (levelHeight / ySplit);
-			yEnd = (currentWayPointNum / ySplit + 1) * (levelHeight / ySplit);
+			
+			xStart = (currentWayPointNum % xSplit) * (levelWidth / xSplit);
+			xEnd = xStart + (levelWidth / xSplit);
+			yStart = (currentWayPointNum / (ySplit + faktor)) * (levelHeight / ySplit);
+			yEnd = yStart + (levelHeight / ySplit);
+
 		}
 		
 		//use a random position in the selected sector

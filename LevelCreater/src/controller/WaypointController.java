@@ -31,7 +31,7 @@ public class WaypointController {
 		int mapHeight = this.map[0].length;
 		
 		while(waypoints.size() < numOfWayPoints) {
-			LOWaypoint currentWp = new LOWaypoint(true, numOfWayPoints, waypoints.size() + 1, 1, 1, mapWidth, mapHeight);
+			LOWaypoint currentWp = new LOWaypoint(true, numOfWayPoints, waypoints.size(), 1, 1, mapWidth, mapHeight);
 			//LOWaypoint currentWp = new LOWaypoint(true, 1, 1, mapWidth, mapHeight);
 			if(!wpIntersectsWithWalls(currentWp)) {
 				if(waypoints.size() > 1) {

@@ -35,7 +35,7 @@ public class LevelFrame extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Level");
 		JMenuItem save = new JMenuItem("Save");
-		save.addActionListener(new SaveLevelMenuItemListener());
+		save.addActionListener(new SaveLevelMenuItemListener(level));
 		menu.add(save);
 		menuBar.add(menu);
 
