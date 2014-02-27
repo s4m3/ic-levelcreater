@@ -41,6 +41,7 @@ public class LevelFrame extends JFrame {
 
 		// Container pane = this.getContentPane();
 		this.setJMenuBar(menuBar);
+		
 		JScrollPane scrollPane = new JScrollPane(new LevelPanel(level));
 		scrollPane
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

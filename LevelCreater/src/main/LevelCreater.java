@@ -3,32 +3,38 @@ package main;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
 import javax.swing.text.PlainDocument;
 
-import controller.CellularMapCreater;
+import layout.SpringUtilities;
+import model.LevelParameterDefaults;
+import model.LevelParameters;
 import controller.actionlistener.CreateButtonListener;
 import controller.actionlistener.LevelNumOfWaypointsParameterListener;
 import controller.actionlistener.LevelheightParameterListener;
 import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
 import controller.actionlistener.ParameterListenerBase;
-import layout.SpringUtilities;
-import model.LevelParameterDefaults;
-import model.LevelParameters;
 import filters.IntegerFilter;
 
 public class LevelCreater extends JFrame {
@@ -128,6 +134,22 @@ public class LevelCreater extends JFrame {
 		southPanel.add(outputTextScrollPane, BorderLayout.SOUTH);
 		
 		southPanel.add(createButton, BorderLayout.EAST);
+		
+		//include hotkey for creating level
+		Action createAction = new AbstractAction("Create") {
+
+			private static final long serialVersionUID = 2091583767957058534L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				createLevel();
+			}
+		};
+		
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+		southPanel.getActionMap().put("Create", createAction);
+		southPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Create");
+		
 		pane.add(southPanel, BorderLayout.SOUTH);
 
 	}
@@ -154,6 +176,11 @@ public class LevelCreater extends JFrame {
 
 	public void setLevelParameters(LevelParameters levelParameters) {
 		this.levelParameters = levelParameters;
+	}
+	
+	public void createLevel() {
+		JOptionPane.showMessageDialog(null, "create LEvel ");
+		//TODO: logic here???
 	}
 
 	public static void main(String[] args) {

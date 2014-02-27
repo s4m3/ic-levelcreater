@@ -1,18 +1,27 @@
 package view;
 
+import helper.LevelIO;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
-import controller.LevelController;
 import model.LOCircle;
 import model.LOPolygon;
 import model.LevelObject;
+import controller.LevelController;
 
 public class LevelPanel extends JPanel {
 	/**
@@ -20,11 +29,30 @@ public class LevelPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 3171735915272793867L;
 	private static final int scale = 10;
-	private LevelController level;
+	private LevelController levelController;
 
 	public LevelPanel(LevelController level) {
 		super();
-		this.level = level;
+		this.levelController = level;
+		
+		//include hotkey for saving
+		Action saveAction = new AbstractAction("Save") {
+			private static final long serialVersionUID = 8144901302424973712L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(levelController == null) {
+					return;
+				}
+				LevelIO levelIO = new LevelIO();
+				levelIO.saveLevelToFile(levelController.getLevelObjectList(), levelController.getLevelParameters().getLevelName());
+			}
+		};
+		
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
+		this.getActionMap().put("Save", saveAction);
+		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Save");
+		
 		this.setPreferredSize(new Dimension(level.getLevelParameters()
 				.getLevelWidth(), level.getLevelParameters().getLevelHeight()));
 		this.setLayout(null);
@@ -46,11 +74,11 @@ public class LevelPanel extends JPanel {
 	}
 
 	public void paintLevel(Graphics2D g2) {
-		ArrayList<LevelObject> levelObjs = this.level.getLevelObjectList();
+		ArrayList<LevelObject> levelObjs = this.levelController.getLevelObjectList();
 		AffineTransform scaleMatrix = new AffineTransform();
         scaleMatrix.scale(scale, scale);
-		this.setPreferredSize(new Dimension(level.getLevelParameters()
-				.getLevelWidth() * scale, level.getLevelParameters().getLevelHeight() * scale));
+		this.setPreferredSize(new Dimension(levelController.getLevelParameters()
+				.getLevelWidth() * scale, levelController.getLevelParameters().getLevelHeight() * scale));
         g2.setTransform(scaleMatrix);
 		for (LevelObject levelObject : levelObjs) {
 			g2.setColor(levelObject.getObjectColor());
