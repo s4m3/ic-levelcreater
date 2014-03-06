@@ -34,8 +34,8 @@ public class WaypointController {
 			LOWaypoint currentWp = new LOWaypoint(true, numOfWayPoints, waypoints.size(), 1, 1, mapWidth, mapHeight);
 			//LOWaypoint currentWp = new LOWaypoint(true, 1, 1, mapWidth, mapHeight);
 			if(!wpIntersectsWithWalls(currentWp)) {
-				if(waypoints.size() > 1) {
-					if(areInterconnected((LOWaypoint) waypoints.get(0), currentWp)) {
+				if(waypoints.size() >= 1) {
+					if(true || areInterconnected((LOWaypoint) waypoints.get(0), currentWp)) {
 						waypoints.add(currentWp);
 					}					
 				} else {

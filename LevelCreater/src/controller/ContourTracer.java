@@ -32,18 +32,23 @@ public class ContourTracer {
 		pixelArray = new int[w + 2][h + 2];
 		labelArray = new int[w + 2][h + 2];
 		// initialize auxiliary arrays
-		try {
-			for (int v = 1; v < h + 1; v++) {
-				for (int u = 1; u < w + 1; u++) {
-					if (map[u - 1][v - 1] == 0)
-						pixelArray[u][v] = BACKGROUND;
-					else
-						pixelArray[u][v] = FOREGROUND;
-				}
+		for (int v = 1; v < h + 1; v++) {
+			for (int u = 1; u < w + 1; u++) {
+				if (map[u - 1][v - 1] == 0)
+					pixelArray[u][v] = BACKGROUND;
+				else
+					pixelArray[u][v] = FOREGROUND;
 			}
-		} catch (IndexOutOfBoundsException e) {
-			e.printStackTrace();
 		}
+		
+		
+		//TODO: delete
+//		for (int i = 0; i < pixelArray.length; i++) {
+//			for (int j = 0; j < pixelArray[i].length; j++) {
+//				System.out.print(pixelArray[i][j]);
+//			}
+//			System.out.println();
+//		}
 	}
 
 	void findAllContours() {
@@ -75,33 +80,28 @@ public class ContourTracer {
 						if (labelArray[v][u] == 0) {
 							// unlabeled—new inner contour
 							Contour ic = traceContour(u - 1, v, label, 0);
-							contours.add(ic);
+							//TODO: works but weird...
+							//contours.add(ic);
 						}
 						label = 0;
 					}
 				}
 			}
 		}
+		//TODO: delete
+		System.out.println();
+		for (int i = 0; i < labelArray.length; i++) {
+			for (int j = 0; j < labelArray[i].length; j++) {
+				System.out.print(labelArray[i][j] >= 0 ? labelArray[i][j] : "#" );
+			}
+			System.out.println();
+		}
 		// shift back to original coordinates
 		Contour.moveContoursBy(contours, -1, -1);
-		System.out.println("done");
+		
+		//first contours corner points are lost due to array index.
+		Contour.addCornerPointsForOutsideContour(contours.get(0), pixelArray[0].length - 2, pixelArray.length - 2);
 	}
-
-//	public void traceContour() {
-//		Contour cont = new Contour(label)
-//		int label = 0;
-//		int mapHeight = map.length;
-//		int mapWidth = map[0].length;
-//		for (int column = 0, row = 0; row < mapHeight; row++) {
-//			for (column = 0; column < mapWidth; column++) {
-//				if (map[column][row] == label) {
-//					ArrayList<MapPoint> pointList = traceContour(column, row,label, 0);
-//					this.contours.add(pointList);
-//					label++;
-//				}
-//			}
-//		}
-//	}
 
 	// trace one contour starting at (xS,yS) in direction dS
 	private Contour traceContour(int xS, int yS, int label, int dS) {
@@ -131,6 +131,9 @@ public class ContourTracer {
 			// are we back at the starting position?
 			done = (xP == xS && yP == yS && xC == xT && yC == yT);
 			if (!done) {
+				if(label == 1) {
+					System.out.print(pt.x + ":" + pt.y + " ");
+				}
 				cont.addPoint(pt);
 			}
 		}

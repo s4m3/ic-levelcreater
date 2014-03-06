@@ -62,7 +62,7 @@ public class Contour {
 		}
 	}
 
-	void moveBy(int dx, int dy) {
+	void movePointsBy(List<MapPoint> points, int dx, int dy) {
 		for (MapPoint pt : points) {
 			pt.translate(dx, dy);
 		}
@@ -70,7 +70,7 @@ public class Contour {
 
 	public static void moveContoursBy (List<Contour> contours, int dx, int dy) {
 		for (Contour c : contours) {
-			c.moveBy(dx, dy);
+			c.movePointsBy(c.getPoints(), dx, dy);
 		}
 	}
 
@@ -90,6 +90,20 @@ public class Contour {
 		for (MapPoint mapPoint : points) {
 			mapPoint.switchXandY();
 		}
+	}
+
+	public static void addCornerPointsForOutsideContour(Contour contour, int mapWidth, int mapHeight) {
+		for (MapPoint mp : contour.getPoints()) {
+			if(mp.x == 0 && mp.y == mapHeight - 1)
+				mp.y = mapHeight;
+			else if(mp.x == mapWidth - 1 && mp.y == 0)
+				mp.x = mapWidth;
+			else if(mp.x == mapWidth - 1 && mp.y == mapHeight - 1) {
+				mp.x = mapWidth;
+				mp.y = mapHeight;
+			}
+		}
+		
 	}
 	
 	

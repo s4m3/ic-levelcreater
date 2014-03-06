@@ -3,6 +3,7 @@ package controller;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Toolkit;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.swing.SwingWorker;
 
 import main.LevelCreater;
 import model.Contour;
+import model.LOCircle;
 import model.LOFloor;
 import model.LOPolygon;
 import model.LOWall;
@@ -26,7 +28,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
 	private CellularMapCreater cmc;
-	private int scale = 1;
+	
+	public static final int CAVERN_ITERATIONS = 6;
+	
+	public static final int scale = 6;
+	private static final int xTranslate = 3;
+	private static final int yTranslate = 5;
 
 	public LevelController(LevelParameters levelParameters) {
 		levelObjectList = new ArrayList<LevelObject>();
@@ -37,133 +44,91 @@ public class LevelController extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 		setProgress(0);
-		createLevel();
-		setProgress(30);
+		createFloor();
+		setProgress(5);
+		
 		// TODO: update... testing purpose
 		cmc = new CellularMapCreater(levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight(), 44);
-		cmc.makeCaverns();
-		setProgress(40);
-		cmc.makeCaverns();
-		setProgress(45);
-		cmc.makeCaverns();
-		setProgress(50);
-		cmc.makeCaverns();
-		setProgress(55);
-		cmc.makeCaverns();
-		setProgress(60);
-		cmc.makeCaverns();
+		
+		for (int i = 0; i < CAVERN_ITERATIONS; i++) {
+			cmc.makeCaverns();
+		}
+		setProgress(10);
 		statusUpdates.add("cavern creation done");
-		cmc.printMap();
-		int createdMap[][] = cmc.regionLabeling(cmc.map);
-		setProgress(60);
+		
+		//TODO: delete, just testing purpose...
+		//cmc.printMap();
+		
+		int[][] createdMap = cmc.getMapWithLabeledRegions();
+		setProgress(40);
 		statusUpdates.add("region labeling done");
-		//cmc.printMap(test);
-//		ContourTracer ct = new ContourTracer(test);
-//		ct.findAllContours();
-//		createTestObject();
+		
 		//to have a closed outside polygon, close the polygon in the middle
 		ArrayList<MapPoint> entrance = cmc.makeEntrance(createdMap);
-		cmc.printMap(createdMap);
+		
+		//cmc.printMap(createdMap);
 		setProgress(65);
+
 		//after opening the polygon, make a entrance polygon that closes that spot
 		createEntranceClosingPolygon(entrance);
 		setProgress(70);
-		//cmc.printMap(test);
-		cmc.convertRegionsToContour(createdMap, 2);
+		
+		//cmc.convertRegionsToContour(createdMap, 2);
 		setProgress(75);
-		//cmc.printMap(test);
-		
-//		cmc.printMap(test2);
-		// createTestMap(mht.map);
-		
-		//TEST CONTOUR TRACER
-//		int[][] multi = new int[][]{
-//				  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0 },
-//				  { 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0 }
-//				};
-//		
-//		System.out.println("value: " + multi[1][2]);
-//		ContourTracer ct2 = new ContourTracer(multi);
-//		ct2.findAllContours();
-//		ArrayList<Contour> contourList2 = ct2.getContours();
-//		Contour testC = contourList2.get(0);
-//		List<MapPoint> points2 = testC.getPoints();
-//		for (MapPoint mapPoint : points2) {
-//			System.out.println(mapPoint.x +":"+ mapPoint.y);
-//		}
-//		LOWall wallp = new LOWall((Polygon) testC.makePolygon());
-//		this.addLevelObject(wallp);
-		//////////////
+
 		
 		ContourTracer ct = new ContourTracer(createdMap);
 		ct.findAllContours();
 		setProgress(80);
 		
+		//TODO: maybe fix this? watch out for the hack in contour tracer for corner points!!
 		//contour tracer changes x and y, therefore x and y need to be switched again
 		ct.switchContourPointsXandY();
 		ArrayList<Contour> contourList = ct.getContours();
 		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
 		PolygonPointReducer ppr = new PolygonPointReducer();
-		setProgress(85);
-//		for (Contour contour : contourList) {
-//			LOWall wallPoly = new LOWall((Polygon) contour.makePolygon());
-//			this.addLevelObject(wallPoly);
-//		}
+
 		setProgress(90);
+//		int t=0;
 		for (Contour contour : contourList) {
-			ArrayList<MapPoint> points = (ArrayList<MapPoint>) contour.getPoints();
-			ArrayList<MapPoint> updatedPoints = ppr.reduceWithTolerance(points, 0);
+//			System.out.println(t++);
+//			System.out.println("before");
+//			for (MapPoint mapPoint1 : contour.getPoints()) {
+//				System.out.print(mapPoint1.x +":"+mapPoint1.y + "  ");
+//			}
+//			System.out.println();
+			ArrayList<MapPoint> updatedPoints = 
+					ppr.reduceWithTolerance((ArrayList<MapPoint>) contour.getPoints(), 1);
+//			System.out.println("updated");
+//			for (MapPoint mapPoint : updatedPoints) {
+//				System.out.print(mapPoint.x +":"+mapPoint.y + "  ");
+//			}
+//			System.out.println();
 			contour.setPoints(updatedPoints);
 			updatedContours.add(contour);
 		}
 		
 		setProgress(91);
 		
-//		System.out.println(updatedContours.size());
 		for (Contour contour : updatedContours) {
-			//System.out.println("label: " + contour.getLabel());
 			LOPolygon poly = new LOWall((Polygon) contour.makePolygon());
 			this.addLevelObject(poly);
 		}
 		
+		setProgress(92);
+		
 		WaypointController wpController = new WaypointController(createdMap, this.getLevelObjectList());
 		this.addLevelObjects(wpController.createWaypoints(levelParameters.getNumOfWaypoints()));
-		
-//		for (ArrayList<MapPoint> pointList : pointLists) {
-//			System.out.println("new pointList:");
-//			for (MapPoint mapPoint : pointList) {
-//				System.out.println("Point " +mapPoint.x+":"+ mapPoint.y);
-//			}
-//		}
-		
-		
-		//TEST PPR
 
-//		ArrayList<MapPoint> shape = new ArrayList<MapPoint>();
-//		shape.add(new MapPoint(0, 100));
-//		shape.add(new MapPoint(20, 0));
-//		shape.add(new MapPoint(40, 300));
-//		shape.add(new MapPoint(60, 0));
-//		shape.add(new MapPoint(80, 20));
-//		shape.add(new MapPoint(100, 30));
-//		shape.add(new MapPoint(120, 50));
-//		shape.add(new MapPoint(140, 200));
-//		shape.add(new MapPoint(200, 0));
-//		for (MapPoint mapPoint : shape) {
-//			System.out.println(mapPoint.x +":"+ mapPoint.y);
-//		}
-//		ArrayList<MapPoint> reduced = ppr.reduceWithTolerance(shape, 50);
-//		System.out.println("after");
-//		for (MapPoint mapPoint : reduced) {
-//			System.out.println(mapPoint.x +":"+ mapPoint.y);
-//		}
+		setProgress(95);
+
+		translateAndScaleLevelObjects();
 		setProgress(100);
 		return null;
 	}
+
+
 
 	/*
 	 * Executed in event dispatching thread
@@ -173,15 +138,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		Toolkit.getDefaultToolkit().beep();
 		LevelCreater.getInstance().createButton.setEnabled(true);
 		LevelCreater.getInstance().setCursor(null); // turn off the wait cursor
-	}
-
-	public void createLevel() {
-		createFloor();
-		//createOutsideWalls();
-		//createRandomWaypoints();
-		// createTestMap(mht.map);
-
-		// createTestObject();
 	}
 
 	public void createTestMap(int[][] map) {
@@ -233,8 +189,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 	}
 
 	private void createFloor() {
-		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth() * scale,
-				levelParameters.getLevelHeight() * scale);
+		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth(),
+				levelParameters.getLevelHeight());
 		this.addLevelObject(levelFloor);
 
 	}
@@ -257,6 +213,25 @@ public class LevelController extends SwingWorker<Void, Void> {
 		this.addLevelObject(bottomWall);
 		this.addLevelObject(leftWall);
 		this.addLevelObject(rightWall);
+	}
+	
+	private void translateAndScaleLevelObjects() {
+		List<LevelObject> levelObjs = this.getLevelObjectList();
+		for (LevelObject levelObject : levelObjs) {
+			if (levelObject instanceof LOPolygon) {
+				LOPolygon poly = ((LOPolygon) levelObject);
+				poly.scalePolygon(scale);
+				poly.translatePolygon(xTranslate, yTranslate);
+			} else if (levelObject instanceof LOCircle) {
+				Ellipse2D.Double ellipse = ((LOCircle) levelObject).getEllipse();
+				ellipse.height *= scale;
+				ellipse.width *= scale;
+				ellipse.x *= scale;
+				ellipse.x += xTranslate;
+				ellipse.y *= scale;
+				ellipse.y += yTranslate;
+			}
+		}		
 	}
 
 
