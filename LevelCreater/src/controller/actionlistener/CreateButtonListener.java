@@ -69,9 +69,9 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
             int progress = (Integer) evt.getNewValue();
             LevelCreater lc = LevelCreater.getInstance();
             lc.progressBar.setValue(progress);
-            if(level.getStatusUpdates().size() > 0) {
-            	lc.outputTextField.append(level.getStatusUpdates().get(level.getStatusUpdates().size()-1) + "\n");
-            	level.getStatusUpdates().remove(level.getStatusUpdates().size() - 1);
+            while(level.getStatusUpdates().size() > 0) {
+            	lc.outputTextField.append(level.getStatusUpdates().get(0) + "\n");
+            	level.getStatusUpdates().remove(0);
             }
             
             if(progress >= 100) {

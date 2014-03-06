@@ -7,6 +7,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingWorker;
 
@@ -43,6 +44,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+		long start = System.currentTimeMillis();
 		setProgress(0);
 		createFloor();
 		setProgress(5);
@@ -81,14 +83,14 @@ public class LevelController extends SwingWorker<Void, Void> {
 		ContourTracer ct = new ContourTracer(createdMap);
 		ct.findAllContours();
 		setProgress(80);
-		
+		statusUpdates.add("contours found");
 		//TODO: maybe fix this? watch out for the hack in contour tracer for corner points!!
 		//contour tracer changes x and y, therefore x and y need to be switched again
 		ct.switchContourPointsXandY();
 		ArrayList<Contour> contourList = ct.getContours();
 		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
 		PolygonPointReducer ppr = new PolygonPointReducer();
-
+		
 		setProgress(90);
 //		int t=0;
 		for (Contour contour : contourList) {
@@ -108,23 +110,34 @@ public class LevelController extends SwingWorker<Void, Void> {
 			contour.setPoints(updatedPoints);
 			updatedContours.add(contour);
 		}
-		
+		statusUpdates.add("polygon points reduced");
 		setProgress(91);
 		
 		for (Contour contour : updatedContours) {
 			LOPolygon poly = new LOWall((Polygon) contour.makePolygon());
 			this.addLevelObject(poly);
 		}
-		
+		statusUpdates.add("wall polygon creation done");
 		setProgress(92);
 		
 		WaypointController wpController = new WaypointController(createdMap, this.getLevelObjectList());
 		this.addLevelObjects(wpController.createWaypoints(levelParameters.getNumOfWaypoints()));
 
 		setProgress(95);
-
+		statusUpdates.add("waypoint creation done");
 		translateAndScaleLevelObjects();
+		setProgress(99);
+		
+		long diff = System.currentTimeMillis() - start;
+		System.out.println(diff);
+		
+		String duration = String.format("%02d:%02d:%02d:%03d", TimeUnit.MILLISECONDS.toHours(diff),
+	            TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
+	            TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)),
+	            diff % 1000);
+		statusUpdates.add("creation took " + duration + " to finish (hh:mm:ss:millis)");
 		setProgress(100);
+
 		return null;
 	}
 
