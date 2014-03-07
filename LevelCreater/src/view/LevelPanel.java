@@ -23,22 +23,23 @@ import javax.swing.KeyStroke;
 
 import model.LOCircle;
 import model.LOCircledWall;
-import model.LOFloor;
 import model.LOPolygon;
 import model.LevelObject;
 import controller.LevelController;
 
-public class LevelPanel extends JPanel {
+public class LevelPanel extends JPanel{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3171735915272793867L;
 
 	private LevelController levelController;
+	
 	private boolean showFilledPolygons = true;
 	
 	private boolean showPolyPoints = false;
-	private static final int polyPointSize = 4;
+	private int polyPointSize = 4;
+	private double scale = 1;
 	
 	public LevelPanel(LevelController level) {
 		super();
@@ -54,7 +55,7 @@ public class LevelPanel extends JPanel {
 					return;
 				}
 				LevelIO levelIO = new LevelIO();
-				levelIO.saveLevelToFile(levelController.getLevelObjectList(), levelController.getLevelParameters().getLevelName());
+				levelIO.saveLevelToFile(levelController.getLevel().getLevelObjects(), levelController.getLevelParameters().getLevelName());
 			}
 		};
 		
@@ -64,6 +65,8 @@ public class LevelPanel extends JPanel {
 		
 		//include hotkey for changing poly
 		Action switchAction = new AbstractAction("Change") {
+			private static final long serialVersionUID = 303105447483218436L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showFilledPolygons = !showFilledPolygons;
@@ -77,6 +80,8 @@ public class LevelPanel extends JPanel {
 		
 		//include hotkey for showing points of polygons
 		Action pointsAction = new AbstractAction("Show Points") {
+			private static final long serialVersionUID = 1230343407709073229L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showPolyPoints = !showPolyPoints;
@@ -88,8 +93,36 @@ public class LevelPanel extends JPanel {
 		this.getActionMap().put("Show Points", pointsAction);
 		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke3, "Show Points");
 		
-//		this.setPreferredSize(new Dimension(level.getLevelParameters()
-//				.getLevelWidth(), level.getLevelParameters().getLevelHeight()));
+		//include hotkey for zooming in
+		Action zoomInAction = new AbstractAction("Zoom In") {
+			private static final long serialVersionUID = 4949531583461899436L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				scale += 0.1;
+				repaint();
+			}
+		};
+		
+		KeyStroke keyStroke4 = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+		this.getActionMap().put("Zoom In", zoomInAction);
+		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke4, "Zoom In");
+		
+		//include hotkey for zooming out
+		Action zoomOutAction = new AbstractAction("Zoom Out") {
+			private static final long serialVersionUID = -6680860247190053279L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				scale -= 0.1;
+				repaint();
+			}
+		};
+		
+		KeyStroke keyStroke5 = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+		this.getActionMap().put("Zoom Out", zoomOutAction);
+		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke5, "Zoom Out");
+		
 		this.setLayout(null);
 		this.revalidate();
 	}
@@ -99,31 +132,28 @@ public class LevelPanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-
-		// g2.setBackground(Color.GREEN);
-		// g2.setColor(Color.BLUE);
-		// // g2.set
-		// g2.fillRect(10, 10, 1510, 510);
-		// g2.clearRect(10, 10, 300, 300);
 		paintLevel(g2);
 
 	}
+	
+	
+	public void repaintLevel() {
+		repaint();
+		super.repaint();
+		
+	}
 
 	public void paintLevel(Graphics2D g2) {
-		ArrayList<LevelObject> levelObjs = this.levelController.getLevelObjectList();
-		//AffineTransform scaleMatrix = new AffineTransform();
-        //scaleMatrix.scale(scale, scale);
+		ArrayList<LevelObject> levelObjs = (ArrayList<LevelObject>) levelController.getLevel().getLevelObjects();
+		AffineTransform scaleMatrix = new AffineTransform();
+        scaleMatrix.scale(scale, scale);
 		this.setPreferredSize(new Dimension(levelController.getLevelParameters()
 				.getLevelWidth() * levelController.scale, levelController.getLevelParameters().getLevelHeight() * levelController.scale));
-        //g2.setTransform(scaleMatrix);
+        g2.setTransform(scaleMatrix);
 		for (LevelObject levelObject : levelObjs) {
 			g2.setColor(levelObject.getObjectColor());
 			if (levelObject instanceof LOPolygon) {
 				Polygon poly = ((LOPolygon) levelObject).getPolygon();
-//				System.out.println(poly.npoints + " punkte");
-//				for (int i = 0; i < poly.npoints; i++) {
-//					System.out.println(poly.xpoints[i] + ":" + poly.ypoints[i]);
-//				}
 				if(showFilledPolygons) 
 					g2.fillPolygon(poly);
 				else
@@ -153,4 +183,6 @@ public class LevelPanel extends JPanel {
 			}
 		}
 	}
+
+
 }

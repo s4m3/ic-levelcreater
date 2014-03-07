@@ -2,9 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Random;
 
 import model.MapPoint;
@@ -302,6 +300,36 @@ public class CellularMapCreater {
 			}
 		}
 		return pointList;
+	}
+	
+	public boolean isValidMap(int[][] map) {
+		boolean isEntrancePossible = isEntrancePossible(map);
+		boolean mapHasMinFreeSpace = mapHasMinFreeSpace(map, 0.2);
+
+		return (isEntrancePossible && mapHasMinFreeSpace);
+	}
+
+	private boolean isEntrancePossible(int[][] map) {
+		int middleY = map[0].length / 2;
+		for (int i = 0; i < map.length; i++) {
+			if(map[i][middleY] == 0)
+				return true;
+		}
+		return false;
+	}
+
+	private boolean mapHasMinFreeSpace(int[][] map, double percentage) {
+		int height = map[0].length;
+		int width = map.length;
+		double totalSpace = width * height;
+		double emptySpace = 0;
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map[i].length; j++) {
+				if(map[i][j] == 0)
+					emptySpace++;
+			}
+		}
+		return emptySpace/totalSpace > percentage;
 	}
 
 	public void convertRegionsToContour(int[][] map, int initialLabel) {

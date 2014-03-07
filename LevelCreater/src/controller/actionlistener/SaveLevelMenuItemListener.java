@@ -23,7 +23,7 @@ public class SaveLevelMenuItemListener implements ActionListener {
 		}
 		
 		LevelIO levelIO = new LevelIO();
-		levelIO.saveLevelToFile(levelController.getLevelObjectList(), levelController.getLevelParameters().getLevelName());
+		levelIO.saveLevelToFile(levelController.getLevel().getLevelObjects(), levelController.getLevelParameters().getLevelName());
 	}
 
 }

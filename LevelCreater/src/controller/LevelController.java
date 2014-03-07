@@ -5,14 +5,12 @@ import helper.TimerThread;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Shape;
-import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import main.LevelCreater;
@@ -22,7 +20,7 @@ import model.LOCircledWall;
 import model.LOFloor;
 import model.LOPolygon;
 import model.LOWall;
-import model.LOWaypoint;
+import model.Level;
 import model.LevelObject;
 import model.LevelParameters;
 import model.MapPoint;
@@ -30,20 +28,21 @@ import enums.StandardWall;
 
 public class LevelController extends SwingWorker<Void, Void> {
 
-	private ArrayList<LevelObject> levelObjectList;
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
 	private CellularMapCreater cmc;
 	private TimerThread timerThread;
+	private Level level;
 	
 	public static final int CAVERN_ITERATIONS = 6;
 	
-	public static int scale = 2;
-	private static int xTranslate = 3;
-	private static int yTranslate = 5;
+	public int scale = 1;
+	private static int xTranslate = 0;
+	private static int yTranslate = 0;
 
 	public LevelController(LevelParameters levelParameters) {
-		levelObjectList = new ArrayList<LevelObject>();
+		scale = levelParameters.getScale();
+		level = new Level();
 		this.levelParameters = levelParameters;
 		statusUpdates = new ArrayList<String>();
 	}
@@ -73,6 +72,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 		int[][] createdMap = cmc.getMapWithLabeledRegions();
 		setProgress(40);
 		statusUpdates.add("region labeling done");
+		
+		if(!cmc.isValidMap(createdMap))
+				return null;
 		
 		//to have a closed outside polygon, close the polygon in the middle
 		ArrayList<MapPoint> entrance = cmc.makeEntrance(createdMap);
@@ -129,7 +131,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 			else if(shapes[i] instanceof Ellipse2D.Double)
 				lo = new LOCircledWall((Ellipse2D.Double) shapes[i]);
 			
-			this.addLevelObject(lo);
+			level.addLevelObject(lo);
 		}
 //		for (Contour contour : updatedContours) {
 //			LOPolygon poly = new LOWall((Polygon) contour.makePolygon());
@@ -138,8 +140,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 		statusUpdates.add("wall polygon creation done");
 		setProgress(92);
 		
-		WaypointController wpController = new WaypointController(createdMap, this.getLevelObjectList());
-		this.addLevelObjects(wpController.createWaypointsALT(levelParameters.getNumOfWaypoints()));
+		WaypointController wpController = new WaypointController(createdMap, level.getLevelObjects());
+		level.addLevelObjects(wpController.createWaypointsALT(levelParameters.getNumOfWaypoints()));
 
 		setProgress(95);
 		statusUpdates.add("waypoint creation done");
@@ -153,6 +155,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	            TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)),
 	            diff % 1000);
 		statusUpdates.add("creation took " + duration + " to finish (hh:mm:ss:millis)");
+		statusUpdates.add(String.format("Num of vertices: %d", level.getNumOfVertices()));
 		setProgress(100);
 
 		return null;
@@ -166,6 +169,11 @@ public class LevelController extends SwingWorker<Void, Void> {
 	@Override
 	public void done() {
 		//Toolkit.getDefaultToolkit().beep();
+		if(getProgress() < 100) {
+			JOptionPane.showMessageDialog(null, "Something went wrong");
+			setProgress(0);
+			statusUpdates.add("Error: invalid level");
+		}
 		LevelCreater.getInstance().createButton.setEnabled(true);
 		LevelCreater.getInstance().setCursor(null); // turn off the wait cursor
 		timerThread.stopTimer();
@@ -179,7 +187,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 				if (map[column][row] == 1) {
 					System.out.println(column + " " + row);
 					LOWall wall = new LOWall(new Point(column, row), 10, 10);
-					this.addLevelObject(wall);
+					level.addLevelObject(wall);
 				}
 			}
 		}
@@ -191,7 +199,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		int[] ypoints = { 0, 0, 20, 20 };
 
 		test.setPolygon(new Polygon(xpoints, ypoints, xpoints.length));
-		this.addLevelObject(test);
+		level.addLevelObject(test);
 	}
 	
 	private void createEntranceClosingPolygon(ArrayList<MapPoint> points) {
@@ -216,13 +224,13 @@ public class LevelController extends SwingWorker<Void, Void> {
 //			System.out.println(xPoints[i] +":"+yPoints[i]);
 //		}
 		LOWall wall = new LOWall(new Polygon(xPoints, yPoints, xPoints.length));
-		this.addLevelObject(wall);
+		level.addLevelObject(wall);
 	}
 
 	private void createFloor() {
 		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight());
-		this.addLevelObject(levelFloor);
+		level.addLevelObject(levelFloor);
 
 	}
 
@@ -240,10 +248,10 @@ public class LevelController extends SwingWorker<Void, Void> {
 		LOWall rightWall = new LOWall(StandardWall.RIGHT,
 				levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight(), 10);
-		this.addLevelObject(topWall);
-		this.addLevelObject(bottomWall);
-		this.addLevelObject(leftWall);
-		this.addLevelObject(rightWall);
+		level.addLevelObject(topWall);
+		level.addLevelObject(bottomWall);
+		level.addLevelObject(leftWall);
+		level.addLevelObject(rightWall);
 	}
 	
 	private void translateAndScaleLevelObjects() {
@@ -254,7 +262,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	}
 	
 	private void translateLevelObjects() {
-		for (LevelObject levelObject : this.getLevelObjectList()) {
+		for (LevelObject levelObject : level.getLevelObjects()) {
 			if (levelObject instanceof LOPolygon) {
 				LOPolygon poly = ((LOPolygon) levelObject);
 				poly.translate(xTranslate, yTranslate);
@@ -266,7 +274,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	}
 	
 	private void scaleLevelObjects() {
-		for (LevelObject levelObject : this.getLevelObjectList()) {
+		for (LevelObject levelObject : level.getLevelObjects()) {
 			if (levelObject instanceof LOPolygon) {
 				LOPolygon poly = ((LOPolygon) levelObject);
 					poly.scale(scale);
@@ -279,16 +287,14 @@ public class LevelController extends SwingWorker<Void, Void> {
 	
 
 
-	public void addLevelObject(LevelObject lo) {
-		this.levelObjectList.add(lo);
-	}
-	
-	public void addLevelObjects(List<LevelObject> loList) {
-		this.levelObjectList.addAll(loList);
+
+
+	public Level getLevel() {
+		return level;
 	}
 
-	public ArrayList<LevelObject> getLevelObjectList() {
-		return levelObjectList;
+	public void setLevel(Level level) {
+		this.level = level;
 	}
 
 	public LevelParameters getLevelParameters() {

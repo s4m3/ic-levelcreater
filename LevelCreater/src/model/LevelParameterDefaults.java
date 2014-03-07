@@ -17,7 +17,7 @@ public class LevelParameterDefaults {
 	public static final int NUM_WAYPOINTS_MIN = 1;
 	public static final int NUM_WAYPOINTS_MAX = 10000;
 	
-	public static final int SCALE_MIN = 1;
+	public static final int SCALE_MIN = 0;
 	public static final int SCALE_MAX = 1000;
 	
 }

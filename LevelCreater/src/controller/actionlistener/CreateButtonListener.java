@@ -1,20 +1,25 @@
 package controller.actionlistener;
 
-import helper.TimerThread;
-
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import controller.LevelController;
 import main.LevelCreater;
 import model.LevelParameterDefaults;
 import model.LevelParameters;
 import view.LevelFrame;
+import view.LevelsContainer;
+import controller.LevelController;
 
 public class CreateButtonListener implements ActionListener, PropertyChangeListener{
 
@@ -81,9 +86,25 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
             }
             
             if(progress >= 100) {
-        		LevelFrame levelFrame = new LevelFrame(level);
-        		// level.pack();
-        		levelFrame.setVisible(true);
+            	JFrame levelFrame = new JFrame();
+            	levelFrame.setTitle(level.getLevelParameters().getLevelName());
+            	levelFrame.setSize(new Dimension(800, 600));
+//        		this.setPreferredSize(new Dimension(800, 600));
+            	levelFrame.setLocation(400, 100);
+            	
+        		// MENU
+        		JMenuBar menuBar = new JMenuBar();
+        		JMenu menu = new JMenu("Level");
+        		JMenuItem save = new JMenuItem("Save");
+        		save.addActionListener(new SaveLevelMenuItemListener(level));
+        		menu.add(save);
+        		menuBar.add(menu);
+
+        		levelFrame.setJMenuBar(menuBar);
+
+            	levelFrame.add(new LevelsContainer(level), 0);
+            	levelFrame.setVisible(true);
+
             }
         } 
 		

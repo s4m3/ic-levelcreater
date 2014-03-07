@@ -2,7 +2,6 @@ package model;
 
 import java.awt.Color;
 import java.awt.Polygon;
-import java.awt.geom.AffineTransform;
 
 public class LOPolygon extends LevelObject {
 	protected Polygon polygon;

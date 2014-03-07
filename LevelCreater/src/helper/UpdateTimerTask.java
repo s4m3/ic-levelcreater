@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JLabel;
 
 import main.LevelCreater;
-import controller.LevelController;
 
 public class UpdateTimerTask extends TimerTask {
 
