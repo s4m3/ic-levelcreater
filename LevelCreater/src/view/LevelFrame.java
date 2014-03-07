@@ -27,9 +27,9 @@ public class LevelFrame extends JFrame {
 		this.setTitle(lp.getLevelName());
 		// this.setSize(lp.getLevelWidth(), lp.getLevelHeight() + 40/* + menubar
 		// */);
-		this.setSize(new Dimension(800, 800));
-		this.setPreferredSize(new Dimension(800, 800));
-		this.setLocation(200, 200);
+		this.setSize(new Dimension(800, 600));
+		this.setPreferredSize(new Dimension(800, 600));
+		this.setLocation(400, 100);
 
 		// MENU
 		JMenuBar menuBar = new JMenuBar();

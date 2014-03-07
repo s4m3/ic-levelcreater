@@ -6,6 +6,7 @@ public class LevelParameters {
 	private int levelWidth;
 	private int levelHeight;
 	private int numOfWaypoints;
+	private int scale;
 
 	public String getLevelName() {
 		return levelName;
@@ -38,5 +39,15 @@ public class LevelParameters {
 	public void setNumOfWaypoints(int numOfWaypoints) {
 		this.numOfWaypoints = numOfWaypoints;
 	}
+
+	public int getScale() {
+		return scale;
+	}
+
+	public void setScale(int scale) {
+		this.scale = scale;
+	}
+	
+	
 
 }

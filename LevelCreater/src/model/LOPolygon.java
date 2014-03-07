@@ -36,7 +36,7 @@ public class LOPolygon extends LevelObject {
 		//int[] xPoints = this.polygon;
 	}
 
-	public void scalePolygon(int scale) {
+	public void scale(int scale) {
 		int length = this.polygon.npoints;
 
 		for (int i = 0; i < length; i++) {
@@ -45,7 +45,7 @@ public class LOPolygon extends LevelObject {
 		}
 	}
 
-	public void translatePolygon(int xtranslate, int ytranslate) {
+	public void translate(int xtranslate, int ytranslate) {
 		this.getPolygon().translate(xtranslate, ytranslate);
 	}
 

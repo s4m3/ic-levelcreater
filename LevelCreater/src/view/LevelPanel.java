@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import model.LOCircle;
+import model.LOCircledWall;
 import model.LOFloor;
 import model.LOPolygon;
 import model.LevelObject;
@@ -137,7 +138,18 @@ public class LevelPanel extends JPanel {
 				}
 			} else if (levelObject instanceof LOCircle) {
 				Ellipse2D.Double ellipse = ((LOCircle) levelObject).getEllipse();
-				g2.fill(ellipse);
+				if(showFilledPolygons) 
+					g2.fill(ellipse);
+				else
+					g2.draw(ellipse);
+				
+				if(showPolyPoints) {
+						if(levelObject instanceof LOCircledWall) {
+						g2.setColor(Color.MAGENTA);
+						Ellipse2D.Double pointEllipse = new Ellipse2D.Double(levelObject.getPosition().x - polyPointSize/2, levelObject.getPosition().y - polyPointSize/2, polyPointSize, polyPointSize);
+						g2.fill(pointEllipse);
+					}
+				}
 			}
 		}
 	}

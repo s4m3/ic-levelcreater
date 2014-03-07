@@ -35,3 +35,5 @@
 /LevelCreater/.metadata/.plugins/org.eclipse.wb.discovery.core/toolkit_swt.png
 /LevelCreater/.metadata/.plugins/org.eclipse.wb.discovery.core/toolkit_xwt.png
 /LevelCreater/.metadata/.plugins/org.eclipse.wb.discovery.core/toolkits.xml
+/LevelCreater/levels/*.dat
+/LevelCreater/RemoteSystemsTempFiles/.project

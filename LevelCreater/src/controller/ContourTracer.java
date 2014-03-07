@@ -88,14 +88,14 @@ public class ContourTracer {
 				}
 			}
 		}
-		//TODO: delete
-		System.out.println();
-		for (int i = 0; i < labelArray.length; i++) {
-			for (int j = 0; j < labelArray[i].length; j++) {
-				System.out.print(labelArray[i][j] >= 0 ? labelArray[i][j] : "#" );
-			}
-			System.out.println();
-		}
+//		//TODO: delete
+//		System.out.println();
+//		for (int i = 0; i < labelArray.length; i++) {
+//			for (int j = 0; j < labelArray[i].length; j++) {
+//				System.out.print(labelArray[i][j] >= 0 ? labelArray[i][j] : "#" );
+//			}
+//			System.out.println();
+//		}
 		// shift back to original coordinates
 		Contour.moveContoursBy(contours, -1, -1);
 		
@@ -131,9 +131,9 @@ public class ContourTracer {
 			// are we back at the starting position?
 			done = (xP == xS && yP == yS && xC == xT && yC == yT);
 			if (!done) {
-				if(label == 1) {
-					System.out.print(pt.x + ":" + pt.y + " ");
-				}
+//				if(label == 1) {
+//					System.out.print(pt.x + ":" + pt.y + " ");
+//				}
 				cont.addPoint(pt);
 			}
 		}

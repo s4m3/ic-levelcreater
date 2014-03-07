@@ -11,6 +11,12 @@ public class LOWaypoint extends LOCircle {
 	public LOWaypoint() {
 		this.objectColor = Color.YELLOW;
 	}
+	
+	public LOWaypoint(int xPos, int yPos, int xSize, int ySize) {
+		this.objectColor = Color.YELLOW;
+		this.position = new Point(xPos, yPos);
+		this.ellipse = new Ellipse2D.Double(xPos - xSize/2, yPos - ySize/2, xSize, ySize);
+	}
 
 	public LOWaypoint(boolean randomPosition, int totalNumOfWayPoints, int currentWayPointNum, double xSize, double ySize,
 			int levelWidth, int levelHeight) {

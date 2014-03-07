@@ -1,14 +1,18 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -35,6 +39,7 @@ import controller.actionlistener.LevelheightParameterListener;
 import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
 import controller.actionlistener.ParameterListenerBase;
+import controller.actionlistener.ScaleParameterListener;
 import filters.IntegerFilter;
 
 public class LevelCreater extends JFrame {
@@ -51,6 +56,7 @@ public class LevelCreater extends JFrame {
 	public JProgressBar progressBar;
 	public JButton createButton;
 	public JTextArea outputTextField;
+	public JLabel timerLabel;
 	
 	private LevelCreater() {
 		this.setTitle("Level Creater");
@@ -82,7 +88,7 @@ public class LevelCreater extends JFrame {
 		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\"!");
 		pane.add(topLabel, BorderLayout.NORTH);
 		String[] labels = { "Levelname: ", "Width: ", "Height: ",
-				"Number of Waypoints: " };
+				"Number of Waypoints: ", "Scale: " };
 		int numPairs = labels.length;
 
 		// Create and populate the panel.
@@ -100,6 +106,8 @@ public class LevelCreater extends JFrame {
 		addParameter("Number of Waypoints",
 				LevelParameterDefaults.NUM_WAYPOINTS, parameterPanel,
 				new LevelNumOfWaypointsParameterListener(levelParameters), true);
+		addParameter("Scale", LevelParameterDefaults.SCALE, parameterPanel, 
+				new ScaleParameterListener(levelParameters), true);
 
 		// Lay out the panel.
 		SpringUtilities.makeCompactGrid(parameterPanel, numPairs, 2, // rows,//
@@ -112,13 +120,19 @@ public class LevelCreater extends JFrame {
 		pane.add(parameterPanel, BorderLayout.CENTER);
 
 		JPanel southPanel = new JPanel(new BorderLayout());
+		JPanel progressPanel = new JPanel();
+		progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.X_AXIS));
+		JLabel progressLabel = new JLabel("Progress: ");
+		progressPanel.add(progressLabel);
+        timerLabel = new JLabel("--:--:--");
+        progressPanel.add(timerLabel);
 		
-		JLabel progressLabel = new JLabel("Progress:");
-		southPanel.add(progressLabel, BorderLayout.NORTH);
+		southPanel.add(progressPanel, BorderLayout.NORTH);
 		
 		progressBar = new JProgressBar(0, 100);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
+        
         southPanel.add(progressBar, BorderLayout.WEST);
 		
 		createButton = new JButton("CREATE");

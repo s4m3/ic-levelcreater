@@ -1,5 +1,7 @@
 package controller.actionlistener;
 
+import helper.TimerThread;
+
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,6 +60,10 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
 		
 		parameter = paras.getNumOfWaypoints();
 		if(parameter < LevelParameterDefaults.NUM_WAYPOINTS_MIN || parameter > LevelParameterDefaults.NUM_WAYPOINTS_MAX)
+			parametersOk = false;
+		
+		parameter = paras.getScale();
+		if(parameter < LevelParameterDefaults.SCALE_MIN || parameter > LevelParameterDefaults.SCALE_MAX)
 			parametersOk = false;
 		
 		return parametersOk;

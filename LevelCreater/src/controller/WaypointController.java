@@ -1,5 +1,7 @@
 package controller;
 
+import helper.Randomizer;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,30 @@ public class WaypointController {
 				} else {
 					waypoints.add(currentWp);
 				}
+			}
+		}
+		return waypoints;
+	}
+	
+	public List<LevelObject> createWaypointsALT(int numOfWaypoints) {
+		if(this.map.equals(null))
+			return null;
+		if(this.levelObjects.size() == 0)
+			return null;
+		
+		List<LevelObject> waypoints = new ArrayList<LevelObject>();
+		int mapWidth = this.map.length;
+		int mapHeight = this.map[0].length;
+		
+		int xPos, yPos;
+		
+		while(waypoints.size() < numOfWaypoints) {
+			xPos = Randomizer.random.nextInt(mapWidth);
+			yPos = Randomizer.random.nextInt(mapHeight);
+			if(map[xPos][yPos] == 0) {
+				LOWaypoint newWp = new LOWaypoint(xPos, yPos, 1, 1);
+				waypoints.add(newWp);
+				map[xPos][yPos] = -1;
 			}
 		}
 		return waypoints;

@@ -29,6 +29,7 @@ public class Contour {
 
 	public Shape makePolygon() {
 		int m = points.size();
+		if(m == 1) System.out.println("circledWall!");
 		if (m > 1) {
 			int[] xPoints = new int[m];
 			int[] yPoints = new int[m];
@@ -44,11 +45,11 @@ public class Contour {
 		} else {
 			// use circles for isolated pixels
 			MapPoint cpt = points.get(0);
-			return new Ellipse2D.Double(cpt.x - 0.1, cpt.y - 0.1, 0.2, 0.2);
+			return new Ellipse2D.Double(cpt.x, cpt.y, 2, 2);
 		}
 	}
 
-	static Shape[] makePolygons(List<Contour> contours) {
+	public static Shape[] makePolygons(List<Contour> contours) {
 		if (contours == null)
 			return null;
 		else {
