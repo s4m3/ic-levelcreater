@@ -64,7 +64,7 @@ public class WaypointController {
 			xPos = Randomizer.random.nextInt(mapWidth);
 			yPos = Randomizer.random.nextInt(mapHeight);
 			if(map[xPos][yPos] == 0) {
-				LOWaypoint newWp = new LOWaypoint(xPos, yPos, 1, 1);
+				LOWaypoint newWp = new LOWaypoint(xPos, yPos, 5, 5);
 				waypoints.add(newWp);
 				map[xPos][yPos] = -1;
 			}

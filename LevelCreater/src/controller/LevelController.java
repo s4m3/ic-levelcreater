@@ -16,9 +16,11 @@ import javax.swing.SwingWorker;
 import main.LevelCreater;
 import model.Contour;
 import model.LOCircle;
+import model.LOCircledSlowDown;
 import model.LOCircledWall;
 import model.LOFloor;
 import model.LOPolygon;
+import model.LOSlowDown;
 import model.LOWall;
 import model.Level;
 import model.LevelObject;
@@ -30,7 +32,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
-	private CellularMapCreater cmc;
+	private CellularAutomaton cellAutomat;
 	private TimerThread timerThread;
 	private Level level;
 	
@@ -57,11 +59,11 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(5);
 		
 		// TODO: update... testing purpose
-		cmc = new CellularMapCreater(levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(), 44);
+		cellAutomat = new CellularAutomaton(levelParameters.getLevelWidth(),
+				levelParameters.getLevelHeight(), levelParameters.getObstacles());
 		
 		for (int i = 0; i < CAVERN_ITERATIONS; i++) {
-			cmc.makeCaverns();
+			cellAutomat.makeCaverns();
 		}
 		setProgress(10);
 		statusUpdates.add("cavern creation done");
@@ -69,17 +71,17 @@ public class LevelController extends SwingWorker<Void, Void> {
 		//TODO: delete, just testing purpose...
 		//cmc.printMap();
 		
-		int[][] createdMap = cmc.getMapWithLabeledRegions();
+		int[][] createdMap = cellAutomat.getMapWithLabeledRegions();
 		setProgress(40);
 		statusUpdates.add("region labeling done");
 		
-		if(!cmc.isValidMap(createdMap))
+		if(!cellAutomat.isValidMap(createdMap))
 				return null;
 		
 		//to have a closed outside polygon, close the polygon in the middle
-		ArrayList<MapPoint> entrance = cmc.makeEntrance(createdMap);
+		ArrayList<MapPoint> entrance = cellAutomat.makeEntrance(createdMap);
 		
-		//cmc.printMap(createdMap);
+		//cellAutomat.printMap(createdMap);
 		setProgress(65);
 
 		//after opening the polygon, make a entrance polygon that closes that spot
@@ -124,6 +126,15 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(91);
 		
 		Shape[] shapes = Contour.makePolygons(updatedContours);
+		
+//		for (int j = 1; j < shapes.length; j++) {
+//			if(shapes[j] instanceof Polygon) {
+//				LOSlowDown slowDownObj = new LOSlowDown((Polygon) shapes[j]);
+////				LOCircledSlowDown slowDownObj = new LOCircledSlowDown((Polygon) shapes[j]);
+//				level.addLevelObject(slowDownObj);
+//			}
+//		}
+		
 		for (int i = 0; i < shapes.length; i++) {
 			LevelObject lo = null;
 			if(shapes[i] instanceof Polygon)

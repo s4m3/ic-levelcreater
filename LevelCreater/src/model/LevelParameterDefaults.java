@@ -7,6 +7,7 @@ public class LevelParameterDefaults {
 	public static final int LEVEL_HEIGHT = 500;
 	public static final int NUM_WAYPOINTS = 2;
 	public static final int SCALE = 1;
+	public static final int OBSTACLES = 44;
 	
 	public static final int LEVEL_WIDTH_MIN = 10;
 	public static final int LEVEL_WIDTH_MAX = 100000;
@@ -19,5 +20,8 @@ public class LevelParameterDefaults {
 	
 	public static final int SCALE_MIN = 0;
 	public static final int SCALE_MAX = 1000;
+	
+	public static final int OBSTACLE_MIN = 30;
+	public static final int OBSTACLE_MAX = 50;
 	
 }

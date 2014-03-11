@@ -38,7 +38,7 @@ public class LevelPanel extends JPanel{
 	private boolean showFilledPolygons = true;
 	
 	private boolean showPolyPoints = false;
-	private int polyPointSize = 4;
+	private int polyPointSize = 2;
 	private double scale = 1;
 	
 	public LevelPanel(LevelController level) {

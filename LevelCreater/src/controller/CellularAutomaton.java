@@ -7,7 +7,7 @@ import java.util.Random;
 
 import model.MapPoint;
 
-public class CellularMapCreater {
+public class CellularAutomaton {
 
 	Random rand = new Random();
 
@@ -21,7 +21,7 @@ public class CellularMapCreater {
 	// ALL_BACKGROUND, ONE, MANY
 	// }
 
-	public CellularMapCreater() {
+	public CellularAutomaton() {
 		mapWidth = 40;
 		mapHeight = 21;
 		percentAreWalls = 40;
@@ -29,7 +29,7 @@ public class CellularMapCreater {
 		randomFillMap();
 	}
 
-	public CellularMapCreater(int width, int height, int percentAreWalls) {
+	public CellularAutomaton(int width, int height, int percentAreWalls) {
 		this.mapWidth = width;
 		this.mapHeight = height;
 		this.percentAreWalls = percentAreWalls;
@@ -37,7 +37,7 @@ public class CellularMapCreater {
 		randomFillMap();
 	}
 
-	public CellularMapCreater(int mapWidth, int mapHeight, int[][] map,
+	public CellularAutomaton(int mapWidth, int mapHeight, int[][] map,
 			int percentWalls) {
 		this.mapWidth = mapWidth;
 		this.mapHeight = mapHeight;
@@ -130,7 +130,7 @@ public class CellularMapCreater {
 		return false;
 	}
 
-	public void printMap() {
+	public void printThisMap() {
 		System.out.println(mapToString());
 	}
 

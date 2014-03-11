@@ -88,7 +88,7 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
             if(progress >= 100) {
             	JFrame levelFrame = new JFrame();
             	levelFrame.setTitle(level.getLevelParameters().getLevelName());
-            	levelFrame.setSize(new Dimension(800, 600));
+            	//levelFrame.setSize(new Dimension(800, 600));
 //        		this.setPreferredSize(new Dimension(800, 600));
             	levelFrame.setLocation(400, 100);
             	
@@ -101,9 +101,12 @@ public class CreateButtonListener implements ActionListener, PropertyChangeListe
         		menuBar.add(menu);
 
         		levelFrame.setJMenuBar(menuBar);
-
-            	levelFrame.add(new LevelsContainer(level), 0);
+        		LevelsContainer levelContainer = new LevelsContainer(level);
+        		levelContainer.setLayout(new BoxLayout(levelContainer, BoxLayout.LINE_AXIS));
+            	levelFrame.add(levelContainer, 0);
             	levelFrame.setVisible(true);
+            	levelFrame.pack();
+            	
 
             }
         } 

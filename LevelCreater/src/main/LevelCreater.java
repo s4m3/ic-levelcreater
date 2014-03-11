@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.ParameterDescriptor;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -30,11 +32,13 @@ import javax.swing.text.PlainDocument;
 import layout.SpringUtilities;
 import model.LevelParameterDefaults;
 import model.LevelParameters;
+import controller.ClipperController;
 import controller.actionlistener.CreateButtonListener;
 import controller.actionlistener.LevelNumOfWaypointsParameterListener;
 import controller.actionlistener.LevelheightParameterListener;
 import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
+import controller.actionlistener.ObstacleChangeListener;
 import controller.actionlistener.ParameterListenerBase;
 import controller.actionlistener.ScaleParameterListener;
 import filters.IntegerFilter;
@@ -88,7 +92,9 @@ public class LevelCreater extends JFrame {
 				"Number of Waypoints: ", "Scale: " };
 		int numPairs = labels.length;
 
-		// Create and populate the panel.
+		// Create and populate the panel.\
+		JPanel allParametersPanel = new JPanel();
+		allParametersPanel.setLayout(new BoxLayout(allParametersPanel, BoxLayout.Y_AXIS));
 		JPanel parameterPanel = new JPanel(new SpringLayout());
 
 		addParameter("Levelname", LevelParameterDefaults.levelName,
@@ -114,7 +120,32 @@ public class LevelCreater extends JFrame {
 
 		Border paneEdge = BorderFactory.createEmptyBorder(0, 10, 10, 10);
 		parameterPanel.setBorder(paneEdge);
-		pane.add(parameterPanel, BorderLayout.CENTER);
+		allParametersPanel.add(parameterPanel);
+		
+		levelParameters.setObstacles(LevelParameterDefaults.OBSTACLES);
+		JPanel obstaclePanel = new JPanel();
+		obstaclePanel.setBorder(paneEdge);
+		JLabel obstacleLabel = new JLabel("Wall Percentage");
+		JLabel amountOfObstaclesLabel = new JLabel("medium");
+		Dimension d = amountOfObstaclesLabel.getPreferredSize();  
+		amountOfObstaclesLabel.setPreferredSize(new Dimension(d.width,d.height)); 
+		obstaclePanel.add(obstacleLabel);
+		
+		JSlider amoutOfObstacleSlider = new JSlider(JSlider.HORIZONTAL,
+                LevelParameterDefaults.OBSTACLE_MIN, LevelParameterDefaults.OBSTACLE_MAX, LevelParameterDefaults.OBSTACLES);
+		amoutOfObstacleSlider.addChangeListener(new ObstacleChangeListener(levelParameters, amountOfObstaclesLabel));
+		//Turn on labels at major tick marks.
+		amoutOfObstacleSlider.setMajorTickSpacing(10);
+		amoutOfObstacleSlider.setMinorTickSpacing(5);
+		amoutOfObstacleSlider.setPaintTicks(true);
+//		amoutOfObstacleSlider.setPaintLabels(true);
+		obstaclePanel.add(amoutOfObstacleSlider);
+		
+		obstaclePanel.add(amountOfObstaclesLabel);
+
+		allParametersPanel.add(obstaclePanel);
+		
+		pane.add(allParametersPanel, BorderLayout.CENTER);
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		JPanel progressPanel = new JPanel();

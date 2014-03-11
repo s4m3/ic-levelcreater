@@ -20,7 +20,11 @@ public class LevelsContainer extends JPanel {
 		// this.setSize(lp.getLevelWidth(), lp.getLevelHeight() + 40/* + menubar
 		// */);
 
-
+		
+		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension preferredSize = new Dimension(lp.getLevelWidth() < screenSize.getWidth() ? lp.getLevelWidth() : (int) screenSize.getWidth() - 100, lp.getLevelHeight() < screenSize.getHeight() ? lp.getLevelHeight() : (int) screenSize.getHeight() - 50);
+			
+		this.setPreferredSize(preferredSize);
 
 		
 		JPanel levelsPanel = new JPanel(new GridLayout(1, 1));

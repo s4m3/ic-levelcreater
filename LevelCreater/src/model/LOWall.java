@@ -13,7 +13,7 @@ public class LOWall extends LOPolygon {
 	}
 	
 	public LOWall(Point position, int width, int height) {
-		this.objectColor = Color.DARK_GRAY;
+		this();
 		this.position = position;
 		int[] xs = { position.x, position.x + width, position.x + width, position.x };
 		int[] ys = { position.y, position.y, position.y + height, position.y + height };
@@ -21,13 +21,13 @@ public class LOWall extends LOPolygon {
 	}
 	
 	public LOWall(Polygon shape) {
-		this.objectColor = Color.DARK_GRAY;
+		this();
 		this.polygon = shape;
 	}
 
 	public LOWall(StandardWall wallType, int levelWidth, int levelHeigth,
 			int wallDepth) {
-		this.objectColor = Color.DARK_GRAY;
+		this();
 		switch (wallType) {
 		case TOP:
 			createTopWall(levelWidth, wallDepth);
