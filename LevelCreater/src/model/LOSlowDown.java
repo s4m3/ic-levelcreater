@@ -13,9 +13,10 @@ public class LOSlowDown extends LOPolygon {
 		this.objectColor = new Color(139, 69, 19);;
 	}
 	
-	public LOSlowDown(Polygon wall) {
+	public LOSlowDown(Polygon poly) {
 		this();
-		this.polygon = calculatePolygonWithWall(wall);
+		//this.polygon = calculatePolygonWithWall(wall);
+		this.polygon = poly;
 	}
 
 	public Polygon calculatePolygonWithWall(Polygon wall) {

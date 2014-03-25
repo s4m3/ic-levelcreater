@@ -19,11 +19,9 @@ public class ObstacleChangeListener implements ChangeListener {
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		JSlider source = (JSlider)e.getSource();
-	    if (!source.getValueIsAdjusting()) {
-	        int obstacleValue = (int)source.getValue();
-	        levelParameters.setObstacles(obstacleValue);
-	        label.setText(obstacleValue < LevelParameterDefaults.OBSTACLES - 1 ? "low" : obstacleValue < LevelParameterDefaults.OBSTACLES + 1 ? "medium" : "high");
-	    }
+        int obstacleValue = (int)source.getValue();
+        levelParameters.setObstacles(obstacleValue);
+        label.setText(obstacleValue < LevelParameterDefaults.OBSTACLES - 1 ? "low" : obstacleValue < LevelParameterDefaults.OBSTACLES + 1 ? "medium" : "high");
 
 	}
 

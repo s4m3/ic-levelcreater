@@ -28,7 +28,6 @@ public class Contour {
 
 	public Shape makePolygon() {
 		int m = points.size();
-		if(m == 1) System.out.println("circledWall!");
 		if (m > 1) {
 			int[] xPoints = new int[m];
 			int[] yPoints = new int[m];

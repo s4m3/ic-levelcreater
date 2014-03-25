@@ -1,7 +1,7 @@
 package controller;
 
 import javax.script.*;
-
+//TODO: DELETE, this is not used
 public class ClipperController {
     public void test() throws Exception {
         ScriptEngineManager manager = new ScriptEngineManager();

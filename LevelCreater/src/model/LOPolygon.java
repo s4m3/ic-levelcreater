@@ -1,7 +1,9 @@
 package model;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
+import java.util.ArrayList;
 
 public class LOPolygon extends LevelObject {
 	protected Polygon polygon;
@@ -46,6 +48,14 @@ public class LOPolygon extends LevelObject {
 
 	public void translate(int xtranslate, int ytranslate) {
 		this.getPolygon().translate(xtranslate, ytranslate);
+	}
+	
+	public ArrayList<Point> getPolyPointList() {
+		ArrayList<Point> list = new ArrayList<Point>(polygon.npoints);
+		for (int i = 0; i < polygon.npoints; i++) {
+			list.add(new Point(polygon.xpoints[i], polygon.ypoints[i]));
+		}
+		return list;
 	}
 
 }

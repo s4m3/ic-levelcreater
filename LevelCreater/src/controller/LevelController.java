@@ -126,14 +126,16 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(91);
 		
 		Shape[] shapes = Contour.makePolygons(updatedContours);
+		PolygonHullController polygonHullController = new PolygonHullController();
 		
-//		for (int j = 1; j < shapes.length; j++) {
-//			if(shapes[j] instanceof Polygon) {
-//				LOSlowDown slowDownObj = new LOSlowDown((Polygon) shapes[j]);
-////				LOCircledSlowDown slowDownObj = new LOCircledSlowDown((Polygon) shapes[j]);
-//				level.addLevelObject(slowDownObj);
-//			}
-//		}
+		for (int j = 1; j < shapes.length; j++) {
+			if(shapes[j] instanceof Polygon) {
+				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
+				LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList())); 
+//				LOCircledSlowDown slowDownObj = new LOCircledSlowDown((Polygon) shapes[j]);
+				level.addLevelObject(slowDownObj);
+			}
+		}
 		
 		for (int i = 0; i < shapes.length; i++) {
 			LevelObject lo = null;
