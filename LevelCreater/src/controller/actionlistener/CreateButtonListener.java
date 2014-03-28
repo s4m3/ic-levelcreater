@@ -6,11 +6,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import main.LevelCreater;
@@ -99,27 +94,9 @@ public class CreateButtonListener implements ActionListener,
 			}
 
 			if (progress >= 100) {
-				JFrame levelFrame = new JFrame();
-				levelFrame.setTitle(level.getLevelParameters().getLevelName());
-				// levelFrame.setSize(new Dimension(800, 600));
-				// this.setPreferredSize(new Dimension(800, 600));
-				levelFrame.setLocation(400, 100);
-
-				// MENU
-				JMenuBar menuBar = new JMenuBar();
-				JMenu menu = new JMenu("Level");
-				JMenuItem save = new JMenuItem("Save");
-				save.addActionListener(new SaveLevelMenuItemListener(level));
-				menu.add(save);
-				menuBar.add(menu);
-
-				levelFrame.setJMenuBar(menuBar);
 				LevelsContainer levelContainer = new LevelsContainer(level);
-				levelContainer.setLayout(new BoxLayout(levelContainer,
-						BoxLayout.Y_AXIS));
-				levelFrame.add(levelContainer, 0);
-				levelFrame.setVisible(true);
-				levelFrame.pack();
+				levelContainer.pack();
+				levelContainer.setVisible(true);
 
 			}
 		}

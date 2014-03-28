@@ -1,26 +1,20 @@
 package view;
 
-import helper.LevelIO;
-
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 
 import model.LOCircle;
 import model.LOCircledWall;
@@ -50,100 +44,25 @@ public class LevelPanel extends JPanel {
 	public LevelPanel(LevelController level) {
 		super();
 		this.levelController = level;
+		setBackground(Color.WHITE);
 
-		// include hotkey for saving
-		Action saveAction = new AbstractAction("Save") {
+		this.setLayout(new BorderLayout());
+		repaintLevel();
+		repaintAfterMilliseconds(100);
+	}
+
+	public void repaintAfterMilliseconds(int ms) {
+		Timer timer = new Timer();
+		timer.schedule(scheduleRepaint(), ms);
+	}
+
+	private TimerTask scheduleRepaint() {
+		return new TimerTask() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (levelController == null) {
-					return;
-				}
-				LevelIO levelIO = new LevelIO();
-				levelIO.saveLevelToFile(levelController.getLevel()
-						.getLevelObjects(), levelController
-						.getLevelParameters().getLevelName());
+			public void run() {
+				repaintLevel();
 			}
 		};
-
-		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				InputEvent.CTRL_DOWN_MASK);
-		this.getActionMap().put("Save", saveAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke,
-				"Save");
-
-		// include hotkey for changing poly
-		Action switchAction = new AbstractAction("Change") {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showFilledPolygons = !showFilledPolygons;
-				repaint();
-			}
-		};
-
-		KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_C, 0);
-		this.getActionMap().put("Change", switchAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke2,
-				"Change");
-
-		// include hotkey for showing points of polygons
-		Action pointsAction = new AbstractAction("Show Points") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showPolyPoints = !showPolyPoints;
-				repaint();
-			}
-		};
-
-		KeyStroke keyStroke3 = KeyStroke.getKeyStroke(KeyEvent.VK_V, 0);
-		this.getActionMap().put("Show Points", pointsAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke3,
-				"Show Points");
-
-		// include hotkey for zooming in
-		Action zoomInAction = new AbstractAction("Zoom In") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				scale += 0.1;
-				repaint();
-			}
-		};
-
-		KeyStroke keyStroke4 = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
-		this.getActionMap().put("Zoom In", zoomInAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke4,
-				"Zoom In");
-
-		// include hotkey for zooming out
-		Action zoomOutAction = new AbstractAction("Zoom Out") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				scale -= 0.1;
-				repaint();
-			}
-		};
-
-		KeyStroke keyStroke5 = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
-		this.getActionMap().put("Zoom Out", zoomOutAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke5,
-				"Zoom Out");
-
-		// include hotkey for showing paths
-		Action showPathAction = new AbstractAction("Show Path") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showPaths = !showPaths;
-				repaint();
-			}
-		};
-
-		KeyStroke keyStroke6 = KeyStroke.getKeyStroke(KeyEvent.VK_B, 0);
-		this.getActionMap().put("Show Path", showPathAction);
-		this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke6,
-				"Show Path");
-
-		this.setLayout(null);
-		this.revalidate();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -156,7 +75,6 @@ public class LevelPanel extends JPanel {
 	}
 
 	public void repaintLevel() {
-		super.repaint();
 		repaint();
 
 	}
@@ -166,14 +84,12 @@ public class LevelPanel extends JPanel {
 				.getLevel().getLevelObjects();
 		AffineTransform scaleMatrix = new AffineTransform();
 		scaleMatrix.scale(scale, scale);
-		this.setPreferredSize(new Dimension(levelController
-				.getLevelParameters().getLevelWidth() * levelController.scale,
-				levelController.getLevelParameters().getLevelHeight()
-						* levelController.scale));
 		g2.setTransform(scaleMatrix);
 		paintLevelObjects(g2, levelObjs);
 		if (showPaths)
 			paintPaths(g2);
+		revalidate();
+		super.revalidate();
 	}
 
 	private void paintLevelObjects(Graphics2D g2,
@@ -235,6 +151,13 @@ public class LevelPanel extends JPanel {
 				g2.drawLine(aP.x, aP.y, bP.x, bP.y);
 			}
 		}
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension((int) (levelController.getLevelParameters()
+				.getLevelWidth() * scale), (int) (levelController
+				.getLevelParameters().getLevelHeight() * scale));
 	}
 
 	public boolean isShowFilledPolygons() {
