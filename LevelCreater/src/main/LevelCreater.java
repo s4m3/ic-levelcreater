@@ -38,6 +38,7 @@ import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
 import controller.actionlistener.ObstacleChangeListener;
 import controller.actionlistener.ParameterListenerBase;
+import controller.actionlistener.RegionMinSizeChangeListener;
 import controller.actionlistener.ScaleParameterListener;
 import filters.IntegerFilter;
 
@@ -147,6 +148,39 @@ public class LevelCreater extends JFrame {
 		obstaclePanel.add(amountOfObstaclesLabel);
 
 		allParametersPanel.add(obstaclePanel);
+
+		// MIN SIZE OF REGION PARAMETER
+		levelParameters
+				.setMinSizeRegionInMapSizePercentage(LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE);
+		JPanel minSizeRegionPanel = new JPanel();
+		minSizeRegionPanel.setBorder(paneEdge);
+		JLabel minSizeRegionLabel = new JLabel("Delete Small Walls");
+		minSizeRegionPanel.add(minSizeRegionLabel);
+		JLabel minSizeRegionPercentageLabel = new JLabel("normal");
+		Dimension dim = minSizeRegionPercentageLabel.getPreferredSize();
+		minSizeRegionPercentageLabel.setPreferredSize(new Dimension(dim.width,
+				dim.height));
+		minSizeRegionPanel.add(minSizeRegionPercentageLabel);
+
+		JSlider minSizeRegionSlider = new JSlider(
+				JSlider.HORIZONTAL,
+				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MIN * 10000),
+				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MAX * 10000),
+				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE * 10000));
+		System.out.println(minSizeRegionSlider.getMinimum());
+		System.out.println(minSizeRegionSlider.getMaximum());
+		System.out.println(minSizeRegionSlider.getValue());
+		minSizeRegionSlider.addChangeListener(new RegionMinSizeChangeListener(
+				levelParameters, minSizeRegionPercentageLabel));
+
+		minSizeRegionSlider.setMajorTickSpacing(1);
+		minSizeRegionSlider.setMinorTickSpacing(1);
+		minSizeRegionSlider.setPaintTicks(true);
+		minSizeRegionPanel.add(minSizeRegionSlider);
+
+		minSizeRegionPanel.add(minSizeRegionPercentageLabel);
+
+		allParametersPanel.add(minSizeRegionPanel);
 
 		pane.add(allParametersPanel, BorderLayout.CENTER);
 

@@ -102,13 +102,15 @@ public class WaypointController {
 
 	// A* Pathfinding to check if the waypoints are interconnected
 	private boolean areInterconnected(LOWaypoint startPoint, LOWaypoint endPoint) {
-		List<Node> path = aStar.calculatePath(map, startPoint.getPosition(),
-				endPoint.getPosition());
-		if (path != null && path.size() > 0) {
-			addPathToList(path);
-			return true;
-		} else
-			return false;
+		// TODO: delete
+		return true;
+		// List<Node> path = aStar.calculatePath(map, startPoint.getPosition(),
+		// endPoint.getPosition());
+		// if (path != null && path.size() > 0) {
+		// addPathToList(path);
+		// return true;
+		// } else
+		// return false;
 	}
 
 	private void addPathToList(List<Node> nodeList) {

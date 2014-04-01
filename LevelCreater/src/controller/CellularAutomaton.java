@@ -2,7 +2,9 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
 
 import model.MapPoint;
@@ -17,6 +19,8 @@ public class CellularAutomaton {
 	public int mapHeight;
 	public int percentAreWalls;
 
+	private Map<Integer, Integer> regionSizeByLabel;
+
 	// private enum neighbors {
 	// ALL_BACKGROUND, ONE, MANY
 	// }
@@ -25,7 +29,7 @@ public class CellularAutomaton {
 		mapWidth = 40;
 		mapHeight = 21;
 		percentAreWalls = 40;
-
+		regionSizeByLabel = new HashMap<Integer, Integer>();
 		randomFillMap();
 	}
 
@@ -33,7 +37,7 @@ public class CellularAutomaton {
 		this.mapWidth = width;
 		this.mapHeight = height;
 		this.percentAreWalls = percentAreWalls;
-
+		regionSizeByLabel = new HashMap<Integer, Integer>();
 		randomFillMap();
 	}
 
@@ -44,6 +48,7 @@ public class CellularAutomaton {
 		this.percentAreWalls = percentWalls == 0 ? 40 : percentWalls;
 		this.map = new int[this.mapWidth][this.mapHeight];
 		this.map = map;
+		regionSizeByLabel = new HashMap<Integer, Integer>();
 	}
 
 	public void makeCaverns() {
@@ -120,7 +125,7 @@ public class CellularAutomaton {
 		}
 		return false;
 	}
-	
+
 	private boolean isOutOfBounds(int x, int y) {
 		if (x < 0 || y < 0) {
 			return true;
@@ -246,26 +251,26 @@ public class CellularAutomaton {
 		return map;
 	}
 
-
-
 	private void floodFill(int[][] map, int column, int row, int label,
 			int mapWidth, int mapHeight) {
 		LinkedList<MapPoint> q = new LinkedList<MapPoint>(); // queue
 		q.addFirst(new MapPoint(column, row));
+		int size = 0;
 		while (!q.isEmpty()) {
 			MapPoint n = q.removeLast();
 			if ((n.x >= 0) && (n.x < mapWidth) && (n.y >= 0)
 					&& (n.y < mapHeight) && map[n.x][n.y] == 1) {
 				map[n.x][n.y] = label;
+				size++;
 				q.addFirst(new MapPoint(n.x + 1, n.y));
 				q.addFirst(new MapPoint(n.x, n.y + 1));
 				q.addFirst(new MapPoint(n.x, n.y - 1));
 				q.addFirst(new MapPoint(n.x - 1, n.y));
 			}
 		}
+		if (size > 0)
+			regionSizeByLabel.put(label, size);
 	}
-
-	
 
 	public int[] getNeighborLabels(int x, int y) {
 		int[] result = new int[4];
@@ -282,15 +287,15 @@ public class CellularAutomaton {
 			return 0;
 		return map[x][y];
 	}
-	
+
 	public ArrayList<MapPoint> makeEntrance(int[][] input) {
 		ArrayList<MapPoint> pointList = new ArrayList<MapPoint>();
 		int middleY = input[0].length / 2;
 		int width = input.length;
-		int i=0;
+		int i = 0;
 		boolean done = false;
-		while(!done) {
-			if(input[i][middleY] != 0 && i < width) {
+		while (!done) {
+			if (input[i][middleY] != 0 && i < width) {
 				input[i][middleY] = 0;
 				MapPoint p = new MapPoint(i, middleY);
 				pointList.add(p);
@@ -301,7 +306,7 @@ public class CellularAutomaton {
 		}
 		return pointList;
 	}
-	
+
 	public boolean isValidMap(int[][] map) {
 		boolean isEntrancePossible = isEntrancePossible(map);
 		boolean mapHasMinFreeSpace = mapHasMinFreeSpace(map, 0.2);
@@ -312,7 +317,7 @@ public class CellularAutomaton {
 	private boolean isEntrancePossible(int[][] map) {
 		int middleY = map[0].length / 2;
 		for (int i = 0; i < map.length; i++) {
-			if(map[i][middleY] == 0)
+			if (map[i][middleY] == 0)
 				return true;
 		}
 		return false;
@@ -323,13 +328,13 @@ public class CellularAutomaton {
 		int width = map.length;
 		double totalSpace = width * height;
 		double emptySpace = 0;
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[i].length; j++) {
-				if(map[i][j] == 0)
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if (map[i][j] == 0)
 					emptySpace++;
 			}
 		}
-		return emptySpace/totalSpace > percentage;
+		return emptySpace / totalSpace > percentage;
 	}
 
 	public void convertRegionsToContour(int[][] map, int initialLabel) {
@@ -377,4 +382,9 @@ public class CellularAutomaton {
 			innerPixel = false;
 		return innerPixel;
 	}
+
+	public Map<Integer, Integer> getRegionSizeByLabel() {
+		return regionSizeByLabel;
+	}
+
 }

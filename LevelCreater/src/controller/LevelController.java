@@ -7,6 +7,7 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
@@ -91,6 +92,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		// cmc.convertRegionsToContour(createdMap, 2);
 		setProgress(75);
+
+		// DELETE TOO SMALL REGIONS
+		cleanupMap(createdMap, cellAutomat.getRegionSizeByLabel());
 
 		ContourTracer ct = new ContourTracer(createdMap);
 		ct.findAllContours();
@@ -186,6 +190,41 @@ public class LevelController extends SwingWorker<Void, Void> {
 		setProgress(100);
 
 		return null;
+	}
+
+	private void cleanupMap(int[][] map, Map<Integer, Integer> regionSizeByLabel) {
+		int width = map.length;
+		int height = map[0].length;
+		int amountOfRegions = regionSizeByLabel.size();
+
+		// save region numbers that must be deleted to iterate only once over
+		// map.
+		ArrayList<Integer> regionsToDelete = new ArrayList<Integer>(
+				amountOfRegions);
+		// mapsize * minsize percentage = min size of region //TODO: set as
+		// parameter and not just default.
+		int minSize = (int) ((width * height) * levelParameters
+				.getMinSizeRegionInMapSizePercentage());
+
+		// labels start with 2. -1,0,1 are reserved for waypoints, empty space
+		// and walls
+		for (int i = 2; i < amountOfRegions; i++) {
+			// System.out.println(String.format("RegionSize. Num:%d, Size: %d",
+			// i,
+			// regionSizeByLabel.get(i)));
+
+			if (regionSizeByLabel.get(i) < minSize) {
+				regionsToDelete.add(i);
+			}
+		}
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if (regionsToDelete.contains(map[i][j])) {
+					map[i][j] = 0;
+				}
+			}
+		}
+
 	}
 
 	/*

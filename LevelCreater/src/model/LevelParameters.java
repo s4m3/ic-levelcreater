@@ -8,6 +8,7 @@ public class LevelParameters {
 	private int numOfWaypoints;
 	private int scale;
 	private int obstacles;
+	private double minSizeRegionInMapSizePercentage;
 
 	public String getLevelName() {
 		return levelName;
@@ -56,7 +57,14 @@ public class LevelParameters {
 	public void setObstacles(int obstacles) {
 		this.obstacles = obstacles;
 	}
-	
-	
+
+	public double getMinSizeRegionInMapSizePercentage() {
+		return minSizeRegionInMapSizePercentage;
+	}
+
+	public void setMinSizeRegionInMapSizePercentage(
+			double minSizeRegionInMapSizePercentage) {
+		this.minSizeRegionInMapSizePercentage = minSizeRegionInMapSizePercentage;
+	}
 
 }
