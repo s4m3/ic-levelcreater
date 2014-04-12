@@ -164,8 +164,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		wpController = new WaypointController(createdMap,
 				level.getLevelObjects());
-		level.addLevelObjects(wpController.createWaypointsALT(levelParameters
-				.getNumOfWaypoints()));
+		level.addLevelObjects(wpController
+				.createWaypointsWithSections(levelParameters
+						.getNumOfWaypoints()));
 
 		setProgress(95);
 		statusUpdates.add("waypoint creation done");
