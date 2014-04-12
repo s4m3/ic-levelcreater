@@ -18,7 +18,7 @@ public class WaypointController {
 	private int[][] map;
 	private List<LevelObject> levelObjects;
 	private AStar aStar;
-	private static int WAYPOINT_SIZE = 5;
+	private int wayPointSize;
 	private List<Path> paths;
 
 	public WaypointController(int[][] map, List<LevelObject> levelObjects) {
@@ -26,6 +26,11 @@ public class WaypointController {
 		this.levelObjects = levelObjects;
 		this.aStar = new AStar();
 		paths = new ArrayList<Path>();
+
+		// set waypoint size according to width and height of map
+		int minDimension = map.length < map[0].length ? map.length
+				: map[0].length;
+		wayPointSize = 1 + (minDimension / 150);
 	}
 
 	public List<LevelObject> createWaypoints(int numOfWayPoints) {
@@ -57,37 +62,37 @@ public class WaypointController {
 		return waypoints;
 	}
 
-	public List<LevelObject> createWaypointsALT(int numOfWaypoints) {
-		if (this.map.equals(null))
-			return null;
-		if (this.levelObjects.size() == 0)
-			return null;
-
-		List<LevelObject> waypoints = new ArrayList<LevelObject>();
-		int mapWidth = this.map.length;
-		int mapHeight = this.map[0].length;
-
-		int xPos, yPos;
-
-		while (waypoints.size() < numOfWaypoints) {
-			xPos = Randomizer.random.nextInt(mapWidth);
-			yPos = Randomizer.random.nextInt(mapHeight);
-			if (map[xPos][yPos] == 0) {
-				LOWaypoint newWp = new LOWaypoint(xPos, yPos, WAYPOINT_SIZE,
-						WAYPOINT_SIZE);
-				if (waypoints.size() >= 1) {
-					if (areInterconnected((LOWaypoint) waypoints.get(0), newWp)) {
-						waypoints.add(newWp);
-						map[xPos][yPos] = -1;
-					}
-				} else {
-					waypoints.add(newWp);
-					map[xPos][yPos] = -1;
-				}
-			}
-		}
-		return waypoints;
-	}
+	// public List<LevelObject> createWaypointsALT(int numOfWaypoints) {
+	// if (this.map.equals(null))
+	// return null;
+	// if (this.levelObjects.size() == 0)
+	// return null;
+	//
+	// List<LevelObject> waypoints = new ArrayList<LevelObject>();
+	// int mapWidth = this.map.length;
+	// int mapHeight = this.map[0].length;
+	//
+	// int xPos, yPos;
+	//
+	// while (waypoints.size() < numOfWaypoints) {
+	// xPos = Randomizer.random.nextInt(mapWidth);
+	// yPos = Randomizer.random.nextInt(mapHeight);
+	// if (map[xPos][yPos] == 0) {
+	// LOWaypoint newWp = new LOWaypoint(xPos, yPos, WAYPOINT_SIZE,
+	// WAYPOINT_SIZE);
+	// if (waypoints.size() >= 1) {
+	// if (areInterconnected((LOWaypoint) waypoints.get(0), newWp)) {
+	// waypoints.add(newWp);
+	// map[xPos][yPos] = -1;
+	// }
+	// } else {
+	// waypoints.add(newWp);
+	// map[xPos][yPos] = -1;
+	// }
+	// }
+	// }
+	// return waypoints;
+	// }
 
 	public List<LevelObject> createWaypointsWithSections(int numOfWaypoints) {
 		if (this.map.equals(null))
@@ -105,24 +110,42 @@ public class WaypointController {
 		int xPos, yPos;
 		for (int i = 0; i < numOfWaypoints; i++) {
 			currentSection = sections[i];
-
+			boolean emptyField = false;
+			boolean isReachable = false;
+			LOWaypoint newWp = null;
 			do {
-				xPos = Randomizer.random
-						.nextInt((currentSection.width - currentSection.x) + 1)
-						+ currentSection.x;
-				yPos = Randomizer.random
-						.nextInt((currentSection.height - currentSection.y) + 1)
-						+ currentSection.y;
-			} while (map[xPos][yPos] != 0);
+				emptyField = false;
+				isReachable = false;
+				xPos = Randomizer.randomIntFromInterval(currentSection.x,
+						currentSection.width);
+				yPos = Randomizer.randomIntFromInterval(currentSection.y,
+						currentSection.height);
+				// xPos = Randomizer.random
+				// .nextInt((currentSection.width - currentSection.x) + 1)
+				// + currentSection.x;
+				// yPos = Randomizer.random
+				// .nextInt((currentSection.height - currentSection.y) + 1)
+				// + currentSection.y;
 
-			LOWaypoint newWp = new LOWaypoint(xPos, yPos, WAYPOINT_SIZE,
-					WAYPOINT_SIZE);
+				emptyField = map[xPos][yPos] == 0;
+				if (emptyField) {
+					newWp = new LOWaypoint(xPos, yPos, wayPointSize,
+							wayPointSize);
+					if (waypoints.size() < 1) {
+						isReachable = true;
 
-			// TODO: are interconnected?
+					} else {
+						isReachable = areInterconnected(
+								(LOWaypoint) waypoints
+										.get(waypoints.size() - 1),
+								newWp);
 
+					}
+
+				}
+			} while (!emptyField || !isReachable);
 			map[xPos][yPos] = -1;
 			waypoints.add(newWp);
-
 		}
 
 		return waypoints;
@@ -138,9 +161,6 @@ public class WaypointController {
 		int numOfWidthSections = (int) Math.floor(levelWidth / sectionEdgeSize);
 		int numOfHeightSections = (int) Math
 				.ceil(levelHeight / sectionEdgeSize);
-		//
-		// System.out.println(numOfWidthSections);
-		// System.out.println(numOfHeightSections);
 		int sectionWidth = levelWidth / numOfWidthSections;
 		int sectionHeight = levelHeight / numOfHeightSections;
 
@@ -157,11 +177,7 @@ public class WaypointController {
 
 				x = (i % numOfWidthSections) * sectionWidth;
 				width = x + sectionWidth;
-				// System.out.println(String.format(
-				// "for wp:%d, x=%d, y=%d, width=%d, height=%d", i, x, y,
-				// width, height));
 				Rectangle currentSection = new Rectangle(x, y, width, height);
-				System.out.println((j * numOfWidthSections) + i);
 				sections[(j * numOfWidthSections) + i] = currentSection;
 			}
 		}

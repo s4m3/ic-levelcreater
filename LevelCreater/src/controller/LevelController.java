@@ -96,16 +96,16 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// DELETE TOO SMALL REGIONS
 		cleanupMap(createdMap, cellAutomat.getRegionSizeByLabel());
 
-		ContourTracer ct = new ContourTracer(createdMap);
-		ct.findAllContours();
+		ContourTracer contourTracer = new ContourTracer(createdMap);
+		contourTracer.findAllContours();
 		setProgress(80);
 		statusUpdates.add("contours found");
 		// TODO: maybe fix this? watch out for the hack in contour tracer for
 		// corner points!!
 		// contour tracer changes x and y, therefore x and y need to be switched
 		// again
-		ct.switchContourPointsXandY();
-		ArrayList<Contour> contourList = ct.getContours();
+		contourTracer.switchContourPointsXandY();
+		ArrayList<Contour> contourList = contourTracer.getContours();
 		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
 		PolygonPointReducer ppr = new PolygonPointReducer();
 
@@ -140,6 +140,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 				LOSlowDown slowDownObj = new LOSlowDown(
 						polygonHullController.getPolygonHullOfPoints(p
 								.getPolyPointList()));
+				slowDownObj.inflatePolygon();
 				// LOCircledSlowDown slowDownObj = new
 				// LOCircledSlowDown((Polygon) shapes[j]);
 				level.addLevelObject(slowDownObj);
@@ -164,6 +165,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		wpController = new WaypointController(createdMap,
 				level.getLevelObjects());
+
+		setProgress(93);
 		level.addLevelObjects(wpController
 				.createWaypointsWithSections(levelParameters
 						.getNumOfWaypoints()));

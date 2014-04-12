@@ -167,9 +167,6 @@ public class LevelCreater extends JFrame {
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MIN * 10000),
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MAX * 10000),
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE * 10000));
-		System.out.println(minSizeRegionSlider.getMinimum());
-		System.out.println(minSizeRegionSlider.getMaximum());
-		System.out.println(minSizeRegionSlider.getValue());
 		minSizeRegionSlider.addChangeListener(new RegionMinSizeChangeListener(
 				levelParameters, minSizeRegionPercentageLabel));
 

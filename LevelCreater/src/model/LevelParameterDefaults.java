@@ -3,8 +3,8 @@ package model;
 public class LevelParameterDefaults {
 
 	public static final String levelName = "Default";
-	public static final int LEVEL_WIDTH = 500;
-	public static final int LEVEL_HEIGHT = 500;
+	public static final int LEVEL_WIDTH = 200;
+	public static final int LEVEL_HEIGHT = 200;
 	public static final int NUM_WAYPOINTS = 2;
 	public static final int SCALE = 1;
 	public static final int OBSTACLES = 44;

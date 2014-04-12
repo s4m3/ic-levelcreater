@@ -95,7 +95,7 @@ public class CreateButtonListener implements ActionListener,
 
 			if (progress >= 100) {
 				LevelsContainer levelContainer = new LevelsContainer(level);
-				levelContainer.pack();
+				// levelContainer.pack();
 				levelContainer.setVisible(true);
 
 			}
