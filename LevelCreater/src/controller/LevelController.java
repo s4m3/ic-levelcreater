@@ -58,7 +58,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		createFloor();
 		setProgress(5);
 
-		// TODO: update... testing purpose
 		cellAutomat = new CellularAutomaton(levelParameters.getLevelWidth(),
 				levelParameters.getLevelHeight(),
 				levelParameters.getObstacles());
@@ -68,9 +67,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		}
 		setProgress(10);
 		statusUpdates.add("cavern creation done");
-
-		// TODO: delete, just testing purpose...
-		// cmc.printMap();
 
 		int[][] createdMap = cellAutomat.getMapWithLabeledRegions();
 		setProgress(40);
@@ -205,8 +201,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// map.
 		ArrayList<Integer> regionsToDelete = new ArrayList<Integer>(
 				amountOfRegions);
-		// mapsize * minsize percentage = min size of region //TODO: set as
-		// parameter and not just default.
+		// mapsize * minsize percentage = min size of region
 		int minSize = (int) ((width * height) * levelParameters
 				.getMinSizeRegionInMapSizePercentage());
 
@@ -259,15 +254,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 				}
 			}
 		}
-	}
-
-	private void createTestObject() {
-		LOPolygon test = new LOPolygon();
-		int[] xpoints = { 0, 20, 20, 0 };
-		int[] ypoints = { 0, 0, 20, 20 };
-
-		test.setPolygon(new Polygon(xpoints, ypoints, xpoints.length));
-		level.addLevelObject(test);
 	}
 
 	private void createEntranceClosingPolygon(ArrayList<MapPoint> points) {

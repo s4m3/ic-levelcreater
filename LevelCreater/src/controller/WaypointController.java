@@ -120,12 +120,6 @@ public class WaypointController {
 						currentSection.width);
 				yPos = Randomizer.randomIntFromInterval(currentSection.y,
 						currentSection.height);
-				// xPos = Randomizer.random
-				// .nextInt((currentSection.width - currentSection.x) + 1)
-				// + currentSection.x;
-				// yPos = Randomizer.random
-				// .nextInt((currentSection.height - currentSection.y) + 1)
-				// + currentSection.y;
 
 				emptyField = map[xPos][yPos] == 0;
 				if (emptyField) {
@@ -135,13 +129,8 @@ public class WaypointController {
 						isReachable = true;
 
 					} else {
-						isReachable = areInterconnected(
-								(LOWaypoint) waypoints
-										.get(waypoints.size() - 1),
-								newWp);
-
+						isReachable = areInterconnected((LOWaypoint) waypoints.get(waypoints.size() - 1),newWp);
 					}
-
 				}
 			} while (!emptyField || !isReachable);
 			map[xPos][yPos] = -1;

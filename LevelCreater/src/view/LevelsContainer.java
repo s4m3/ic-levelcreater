@@ -49,6 +49,7 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 	private static int MIN_WIDTH = 800;
 
+	@SuppressWarnings("serial")
 	public LevelsContainer(final LevelController levelController) {
 		LevelParameters lp = levelController.getLevelParameters();
 
