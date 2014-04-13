@@ -62,37 +62,37 @@ public class WaypointController {
 		return waypoints;
 	}
 
-	// public List<LevelObject> createWaypointsALT(int numOfWaypoints) {
-	// if (this.map.equals(null))
-	// return null;
-	// if (this.levelObjects.size() == 0)
-	// return null;
-	//
-	// List<LevelObject> waypoints = new ArrayList<LevelObject>();
-	// int mapWidth = this.map.length;
-	// int mapHeight = this.map[0].length;
-	//
-	// int xPos, yPos;
-	//
-	// while (waypoints.size() < numOfWaypoints) {
-	// xPos = Randomizer.random.nextInt(mapWidth);
-	// yPos = Randomizer.random.nextInt(mapHeight);
-	// if (map[xPos][yPos] == 0) {
-	// LOWaypoint newWp = new LOWaypoint(xPos, yPos, WAYPOINT_SIZE,
-	// WAYPOINT_SIZE);
-	// if (waypoints.size() >= 1) {
-	// if (areInterconnected((LOWaypoint) waypoints.get(0), newWp)) {
-	// waypoints.add(newWp);
-	// map[xPos][yPos] = -1;
-	// }
-	// } else {
-	// waypoints.add(newWp);
-	// map[xPos][yPos] = -1;
-	// }
-	// }
-	// }
-	// return waypoints;
-	// }
+	public List<LevelObject> createWaypointsALT(int numOfWaypoints) {
+		if (this.map.equals(null))
+			return null;
+		if (this.levelObjects.size() == 0)
+			return null;
+
+		List<LevelObject> waypoints = new ArrayList<LevelObject>();
+		int mapWidth = this.map.length;
+		int mapHeight = this.map[0].length;
+
+		int xPos, yPos;
+
+		while (waypoints.size() < numOfWaypoints) {
+			xPos = Randomizer.random.nextInt(mapWidth);
+			yPos = Randomizer.random.nextInt(mapHeight);
+			if (map[xPos][yPos] == 0) {
+				LOWaypoint newWp = new LOWaypoint(xPos, yPos, wayPointSize,
+						wayPointSize);
+				if (waypoints.size() >= 1) {
+					if (areInterconnected((LOWaypoint) waypoints.get(0), newWp)) {
+						waypoints.add(newWp);
+						map[xPos][yPos] = -1;
+					}
+				} else {
+					waypoints.add(newWp);
+					map[xPos][yPos] = -1;
+				}
+			}
+		}
+		return waypoints;
+	}
 
 	public List<LevelObject> createWaypointsWithSections(int numOfWaypoints) {
 		if (this.map.equals(null))
@@ -129,7 +129,10 @@ public class WaypointController {
 						isReachable = true;
 
 					} else {
-						isReachable = areInterconnected((LOWaypoint) waypoints.get(waypoints.size() - 1),newWp);
+						isReachable = areInterconnected(
+								(LOWaypoint) waypoints
+										.get(waypoints.size() - 1),
+								newWp);
 					}
 				}
 			} while (!emptyField || !isReachable);
@@ -188,15 +191,13 @@ public class WaypointController {
 
 	// A* Pathfinding to check if the waypoints are interconnected
 	private boolean areInterconnected(LOWaypoint startPoint, LOWaypoint endPoint) {
-		// TODO: delete
-		return true;
-		// List<Node> path = aStar.calculatePath(map, startPoint.getPosition(),
-		// endPoint.getPosition());
-		// if (path != null && path.size() > 0) {
-		// addPathToList(path);
-		// return true;
-		// } else
-		// return false;
+		List<Node> path = aStar.calculatePath(map, startPoint.getPosition(),
+				endPoint.getPosition());
+		if (path != null && path.size() > 0) {
+			addPathToList(path);
+			return true;
+		} else
+			return false;
 	}
 
 	private void addPathToList(List<Node> nodeList) {

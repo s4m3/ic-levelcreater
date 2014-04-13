@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,15 @@ public class Path {
 
 	public List<MapPoint> getNodes() {
 		return nodes;
+	}
+
+	public ArrayList<Point> getPathAsArrayListOfPoints() {
+		ArrayList<Point> pointList = new ArrayList<Point>(nodes.size());
+		for (MapPoint mapPoint : nodes) {
+			Point p = new Point(mapPoint.x, mapPoint.y);
+			pointList.add(p);
+		}
+		return pointList;
 	}
 
 }

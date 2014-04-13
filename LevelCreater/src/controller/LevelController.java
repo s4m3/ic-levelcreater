@@ -7,6 +7,7 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -20,11 +21,13 @@ import model.LOCircledWall;
 import model.LOFloor;
 import model.LOPolygon;
 import model.LOSlowDown;
+import model.LOSpeedUp;
 import model.LOWall;
 import model.Level;
 import model.LevelObject;
 import model.LevelParameters;
 import model.MapPoint;
+import model.Path;
 import enums.StandardWall;
 
 public class LevelController extends SwingWorker<Void, Void> {
@@ -51,6 +54,11 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+		return runLevelCreation();
+
+	}
+
+	private Void runLevelCreation() {
 		long start = System.currentTimeMillis();
 		timerThread = new TimerThread();
 		timerThread.run();
@@ -163,12 +171,24 @@ public class LevelController extends SwingWorker<Void, Void> {
 				level.getLevelObjects());
 
 		setProgress(93);
-		level.addLevelObjects(wpController
-				.createWaypointsWithSections(levelParameters
-						.getNumOfWaypoints()));
+		level.addLevelObjects(wpController.createWaypointsALT(levelParameters
+				.getNumOfWaypoints()));
 
 		setProgress(95);
 		statusUpdates.add("waypoint creation done");
+
+		// TODO: create Speed Ups
+		Iterator pathIter = wpController.getPaths().iterator();
+		Path path;
+		while (pathIter.hasNext()) {
+			path = (Path) pathIter.next();
+			LOSpeedUp speedUpObject = new LOSpeedUp(
+					polygonHullController.getPolygonHullOfPoints(path
+							.getPathAsArrayListOfPoints()));
+			level.addLevelObject(speedUpObject);
+
+		}
+
 		translateAndScaleLevelObjects();
 		setProgress(99);
 
@@ -188,7 +208,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		statusUpdates.add(String.format("Num of vertices: %d",
 				level.getNumOfVertices()));
 		setProgress(100);
-
 		return null;
 	}
 
