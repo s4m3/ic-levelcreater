@@ -1,8 +1,5 @@
-/controller
-/enums
-/filters
 /helper
-/layout
-/main
 /model
 /view
+/model
+/main
