@@ -1,0 +1,120 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[T1]{fontenc}
+
+\frenchspacing{}
+
+\usepackage[english, ngerman]{babel}
+\usepackage{textcomp}
+
+\usepackage{hyperref}
+
+
+%\usepackage{droid}
+
+\usepackage[pdftex]{graphicx}
+
+\usepackage[a4paper]{geometry}
+
+\usepackage{setspace}
+\setstretch{1.3}
+
+%\usepackage{xhfill}
+\usepackage{nth}
+\usepackage[labelfont=bf,figurename=Fig.,tablename=Tab.]{caption}
+
+
+%\definecolor{codeNote}{rgb}{0.0, 0.6, 0.0}
+%\definecolor{gray-5}{gray}{0.85}
+%\definecolor{orange}{rgb}{1.0, 0.27, 0}
+%\definecolor{blue}{rgb}{0.0, 0.0, 0.8}
+
+\usepackage{multicol}
+
+\usepackage[activate]{pdfcprot}
+\usepackage{listings}
+\lstset{breaklines=true} 
+%\lstset{numbers=left, numberstyle=\scriptsize\ttfamily, numbersep=10pt, captionpos=b} 
+\lstset{columns=flexible}
+\lstset{backgroundcolor=\color{gray-5}}
+\lstset{basicstyle=\small\ttfamily}
+\lstset{framesep=4pt}
+\lstset{upquote=true}
+\lstset{inputencoding=utf8}
+\lstset{escapeinside={\%*}{*)}}
+\lstset{language=bash}
+\lstset{commentstyle=\color{blue},}
+\lstset{
+    literate={~} {$\sim$}{1}
+}
+
+\begin{document}
+
+%%%%%%%%%%%%%   COMMANDS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newcommand{\tip}{\rule{10pt}{10pt}\hspace{12pt}}
+
+%\newenvironment{command}[1]{\noindent\xrfill{2pt}[orange]\textcolor{orange}{\textbf{#1}}\xrfill{2pt}[orange]}{\noindent\xrfill{2pt}[orange]}
+
+%\newcommand{\codenote}[1]{\textcolor{codeNote}{#1}}
+%%%%%%%%%%%%%   COMMANDS END   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	
+\title{IC: Automatische Levelgenerierung}
+\author{Simon Mary}
+\maketitle
+%\thispagestyle{empty}
+%\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Einleitung}
+Die hier beschriebene Arbeit wurde als \textit{Independent Production} im Rahmen eines \textit{Independent Coursework} an der \textit{HTW Berlin} bearbeitet. Dazu wurde eine automatisierte Level-Erstellung für eine 2D Simulation implementiert. Die Simulation ist eine Basisumgebung für intelligente Agenten in Form von Autos, die sich auf der Leveloberfläche bewegen. Diese Level beinhalten grundsätzlich fünf verschiedene Objekttypen, die auf der Karte als farbige Polygone oder Ellipsen dargestellt werden: 
+
+%TODO: farben einfügen
+\begin{enumerate}
+\item{}Normaler Untergrund: Die Fahrzeuge können auf diesem Untergrund mit normaler Geschwindigkeit fahren.
+\item{}Wände/Unbefahrbares Terrain: Die Fahrzeuge können nicht auf diesen Bereichen fahren.
+\item{}Schwer befahrbarer Untergrund: Die Fahrzeuge können auf dieser Oberfläche mit verminderter Geschwindigkeit fahren.
+\item{}Geschwindigkeitserhöhender Untergrund/Boost Terrain: Die Geschwindigkeit der Fahrzeuge wird auf diesem Untergrund erhöht.
+\item{}Wegpunkte: Die Fahrzeuge müssen alle Wegpunkte abfahren, um das Level zu beenden.
+\end{enumerate}
+
+Dazu wird durch Verfahren der prozeduralen Levelgenerierung mithilfe einstellbarer Parameter das Terrain erstellt. Anders als bei einer völlig zufälligen Levelgenerierung, besitzen die Level eine Grundstruktur, die durch vorbestimmte Regeln (z.B. Wände am Rand) implementiert ist. Des weiteren werden die Level am Ende evaluiert (z.B. "sind alle Wegpunkte zugänglich"), sodass sie sinnvoll in die Simulation integriert werden können und nutzbar sind. Um eine weitere Nutzung der erstellten Level zu gewährleisten wurde außerdem eine Exportierfunktion zum Speichern des Levels integriert.
+
+Die Umsetzung erfolgte in Java mithilfe von AWT und Swing zur Darstellung der Ergebnisse.
+
+\section{Umsetzung}
+%TODO: Alle Algorithmen aufzählen und kurz erklären
+\subsection{Zellularer Automat}
+Die Grundform... Zunächst Mauern
+
+\subsection{Flood Fill}
+Um Polygone aus dem Grid... zunächst indexieren
+
+
+\subsection{Kontur tracing / Potrace/Make Polygons (convex und konkav) aus punktmenge}
+Burger Burge etc.
+
+\subsection{PolygonPointReducer um polygon zahl zu reduzieren}
+
+\subsection{Konvex Polygone aus Punktmenge für slow down felder}
+
+\subsection{speed up?}
+
+\subsection{A stern für wegpunkte}
+
+\subsection{Skalierung...}
+
+
+\section{Programm/Implementierung}
+%Programmstruktur etc.
+
+\section{Ergebnisse}
+%Beispiel Level
+
+\section{Fazit}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+

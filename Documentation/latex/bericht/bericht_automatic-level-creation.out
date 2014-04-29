@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Einleitung}{}% 1
+\BOOKMARK [1][-]{section.2}{Umsetzung}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Zellularer Automat}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Flood Fill}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Kontur tracing / Potrace/Make Polygons \(convex und konkav\) aus punktmenge}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{PolygonPointReducer um polygon zahl zu reduzieren}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{Konvex Polygone aus Punktmenge f\374r slow down felder}{section.2}% 7
+\BOOKMARK [2][-]{subsection.2.6}{speed up?}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.7}{A stern f\374r wegpunkte}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.8}{Skalierung...}{section.2}% 10
+\BOOKMARK [1][-]{section.3}{Programm/Implementierung}{}% 11
+\BOOKMARK [1][-]{section.4}{Ergebnisse}{}% 12
+\BOOKMARK [1][-]{section.5}{Fazit}{}% 13

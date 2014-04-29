@@ -178,7 +178,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		statusUpdates.add("waypoint creation done");
 
 		// TODO: create Speed Ups
-		Iterator pathIter = wpController.getPaths().iterator();
+		Iterator<Path> pathIter = wpController.getPaths().iterator();
 		Path path;
 		while (pathIter.hasNext()) {
 			path = (Path) pathIter.next();
