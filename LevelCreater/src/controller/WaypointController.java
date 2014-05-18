@@ -130,9 +130,9 @@ public class WaypointController {
 
 					} else {
 						isReachable = areInterconnected(
-								(LOWaypoint) waypoints
-										.get(waypoints.size() - 1),
-								newWp);
+								(LOWaypoint) getClosestWaypoint(waypoints,
+										newWp), newWp);
+
 					}
 				}
 			} while (!emptyField || !isReachable);
@@ -149,8 +149,8 @@ public class WaypointController {
 			int numWayPoints) {
 		int levelSize = levelWidth * levelHeight;
 		int sectionSize = levelSize / numWayPoints;
-		double sectionEdgeSize = Math.floor(Math.sqrt(sectionSize));
-		int numOfWidthSections = (int) Math.floor(levelWidth / sectionEdgeSize);
+		double sectionEdgeSize = Math.ceil(Math.sqrt(sectionSize));
+		int numOfWidthSections = (int) Math.ceil(levelWidth / sectionEdgeSize);
 		int numOfHeightSections = (int) Math
 				.ceil(levelHeight / sectionEdgeSize);
 		int sectionWidth = levelWidth / numOfWidthSections;
@@ -175,6 +175,27 @@ public class WaypointController {
 		}
 
 		return sections;
+	}
+
+	private LevelObject getClosestWaypoint(List<LevelObject> waypoints,
+			LOWaypoint waypoint) {
+		int closestDistance = Integer.MAX_VALUE;
+		LevelObject ret = null;
+		int currentDistance;
+		for (LevelObject wp : waypoints) {
+			currentDistance = getDistance(wp, waypoint);
+			if (currentDistance < closestDistance) {
+				ret = wp;
+				closestDistance = currentDistance;
+			}
+		}
+		return ret;
+	}
+
+	private int getDistance(LevelObject a, LevelObject b) {
+		int distX = a.getPosition().x - b.getPosition().x;
+		int distY = b.getPosition().y - b.getPosition().y;
+		return (distX * distX + distY * distY);
 	}
 
 	private boolean wpIntersectsWithWalls(LOWaypoint wayPoint) {

@@ -171,8 +171,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 				level.getLevelObjects());
 
 		setProgress(93);
-		level.addLevelObjects(wpController.createWaypointsALT(levelParameters
-				.getNumOfWaypoints()));
+		level.addLevelObjects(wpController
+				.createWaypointsWithSections(levelParameters
+						.getNumOfWaypoints()));
 
 		setProgress(95);
 		statusUpdates.add("waypoint creation done");
@@ -182,10 +183,17 @@ public class LevelController extends SwingWorker<Void, Void> {
 		Path path;
 		while (pathIter.hasNext()) {
 			path = (Path) pathIter.next();
-			LOSpeedUp speedUpObject = new LOSpeedUp(
-					polygonHullController.getPolygonHullOfPoints(path
-							.getPathAsArrayListOfPoints()));
-			level.addLevelObject(speedUpObject);
+			ArrayList<MapPoint> updatedPath = ppr.reduceWithTolerance(
+					path.getNodesAsArrayList(), 1);
+			Polygon speedUpPoly = new Polygon();
+			for (MapPoint mapPoint : updatedPath) {
+				speedUpPoly.addPoint(mapPoint.x, mapPoint.y);
+			}
+			LOSpeedUp test = new LOSpeedUp(speedUpPoly);
+			// LOSpeedUp speedUpObject = new LOSpeedUp(
+			// polygonHullController.getPolygonHullOfPoints(path
+			// .getPathAsArrayListOfPoints()));
+			level.addLevelObject(test);
 
 		}
 
@@ -338,10 +346,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 		for (LevelObject levelObject : level.getLevelObjects()) {
 			if (levelObject instanceof LOPolygon) {
 				LOPolygon poly = ((LOPolygon) levelObject);
-				poly.translate(xTranslate, yTranslate);
+				if (poly != null)
+					poly.translate(xTranslate, yTranslate);
 			} else if (levelObject instanceof LOCircle) {
 				LOCircle circle = (LOCircle) levelObject;
-				circle.translate(xTranslate, yTranslate);
+				if (circle != null)
+					circle.translate(xTranslate, yTranslate);
 			}
 		}
 	}
@@ -350,10 +360,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 		for (LevelObject levelObject : level.getLevelObjects()) {
 			if (levelObject instanceof LOPolygon) {
 				LOPolygon poly = ((LOPolygon) levelObject);
-				poly.scale(scale);
+				if (poly != null)
+					poly.scale(scale);
 			} else if (levelObject instanceof LOCircle) {
 				LOCircle circle = (LOCircle) levelObject;
-				circle.scale(scale);
+				if (circle != null)
+					circle.scale(scale);
 			}
 		}
 	}

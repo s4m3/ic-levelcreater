@@ -8,8 +8,10 @@ import model.MapPoint;
 
 /**
  * 
- *
- * Ported from https://github.com/opensciencemap/VectorTileMap/blob/master/TileMapApp/src/org/osmdroid/utils/DouglasPeuckerReducer.java
+ * 
+ * Ported from
+ * https://github.com/opensciencemap/VectorTileMap/blob/master/TileMapApp
+ * /src/org/osmdroid/utils/DouglasPeuckerReducer.java
  * 
  * 
  */
@@ -26,8 +28,8 @@ public class PolygonPointReducer {
 	 *            coordinate system of the points (micro-degrees here)
 	 * @return the reduced shape
 	 */
-	public ArrayList<MapPoint> reduceWithTolerance(
-			ArrayList<MapPoint> shape, double tolerance) {
+	public ArrayList<MapPoint> reduceWithTolerance(ArrayList<MapPoint> shape,
+			double tolerance) {
 		int n = shape.size();
 		// if a shape has 2 or less points it cannot be reduced
 		if (tolerance <= 0 || n < 3) {
@@ -138,8 +140,9 @@ public class PolygonPointReducer {
 	 */
 	private double orthogonalDistance(MapPoint point, MapPoint lineStart,
 			MapPoint lineEnd) {
-		Line2D.Float line = new Line2D.Float(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y);
+		Line2D.Float line = new Line2D.Float(lineStart.x, lineStart.y,
+				lineEnd.x, lineEnd.y);
 		return line.ptLineDist(new Point2D.Float(point.x, point.y));
-		
+
 	}
 }

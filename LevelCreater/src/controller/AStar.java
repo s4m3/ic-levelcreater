@@ -13,6 +13,7 @@ import model.Node;
 public class AStar {
 
 	public ArrayList<Node> calculatePath(int[][] map, Point start, Point goal) {
+		// printMapWithSymbols(map, start, goal, null);
 		int mapWidth = map.length;
 		int mapHeight = map[0].length;
 		int startX, startY, endX, endY, iX, iY; // for iteration through
@@ -38,17 +39,22 @@ public class AStar {
 			endX = cX + 1;
 			endY = cY + 1;
 
-			for (iX = startX; iX < endX; iX++) {
-				for (iY = startY; iY < endY; iY++) {
+			for (iX = startX; iX <= endX; iX++) {
+				for (iY = startY; iY <= endY; iY++) {
 					if (!isOutOfBounds(iX, iY, mapWidth, mapHeight)
 							&& !(iX == cX && iY == cY)) { // check: out of
 															// bounds and ignore
 															// same node
 						if (map[iX][iY] == 0) {
+
 							Node n = new Node(currentNode, iX, iY);
+							// printMapWithSymbols(map, start, goal,
+							// closedList);
 							n.setG(calcG(n));
 							n.setH(calcH(n, goal));
 							n.setF(n.getG() + n.getH());
+							// System.out.println(String.format("%f %f %f",
+							// n.getG(), n.getH(), n.getF()));
 							successors.add(n);
 						}
 					}
@@ -132,6 +138,60 @@ public class AStar {
 			return true;
 		} else if (x > mapWidth - 1 || y > mapHeight - 1) {
 			return true;
+		}
+		return false;
+	}
+
+	public void printMapWithSymbols(int[][] map, Point start, Point goal,
+			List<Node> openList) {
+		System.out.println(mapToStringWithSymbols(map, start, goal, openList));
+	}
+
+	private String mapToStringWithSymbols(int[][] map, Point start, Point goal,
+			List<Node> openList) {
+		String returnString = "";
+		ArrayList<String> mapSymbols = new ArrayList<String>();
+		mapSymbols.add(".");
+		mapSymbols.add("#");
+		mapSymbols.add("W");
+		mapSymbols.add("S");
+		mapSymbols.add("G");
+		mapSymbols.add("N");
+
+		int startX = start.x;
+		int startY = start.y;
+		int goalX = goal.x;
+		int goalY = goal.y;
+		int mapVal;
+		int val;
+		int mapHeight = map[0].length;
+		int mapWidth = map.length;
+
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				mapVal = map[column][row];
+				val = mapVal == 0 ? 0 : mapVal > 0 ? 1 : 2;
+				if (column == startX && row == startY)
+					val = 3;
+				else if (column == goalX && row == goalY)
+					val = 4;
+				else if (listContainsNode(openList, column, row))
+					val = 5;
+
+				returnString += mapSymbols.get(val);
+			}
+			returnString += "\n";
+		}
+		return returnString;
+	}
+
+	private boolean listContainsNode(List<Node> openList, int x, int y) {
+		if (openList == null)
+			return false;
+
+		for (Node node : openList) {
+			if (node.getX() == x && node.getY() == y)
+				return true;
 		}
 		return false;
 	}

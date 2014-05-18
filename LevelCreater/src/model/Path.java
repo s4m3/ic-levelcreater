@@ -19,6 +19,14 @@ public class Path {
 		return nodes;
 	}
 
+	public ArrayList<MapPoint> getNodesAsArrayList() {
+		ArrayList<MapPoint> nodesAsAL = new ArrayList<>(nodes.size());
+		for (MapPoint mapPoint : nodes) {
+			nodesAsAL.add(mapPoint);
+		}
+		return nodesAsAL;
+	}
+
 	public ArrayList<Point> getPathAsArrayListOfPoints() {
 		ArrayList<Point> pointList = new ArrayList<Point>(nodes.size());
 		for (MapPoint mapPoint : nodes) {

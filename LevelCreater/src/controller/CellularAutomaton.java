@@ -143,6 +143,30 @@ public class CellularAutomaton {
 		System.out.println(mapToString(map));
 	}
 
+	public void printMapWithSymbols(int[][] map) {
+		System.out.println(mapToStringWithSymbols(map));
+	}
+
+	private String mapToStringWithSymbols(int[][] map) {
+		String returnString = "";
+		ArrayList<String> mapSymbols = new ArrayList<String>();
+		mapSymbols.add(".");
+		mapSymbols.add("#");
+		mapSymbols.add("W");
+
+		int mapVal;
+		int val;
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				mapVal = map[column][row];
+				val = mapVal == 0 ? 0 : mapVal > 0 ? 1 : 2;
+				returnString += mapSymbols.get(val);
+			}
+			returnString += "\n";
+		}
+		return returnString;
+	}
+
 	private String mapToString() {
 		String returnString = "Width: " + mapWidth + "\tHeight: " + mapHeight
 				+ "\t" + percentAreWalls + "% Walls \n";
