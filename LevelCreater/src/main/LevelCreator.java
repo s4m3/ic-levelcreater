@@ -91,7 +91,7 @@ public class LevelCreator extends JFrame implements PropertyChangeListener {
 			pane.add(new JLabel("Container doesn't use BorderLayout!"));
 			return;
 		}
-		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\"!");
+		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\" or hit ENTER!");
 		pane.add(topLabel, BorderLayout.NORTH);
 		String[] labels = { "Levelname: ", "Width: ", "Height: ", "Number of Waypoints: ", "Scale: " };
 		int numPairs = labels.length;
@@ -260,6 +260,7 @@ public class LevelCreator extends JFrame implements PropertyChangeListener {
 		outputTextField.setText("Creating Level...\n");
 		levelController = new LevelController(getLevelParameters());
 		levelController.addPropertyChangeListener(this);
+
 		levelController.execute();
 	}
 

@@ -59,23 +59,23 @@ public class AStar {
 				}
 			}
 
-			for (Node n : successors) { // für jede Gehmöglichkeit
+			for (Node n : successors) {
 				if (n.getX() == (int) goal.getX() && n.getY() == (int) goal.getY()) {
 					ArrayList<Node> path = generatePath(n);
 					return path;
 				}
-				boolean add = true; // wenn es keinen besseren Knoten in der
-				if (besserIn(n, openList)) // openList und der
+				boolean add = true;
+				if (besserIn(n, openList))
 					add = false;
-				if (besserIn(n, closedList)) // closedList
+				if (besserIn(n, closedList))
 					add = false;
 				if (add)
-					openList.add(n); // gibt, successor zur openList hinzufügen
+					openList.add(n);
 			}
-			closedList.add(currentNode); // Schleife beendet, q zur closedList
-											// tun
+			closedList.add(currentNode);
+
 		}
-		// Schleife beendet->kein Weg gefunden
+		// no way found
 		return null;
 	}
 

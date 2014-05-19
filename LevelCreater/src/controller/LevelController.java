@@ -52,7 +52,12 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-		return runLevelCreation();
+		try {
+			runLevelCreation();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 

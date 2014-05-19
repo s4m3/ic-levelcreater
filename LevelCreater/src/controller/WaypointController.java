@@ -5,6 +5,7 @@ import helper.Randomizer;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import model.astar.Node;
@@ -33,6 +34,15 @@ public class WaypointController {
 		wayPointSize = 1 + (minDimension / DIMENSION_FRACTION);
 	}
 
+	private Rectangle getNextSection(List<Rectangle> sectionList) {
+		int sectionListSize = sectionList.size();
+		if (sectionListSize > 0) {
+			return sectionList.get(Randomizer.random.nextInt(sectionListSize));
+		} else {
+			return new Rectangle(0, 0, map.length - 1, map[0].length);
+		}
+	}
+
 	public List<LevelObject> createWaypointsWithSections(int numOfWaypoints) {
 		if (this.map.equals(null))
 			return null;
@@ -48,36 +58,50 @@ public class WaypointController {
 		// convert to list to be able to easily pick random section
 		Collections.addAll(sectionList, sections);
 		Rectangle currentSection;
-		int xPos, yPos, sectionNum;
+		int xPos, yPos, numOfFieldsInSection, numOfTrials;
+		boolean emptyField = false;
+		boolean isReachable = false;
+		boolean tooManyTrials = false;
 		for (int i = 0; i < numOfWaypoints; i++) {
 			// pick random section
-			sectionNum = Randomizer.random.nextInt(sectionList.size());
-			currentSection = sectionList.get(sectionNum);
 
-			boolean emptyField = false;
-			boolean isReachable = false;
+			currentSection = getNextSection(sectionList);
+			numOfFieldsInSection = (currentSection.height - currentSection.y) * (currentSection.width - currentSection.x);
+			numOfTrials = 0;
+
 			LOWaypoint newWp = null;
 			do {
 				emptyField = false;
 				isReachable = false;
-				xPos = Randomizer.randomIntFromInterval(currentSection.x, currentSection.width);
-				yPos = Randomizer.randomIntFromInterval(currentSection.y, currentSection.height);
-
+				tooManyTrials = false;
+				// System.out.println("before:" + i);
+				xPos = Randomizer.randomIntFromInterval(currentSection.x, currentSection.width - 1);
+				yPos = Randomizer.randomIntFromInterval(currentSection.y, currentSection.height - 1);
+				System.out.println(String.format("%d, x:%d y:%d field:%d", i, xPos, yPos, map[xPos][yPos]));
 				emptyField = map[xPos][yPos] == 0;
+				numOfTrials++;
 				if (emptyField) {
 					newWp = new LOWaypoint(xPos, yPos, wayPointSize, wayPointSize);
+					System.out.println("wp");
 					if (waypoints.size() < 1) {
 						isReachable = true;
 
 					} else {
-						isReachable = areInterconnected((LOWaypoint) getClosestWaypoint(waypoints, newWp), newWp);
-
+						System.out.println("so far");
+						LOWaypoint otherWp = (LOWaypoint) getClosestWaypoint(waypoints, newWp);
+						System.out.println("ok");
+						isReachable = areInterconnected(otherWp, newWp);
+						System.out.println("reachable:" + isReachable);
 					}
 				}
-			} while (!emptyField || !isReachable);
+				tooManyTrials = numOfTrials >= numOfFieldsInSection;
+			} while ((!emptyField || !isReachable) && !tooManyTrials);
 			map[xPos][yPos] = -1;
+			System.out.println("hier");
 			waypoints.add(newWp);
-			sectionList.remove(sectionNum);
+			System.out.println("added");
+			sectionList.remove(currentSection);
+			System.out.println("removed");
 		}
 
 		return waypoints;
@@ -113,58 +137,6 @@ public class WaypointController {
 			}
 		}
 		return waypoints;
-	}
-
-	public List<LevelObject> TESTcreateWaypointsWithSections(int numOfWaypoints) {
-		if (this.map.equals(null))
-			return null;
-		if (this.levelObjects.size() == 0)
-			return null;
-
-		List<LevelObject> waypoints = new ArrayList<LevelObject>();
-		int mapWidth = this.map.length;
-		int mapHeight = this.map[0].length;
-
-		Rectangle[] sections = calculateSections(mapWidth, mapHeight, numOfWaypoints);
-
-		List<Rectangle> sectionList = new ArrayList<>(sections.length);
-		// convert to list to be able to easily pick random section
-		Collections.addAll(sectionList, sections);
-
-		Rectangle currentSection;
-		int xPos, yPos, sectionNum;
-		for (int i = 0; i < numOfWaypoints; i++) {
-			// pick random section
-			sectionNum = Randomizer.random.nextInt(sectionList.size());
-			currentSection = sectionList.get(sectionNum);
-			boolean emptyField = false;
-			LOWaypoint newWp = null;
-			do {
-				emptyField = false;
-				xPos = Randomizer.randomIntFromInterval(currentSection.x, currentSection.width);
-				yPos = Randomizer.randomIntFromInterval(currentSection.y, currentSection.height);
-
-				emptyField = map[xPos][yPos] == 0;
-			} while (!emptyField);
-			newWp = new LOWaypoint(xPos, yPos, wayPointSize, wayPointSize);
-			map[xPos][yPos] = -1;
-			waypoints.add(newWp);
-			sectionList.remove(sectionNum);
-		}
-
-		return waypoints;
-	}
-
-	public void TESTconnectWaypoints(List<LOWaypoint> waypoints) {
-		for (LOWaypoint wp : waypoints) {
-			if (wp.getConnectedWaypoint() == null) {
-				LOWaypoint otherWp = TESTgetClosestWaypoint(waypoints, wp);
-				boolean interconnected = areInterconnected(otherWp, wp);
-				otherWp.setConnectedWaypoint(wp);
-
-				System.out.println(interconnected);
-			}
-		}
 	}
 
 	// Returns sections where width and height are end coordinates (instead of
@@ -211,24 +183,10 @@ public class WaypointController {
 		int closestDistance = Integer.MAX_VALUE;
 		LevelObject ret = null;
 		int currentDistance;
-		for (LevelObject wp : waypoints) {
-			if (!wp.equals(waypoint)) {
-				currentDistance = getDistance(wp, waypoint);
-				if (currentDistance < closestDistance) {
-					ret = wp;
-					closestDistance = currentDistance;
-				}
-			}
-		}
-		return ret;
-	}
-
-	private LOWaypoint TESTgetClosestWaypoint(List<LOWaypoint> waypoints, LOWaypoint waypoint) {
-		int closestDistance = Integer.MAX_VALUE;
-		LOWaypoint ret = null;
-		int currentDistance;
-		for (LOWaypoint wp : waypoints) {
-			if (!wp.equals(waypoint)) {
+		Iterator<LevelObject> iter = waypoints.iterator();
+		while (iter.hasNext()) {
+			LevelObject wp = iter.next();
+			if (wp != null && !waypoint.equals(wp)) {
 				currentDistance = getDistance(wp, waypoint);
 				if (currentDistance < closestDistance) {
 					ret = wp;
