@@ -29,8 +29,8 @@ import javax.swing.border.Border;
 import javax.swing.text.PlainDocument;
 
 import layout.SpringUtilities;
-import model.LevelParameterDefaults;
-import model.LevelParameters;
+import model.level.LevelParameterDefaults;
+import model.level.LevelParameters;
 import controller.actionlistener.CreateButtonListener;
 import controller.actionlistener.LevelNumOfWaypointsParameterListener;
 import controller.actionlistener.LevelheightParameterListener;

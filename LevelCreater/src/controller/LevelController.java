@@ -2,12 +2,12 @@ package controller;
 
 import helper.TimerThread;
 
-import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -15,26 +15,24 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import main.LevelCreater;
-import model.Contour;
-import model.LOCircle;
-import model.LOCircledWall;
-import model.LOFloor;
-import model.LOPolygon;
-import model.LOSlowDown;
-import model.LOSpeedUp;
-import model.LOWall;
-import model.Level;
-import model.LevelObject;
-import model.LevelParameters;
-import model.MapPoint;
-import model.Path;
-import enums.StandardWall;
+import model.astar.Path;
+import model.contour.Contour;
+import model.level.Level;
+import model.level.LevelParameters;
+import model.level.MapPoint;
+import model.level.objects.LOCircle;
+import model.level.objects.LOCircledWall;
+import model.level.objects.LOFloor;
+import model.level.objects.LOPolygon;
+import model.level.objects.LOSlowDown;
+import model.level.objects.LOSpeedUp;
+import model.level.objects.LOWall;
+import model.level.objects.LevelObject;
 
 public class LevelController extends SwingWorker<Void, Void> {
 
 	private LevelParameters levelParameters;
 	private ArrayList<String> statusUpdates;
-	private CellularAutomaton cellAutomat;
 	private TimerThread timerThread;
 	private Level level;
 	public WaypointController wpController;
@@ -59,27 +57,35 @@ public class LevelController extends SwingWorker<Void, Void> {
 	}
 
 	private Void runLevelCreation() {
+
+		// setup timer
 		long start = System.currentTimeMillis();
 		timerThread = new TimerThread();
 		timerThread.run();
+
 		setProgress(0);
+
 		createFloor();
+
 		setProgress(5);
 
-		cellAutomat = new CellularAutomaton(levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(),
+		// setup cellular automaton
+		CellularAutomaton cellAutomat = new CellularAutomaton(levelParameters.getLevelWidth(), levelParameters.getLevelHeight(),
 				levelParameters.getObstacles());
 
+		// create caverns
 		for (int i = 0; i < CAVERN_ITERATIONS; i++) {
 			cellAutomat.makeCaverns();
 		}
 		setProgress(10);
 		statusUpdates.add("cavern creation done");
 
+		// label regions and get copy, to keep original created map
 		int[][] createdMap = cellAutomat.getMapWithLabeledRegions();
 		setProgress(40);
 		statusUpdates.add("region labeling done");
 
+		// validate created map
 		if (!cellAutomat.isValidMap(createdMap))
 			return null;
 
@@ -94,14 +100,16 @@ public class LevelController extends SwingWorker<Void, Void> {
 		createEntranceClosingPolygon(entrance);
 		setProgress(70);
 
-		// cmc.convertRegionsToContour(createdMap, 2);
-		setProgress(75);
-
-		// DELETE TOO SMALL REGIONS
+		// delete regions that are to small
 		cleanupMap(createdMap, cellAutomat.getRegionSizeByLabel());
 
+		// init contour tracer that creates polygons out of the labeled regions
+		// map
 		ContourTracer contourTracer = new ContourTracer(createdMap);
+
+		// trace contours
 		contourTracer.findAllContours();
+
 		setProgress(80);
 		statusUpdates.add("contours found");
 		// TODO: maybe fix this? watch out for the hack in contour tracer for
@@ -109,48 +117,25 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// contour tracer changes x and y, therefore x and y need to be switched
 		// again
 		contourTracer.switchContourPointsXandY();
-		ArrayList<Contour> contourList = contourTracer.getContours();
-		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
-		PolygonPointReducer ppr = new PolygonPointReducer();
 
-		setProgress(90);
-		// int t=0;
+		// get traced contours
+		ArrayList<Contour> contourList = contourTracer.getContours();
+
+		// clean up contours by reducing polygon points that are unnecessary
+		ArrayList<Contour> updatedContours = new ArrayList<Contour>();
+		PolygonPointReducer polyPointReducer = new PolygonPointReducer();
 		for (Contour contour : contourList) {
-			// System.out.println(t++);
-			// System.out.println("before");
-			// for (MapPoint mapPoint1 : contour.getPoints()) {
-			// System.out.print(mapPoint1.x +":"+mapPoint1.y + "  ");
-			// }
-			// System.out.println();
-			ArrayList<MapPoint> updatedPoints = ppr.reduceWithTolerance(
-					(ArrayList<MapPoint>) contour.getPoints(), 1);
-			// System.out.println("updated");
-			// for (MapPoint mapPoint : updatedPoints) {
-			// System.out.print(mapPoint.x +":"+mapPoint.y + "  ");
-			// }
-			// System.out.println();
+			ArrayList<MapPoint> updatedPoints = polyPointReducer
+					.reduceWithTolerance((ArrayList<MapPoint>) contour.getPoints(), 1);
+
 			contour.setPoints(updatedPoints);
 			updatedContours.add(contour);
 		}
 		statusUpdates.add("polygon points reduced");
-		setProgress(91);
+		setProgress(85);
 
+		// finally create polygons out of the cleaned contours
 		Shape[] shapes = Contour.makePolygons(updatedContours);
-		PolygonHullController polygonHullController = new PolygonHullController();
-
-		for (int j = 1; j < shapes.length; j++) {
-			if (shapes[j] instanceof Polygon) {
-				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
-				LOSlowDown slowDownObj = new LOSlowDown(
-						polygonHullController.getPolygonHullOfPoints(p
-								.getPolyPointList()));
-				slowDownObj.inflatePolygon();
-				// LOCircledSlowDown slowDownObj = new
-				// LOCircledSlowDown((Polygon) shapes[j]);
-				level.addLevelObject(slowDownObj);
-			}
-		}
-
 		for (int i = 0; i < shapes.length; i++) {
 			LevelObject lo = null;
 			if (shapes[i] instanceof Polygon)
@@ -160,61 +145,61 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 			level.addLevelObject(lo);
 		}
-		// for (Contour contour : updatedContours) {
-		// LOPolygon poly = new LOWall((Polygon) contour.makePolygon());
-		// this.addLevelObject(poly);
-		// }
+
+		// init polygon hull controller and create inflated polygons of walls as
+		// slow down objects surrounding the walls
+		PolygonHullController polygonHullController = new PolygonHullController();
+		for (int j = 1; j < shapes.length; j++) {
+			if (shapes[j] instanceof Polygon) {
+				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
+				LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList()));
+				slowDownObj.inflatePolygon();
+				level.addLevelObject(slowDownObj);
+			}
+		}
 		statusUpdates.add("wall polygon creation done");
-		setProgress(92);
+		setProgress(89);
 
-		wpController = new WaypointController(createdMap,
-				level.getLevelObjects());
+		statusUpdates.add("creating waypoints...");
+		setProgress(90);
 
-		setProgress(93);
-		level.addLevelObjects(wpController
-				.createWaypointsWithSections(levelParameters
-						.getNumOfWaypoints()));
+		// init waypoint controller
+		wpController = new WaypointController(createdMap, level.getLevelObjects());
+		// create waypoints
+		List<LevelObject> waypoints = wpController.createWaypointsWithSections(levelParameters.getNumOfWaypoints());
+		level.addLevelObjects(waypoints);
 
 		setProgress(95);
 		statusUpdates.add("waypoint creation done");
 
-		// TODO: create Speed Ups
 		Iterator<Path> pathIter = wpController.getPaths().iterator();
 		Path path;
 		while (pathIter.hasNext()) {
 			path = (Path) pathIter.next();
-			ArrayList<MapPoint> updatedPath = ppr.reduceWithTolerance(
-					path.getNodesAsArrayList(), 1);
+			ArrayList<MapPoint> updatedPath = polyPointReducer.reduceWithTolerance(path.getNodesAsArrayList(), 1);
 			Polygon speedUpPoly = new Polygon();
 			for (MapPoint mapPoint : updatedPath) {
 				speedUpPoly.addPoint(mapPoint.x, mapPoint.y);
 			}
 			LOSpeedUp test = new LOSpeedUp(speedUpPoly);
-			// LOSpeedUp speedUpObject = new LOSpeedUp(
-			// polygonHullController.getPolygonHullOfPoints(path
-			// .getPathAsArrayListOfPoints()));
 			level.addLevelObject(test);
 
 		}
 
+		// level can be scaled (see scale, xTransform and yTransform)
 		translateAndScaleLevelObjects();
+
 		setProgress(99);
 
+		// print final progress time and num of vertices
 		long diff = System.currentTimeMillis() - start;
+		String duration = String.format("%02d:%02d:%02d:%03d", TimeUnit.MILLISECONDS.toHours(diff),
+				TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(diff)),
+				TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(diff)),
+				diff % 1000);
+		statusUpdates.add("creation took " + duration + " to finish (hh:mm:ss:millis)");
+		statusUpdates.add(String.format("Num of vertices: %d", level.getNumOfVertices()));
 
-		String duration = String.format(
-				"%02d:%02d:%02d:%03d",
-				TimeUnit.MILLISECONDS.toHours(diff),
-				TimeUnit.MILLISECONDS.toMinutes(diff)
-						- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
-								.toHours(diff)),
-				TimeUnit.MILLISECONDS.toSeconds(diff)
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-								.toMinutes(diff)), diff % 1000);
-		statusUpdates.add("creation took " + duration
-				+ " to finish (hh:mm:ss:millis)");
-		statusUpdates.add(String.format("Num of vertices: %d",
-				level.getNumOfVertices()));
 		setProgress(100);
 		return null;
 	}
@@ -226,11 +211,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		// save region numbers that must be deleted to iterate only once over
 		// map.
-		ArrayList<Integer> regionsToDelete = new ArrayList<Integer>(
-				amountOfRegions);
+		ArrayList<Integer> regionsToDelete = new ArrayList<Integer>(amountOfRegions);
 		// mapsize * minsize percentage = min size of region
-		int minSize = (int) ((width * height) * levelParameters
-				.getMinSizeRegionInMapSizePercentage());
+		int minSize = (int) ((width * height) * levelParameters.getMinSizeRegionInMapSizePercentage());
 
 		// labels start with 2. -1,0,1 are reserved for waypoints, empty space
 		// and walls
@@ -269,20 +252,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		timerThread.stopTimer();
 	}
 
-	public void createTestMap(int[][] map) {
-		int mapHeight = levelParameters.getLevelHeight();
-		int mapWidth = levelParameters.getLevelWidth();
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				if (map[column][row] == 1) {
-					System.out.println(column + " " + row);
-					LOWall wall = new LOWall(new Point(column, row), 10, 10);
-					level.addLevelObject(wall);
-				}
-			}
-		}
-	}
-
 	private void createEntranceClosingPolygon(ArrayList<MapPoint> points) {
 
 		int m = points.size();
@@ -309,30 +278,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 	}
 
 	private void createFloor() {
-		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight());
+		LOFloor levelFloor = new LOFloor(levelParameters.getLevelWidth(), levelParameters.getLevelHeight());
 		level.addLevelObject(levelFloor);
 
-	}
-
-	public void createOutsideWalls() {
-
-		LOWall topWall = new LOWall(StandardWall.TOP,
-				levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(), 10);
-		LOWall bottomWall = new LOWall(StandardWall.BOTTOM,
-				levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(), 10);
-		LOWall leftWall = new LOWall(StandardWall.LEFT,
-				levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(), 10);
-		LOWall rightWall = new LOWall(StandardWall.RIGHT,
-				levelParameters.getLevelWidth(),
-				levelParameters.getLevelHeight(), 10);
-		level.addLevelObject(topWall);
-		level.addLevelObject(bottomWall);
-		level.addLevelObject(leftWall);
-		level.addLevelObject(rightWall);
 	}
 
 	private void translateAndScaleLevelObjects() {

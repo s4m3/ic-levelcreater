@@ -4,7 +4,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-import model.LevelParameters;
+import model.level.LevelParameters;
 
 public class LevelnameParameterListener extends ParameterListenerBase implements
 		DocumentListener {

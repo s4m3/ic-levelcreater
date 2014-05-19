@@ -17,13 +17,13 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import model.LOCircle;
-import model.LOCircledWall;
-import model.LOPolygon;
-import model.LOSpeedUp;
-import model.Level;
-import model.MapPoint;
-import model.Path;
+import model.astar.Path;
+import model.level.Level;
+import model.level.MapPoint;
+import model.level.objects.LOCircle;
+import model.level.objects.LOCircledWall;
+import model.level.objects.LOPolygon;
+import model.level.objects.LOSpeedUp;
 import controller.LevelController;
 
 public class LevelPanel extends JPanel {

@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Node;
+import model.astar.Node;
 
 /**
  * Adaptiert von

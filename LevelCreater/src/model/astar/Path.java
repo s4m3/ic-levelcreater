@@ -1,8 +1,10 @@
-package model;
+package model.astar;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.level.MapPoint;
 
 public class Path {
 

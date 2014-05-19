@@ -2,8 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
-import model.Contour;
-import model.MapPoint;
+import model.contour.Contour;
+import model.level.MapPoint;
 
 public class ContourTracer {
 	static final byte FOREGROUND = 1;

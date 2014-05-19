@@ -9,8 +9,8 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JOptionPane;
 
 import main.LevelCreater;
-import model.LevelParameterDefaults;
-import model.LevelParameters;
+import model.level.LevelParameterDefaults;
+import model.level.LevelParameters;
 import view.LevelsContainer;
 import controller.LevelController;
 

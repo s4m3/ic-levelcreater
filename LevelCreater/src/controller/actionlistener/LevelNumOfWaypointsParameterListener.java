@@ -4,8 +4,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-import model.LevelParameterDefaults;
-import model.LevelParameters;
+import model.level.LevelParameterDefaults;
+import model.level.LevelParameters;
 
 public class LevelNumOfWaypointsParameterListener extends ParameterListenerBase
 		implements DocumentListener {

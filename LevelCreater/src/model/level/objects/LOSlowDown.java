@@ -1,10 +1,12 @@
-package model;
+package model.level.objects;
 
 import helper.Randomizer;
 
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+
+import model.level.MapPoint;
 
 public class LOSlowDown extends LOPolygon {
 

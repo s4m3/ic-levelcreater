@@ -32,7 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 
-import model.LevelParameters;
+import model.level.LevelParameters;
 import controller.LevelController;
 import controller.actionlistener.SaveLevelMenuItemListener;
 

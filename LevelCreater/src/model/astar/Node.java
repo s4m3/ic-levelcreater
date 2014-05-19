@@ -1,4 +1,4 @@
-package model;
+package model.astar;
 
 
 //for A* Algorithm
@@ -12,8 +12,8 @@ public class Node {
 			this.x = x; 
 			this.y = y; 
 			this.g = g; // Kosten Start->Node
-			this.h = h; // geschätzte Kosten Node->Ziel
-			this.f = g + h; // geschätzte Kosten Node
+			this.h = h; // gesch?tzte Kosten Node->Ziel
+			this.f = g + h; // gesch?tzte Kosten Node
 		}
 
 		public Node(Node parent, int x, int y) {

@@ -1,10 +1,11 @@
-package model;
+package model.level.objects;
 
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 
+@Deprecated
 public class LOCircledSlowDown extends LOCircle {
 	public LOCircledSlowDown() {
 		this.objectColor = new Color(139, 69, 19);

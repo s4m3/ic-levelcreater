@@ -1,8 +1,17 @@
-package model;
+package model.level;
 
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.level.objects.LOCircle;
+import model.level.objects.LOFloor;
+import model.level.objects.LOPolygon;
+import model.level.objects.LOSlowDown;
+import model.level.objects.LOSpeedUp;
+import model.level.objects.LOWall;
+import model.level.objects.LOWaypoint;
+import model.level.objects.LevelObject;
 
 public class Level {
 	private List<LevelObject> levelObjects;
@@ -50,6 +59,16 @@ public class Level {
 
 	public ArrayList<LOCircle> getWaypoints() {
 		ArrayList<LOCircle> ret = new ArrayList<LOCircle>();
+		for (LevelObject levelObj : levelObjects) {
+			if (levelObj instanceof LOWaypoint) {
+				ret.add((LOWaypoint) levelObj);
+			}
+		}
+		return ret;
+	}
+
+	public ArrayList<LOWaypoint> TESTgetAllWaypoints() {
+		ArrayList<LOWaypoint> ret = new ArrayList<LOWaypoint>();
 		for (LevelObject levelObj : levelObjects) {
 			if (levelObj instanceof LOWaypoint) {
 				ret.add((LOWaypoint) levelObj);

@@ -5,8 +5,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import model.LevelParameterDefaults;
-import model.LevelParameters;
+import model.level.LevelParameterDefaults;
+import model.level.LevelParameters;
 
 public class RegionMinSizeChangeListener implements ChangeListener {
 

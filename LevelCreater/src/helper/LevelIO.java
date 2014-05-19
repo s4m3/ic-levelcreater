@@ -10,10 +10,10 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import model.LOFloor;
-import model.LOWall;
-import model.LOWaypoint;
-import model.LevelObject;
+import model.level.objects.LOFloor;
+import model.level.objects.LOWall;
+import model.level.objects.LOWaypoint;
+import model.level.objects.LevelObject;
 
 public class LevelIO {
 

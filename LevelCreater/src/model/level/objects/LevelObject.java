@@ -1,4 +1,4 @@
-package model;
+package model.level.objects;
 
 import java.awt.Color;
 import java.awt.Point;
