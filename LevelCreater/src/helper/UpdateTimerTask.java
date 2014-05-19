@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JLabel;
 
-import main.LevelCreater;
+import main.LevelCreator;
 
 public class UpdateTimerTask extends TimerTask {
 
@@ -13,7 +13,7 @@ public class UpdateTimerTask extends TimerTask {
 	private JLabel timeLabel;
 	public UpdateTimerTask(long startTime) {
 		this.startTime = startTime;
-		timeLabel = LevelCreater.getInstance().timerLabel;
+		timeLabel = LevelCreator.getInstance().timerLabel;
 	}
 	@Override
 	public void run() {

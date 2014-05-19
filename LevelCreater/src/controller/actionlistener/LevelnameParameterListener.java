@@ -6,8 +6,7 @@ import javax.swing.text.BadLocationException;
 
 import model.level.LevelParameters;
 
-public class LevelnameParameterListener extends ParameterListenerBase implements
-		DocumentListener {
+public class LevelnameParameterListener extends ParameterListenerBase implements DocumentListener {
 
 	public LevelnameParameterListener(LevelParameters levelParameters) {
 		super(levelParameters);
@@ -36,12 +35,5 @@ public class LevelnameParameterListener extends ParameterListenerBase implements
 			e1.printStackTrace();
 		}
 		levelParameters.setLevelName(text);
-		// java.awt.EventQueue.invokeLater(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// levelParameters.setLevelName(e.toString());
-		// }
-		// });
 	}
 }

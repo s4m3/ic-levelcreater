@@ -7,8 +7,7 @@ import java.util.List;
 import model.astar.Node;
 
 /**
- * Adaptiert von
- * http://www.java-forum.org/codeschnipsel-u-projekte/5046-codeschnipsel.html
+ * Adaptiert von http://www.java-forum.org/codeschnipsel-u-projekte/5046-codeschnipsel.html
  */
 public class AStar {
 
@@ -41,10 +40,9 @@ public class AStar {
 
 			for (iX = startX; iX <= endX; iX++) {
 				for (iY = startY; iY <= endY; iY++) {
-					if (!isOutOfBounds(iX, iY, mapWidth, mapHeight)
-							&& !(iX == cX && iY == cY)) { // check: out of
-															// bounds and ignore
-															// same node
+					if (!isOutOfBounds(iX, iY, mapWidth, mapHeight) && !(iX == cX && iY == cY)) { // check: out of
+																									// bounds and ignore
+																									// same node
 						if (map[iX][iY] == 0) {
 
 							Node n = new Node(currentNode, iX, iY);
@@ -62,8 +60,7 @@ public class AStar {
 			}
 
 			for (Node n : successors) { // für jede Gehmöglichkeit
-				if (n.getX() == (int) goal.getX()
-						&& n.getY() == (int) goal.getY()) {
+				if (n.getX() == (int) goal.getX() && n.getY() == (int) goal.getY()) {
 					ArrayList<Node> path = generatePath(n);
 					return path;
 				}
@@ -107,8 +104,7 @@ public class AStar {
 	private boolean besserIn(Node n, List<Node> l) // Umweg gegangen?
 	{
 		for (Node no : l) {
-			if (no.getX() == n.getX() && no.getY() == n.getY()
-					&& no.getF() <= n.getF())
+			if (no.getX() == n.getX() && no.getY() == n.getY() && no.getF() <= n.getF())
 				return true;
 		}
 		return false;
@@ -142,13 +138,11 @@ public class AStar {
 		return false;
 	}
 
-	public void printMapWithSymbols(int[][] map, Point start, Point goal,
-			List<Node> openList) {
+	public void printMapWithSymbols(int[][] map, Point start, Point goal, List<Node> openList) {
 		System.out.println(mapToStringWithSymbols(map, start, goal, openList));
 	}
 
-	private String mapToStringWithSymbols(int[][] map, Point start, Point goal,
-			List<Node> openList) {
+	private String mapToStringWithSymbols(int[][] map, Point start, Point goal, List<Node> openList) {
 		String returnString = "";
 		ArrayList<String> mapSymbols = new ArrayList<String>();
 		mapSymbols.add(".");

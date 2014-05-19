@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import main.LevelCreater;
+import main.LevelCreator;
 import model.astar.Path;
 import model.contour.Contour;
 import model.level.Level;
@@ -247,8 +247,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 			setProgress(0);
 			statusUpdates.add("Error: invalid level");
 		}
-		LevelCreater.getInstance().createButton.setEnabled(true);
-		LevelCreater.getInstance().setCursor(null); // turn off the wait cursor
+		LevelCreator.getInstance().createButton.setEnabled(true);
+		LevelCreator.getInstance().setCursor(null); // turn off the wait cursor
 		timerThread.stopTimer();
 	}
 
