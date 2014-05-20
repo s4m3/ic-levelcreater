@@ -4,26 +4,27 @@ import helper.LevelIO;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
+import model.level.objects.LevelObject;
 import controller.LevelController;
 
-public class SaveLevelMenuItemListener implements ActionListener {
+public class LoadLevelMenuItemListener implements ActionListener {
 
 	private LevelController levelController;
-	
-	public SaveLevelMenuItemListener(LevelController levelController) {
+
+	public LoadLevelMenuItemListener(LevelController levelController) {
 		this.levelController = levelController;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//JOptionPane.showMessageDialog(null, "save");
-		if(this.levelController == null) {
+		if (this.levelController == null) {
 			return;
 		}
-		
 		LevelIO levelIO = new LevelIO();
-		levelIO.saveLevelToFile(levelController.getLevel().getLevelObjects(), levelController.getLevelParameters().getLevelName());
+		List<LevelObject> loadedLevelObjs = levelIO.loadLevelFromFile();
+		// TODO: populate level
 	}
 
 }

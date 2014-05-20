@@ -50,6 +50,10 @@ public class LevelController extends SwingWorker<Void, Void> {
 		statusUpdates = new ArrayList<String>();
 	}
 
+	public LevelController() {
+
+	}
+
 	@Override
 	protected Void doInBackground() throws Exception {
 		try {

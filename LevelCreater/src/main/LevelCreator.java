@@ -18,6 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -41,6 +44,7 @@ import controller.actionlistener.LevelNumOfWaypointsParameterListener;
 import controller.actionlistener.LevelheightParameterListener;
 import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
+import controller.actionlistener.LoadLevelMenuItemListener;
 import controller.actionlistener.ObstacleChangeListener;
 import controller.actionlistener.ParameterListenerBase;
 import controller.actionlistener.RegionMinSizeChangeListener;
@@ -91,12 +95,23 @@ public class LevelCreator extends JFrame implements PropertyChangeListener {
 			pane.add(new JLabel("Container doesn't use BorderLayout!"));
 			return;
 		}
+
+		// Menu
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Level");
+		JMenuItem load = new JMenuItem("Load existing Level");
+		load.addActionListener(new LoadLevelMenuItemListener(new LevelController()));
+		menu.add(load);
+		menuBar.add(menu);
+
+		setJMenuBar(menuBar);
+
 		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\" or hit ENTER!");
 		pane.add(topLabel, BorderLayout.NORTH);
 		String[] labels = { "Levelname: ", "Width: ", "Height: ", "Number of Waypoints: ", "Scale: " };
 		int numPairs = labels.length;
 
-		// Create and populate the panel.\
+		// Create and populate the panel.
 		JPanel allParametersPanel = new JPanel();
 		allParametersPanel.setLayout(new BoxLayout(allParametersPanel, BoxLayout.Y_AXIS));
 		JPanel parameterPanel = new JPanel(new SpringLayout());
