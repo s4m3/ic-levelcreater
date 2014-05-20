@@ -77,31 +77,23 @@ public class WaypointController {
 				// System.out.println("before:" + i);
 				xPos = Randomizer.randomIntFromInterval(currentSection.x, currentSection.width - 1);
 				yPos = Randomizer.randomIntFromInterval(currentSection.y, currentSection.height - 1);
-				System.out.println(String.format("%d, x:%d y:%d field:%d", i, xPos, yPos, map[xPos][yPos]));
 				emptyField = map[xPos][yPos] == 0;
 				numOfTrials++;
 				if (emptyField) {
 					newWp = new LOWaypoint(xPos, yPos, wayPointSize, wayPointSize);
-					System.out.println("wp");
 					if (waypoints.size() < 1) {
 						isReachable = true;
 
 					} else {
-						System.out.println("so far");
 						LOWaypoint otherWp = (LOWaypoint) getClosestWaypoint(waypoints, newWp);
-						System.out.println("ok");
 						isReachable = areInterconnected(otherWp, newWp);
-						System.out.println("reachable:" + isReachable);
 					}
 				}
 				tooManyTrials = numOfTrials >= numOfFieldsInSection;
 			} while ((!emptyField || !isReachable) && !tooManyTrials);
 			map[xPos][yPos] = -1;
-			System.out.println("hier");
 			waypoints.add(newWp);
-			System.out.println("added");
 			sectionList.remove(currentSection);
-			System.out.println("removed");
 		}
 
 		return waypoints;

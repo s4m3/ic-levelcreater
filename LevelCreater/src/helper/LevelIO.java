@@ -1,10 +1,14 @@
 package helper;
 
 import java.awt.Polygon;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -21,6 +25,32 @@ public class LevelIO {
 	public static final String FILE_ENDING = ".dat";
 	public static final String X_AND_Y_SEPARATOR = ":";
 	public static final String POINTS_SEPARATOR = " ";
+
+	public List<LevelObject> loadLevelFromFile() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.showOpenDialog(null);
+		FileReader freader = null;
+		BufferedReader reader = null;
+		try {
+			freader = new FileReader(chooser.getSelectedFile());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if (freader != null) {
+			reader = new BufferedReader(freader);
+			JOptionPane.showMessageDialog(null, "TODO: check if file is ok and read and return");
+		}
+		try {
+			freader.close();
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		List<LevelObject> levelObjs = new ArrayList<LevelObject>();
+		return levelObjs;
+	}
 
 	public void saveLevelToFile(List<LevelObject> levelObjects, String levelName) {
 		String line = levelName;
@@ -52,8 +82,7 @@ public class LevelIO {
 			}
 			out.close();
 
-			JOptionPane.showMessageDialog(null, String.format(
-					"%s saved at %s.", levelName, adjustedLevelName));
+			JOptionPane.showMessageDialog(null, String.format("%s saved at %s.", levelName, adjustedLevelName));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -77,8 +106,7 @@ public class LevelIO {
 		String output = "[Floor]";
 		Polygon poly = floorObject.getPolygon();
 		for (int i = 0; i < poly.npoints; i++) {
-			output += poly.xpoints[i] + X_AND_Y_SEPARATOR + poly.ypoints[i]
-					+ POINTS_SEPARATOR;
+			output += poly.xpoints[i] + X_AND_Y_SEPARATOR + poly.ypoints[i] + POINTS_SEPARATOR;
 		}
 		output += "\n";
 		return output;
@@ -86,8 +114,7 @@ public class LevelIO {
 
 	private String getWaypointOutputString(LOWaypoint waypointObject) {
 		String output = "[Waypoint]";
-		output += waypointObject.getPosition().x + X_AND_Y_SEPARATOR
-				+ waypointObject.getPosition().y;
+		output += waypointObject.getPosition().x + X_AND_Y_SEPARATOR + waypointObject.getPosition().y;
 		output += "\n";
 		return output;
 	}
@@ -96,8 +123,7 @@ public class LevelIO {
 		String output = "[Wall]";
 		Polygon poly = wallObject.getPolygon();
 		for (int i = 0; i < poly.npoints; i++) {
-			output += poly.xpoints[i] + X_AND_Y_SEPARATOR + poly.ypoints[i]
-					+ POINTS_SEPARATOR;
+			output += poly.xpoints[i] + X_AND_Y_SEPARATOR + poly.ypoints[i] + POINTS_SEPARATOR;
 		}
 		output += "\n";
 		return output;
@@ -115,8 +141,7 @@ public class LevelIO {
 			if (!file.exists() && !file.isFile()) {
 				foundNonExistingFile = true;
 			} else {
-				fileName = fileName.substring(0, fileNameLength) + "_"
-						+ fileExtension;
+				fileName = fileName.substring(0, fileNameLength) + "_" + fileExtension;
 				fileExtension++;
 			}
 		}

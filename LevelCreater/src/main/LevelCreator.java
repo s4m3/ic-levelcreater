@@ -109,7 +109,8 @@ public class LevelCreator extends JFrame implements PropertyChangeListener {
 				levelParameters), true);
 		addParameter("Number of Waypoints", LevelParameterDefaults.NUM_WAYPOINTS, parameterPanel,
 				new LevelNumOfWaypointsParameterListener(levelParameters), true);
-		addParameter("Scale", LevelParameterDefaults.SCALE, parameterPanel, new ScaleParameterListener(levelParameters), true);
+		addParameter("Level Scale", LevelParameterDefaults.SCALE, parameterPanel, new ScaleParameterListener(levelParameters),
+				true);
 
 		// Lay out the panel.
 		SpringUtilities.makeCompactGrid(parameterPanel, numPairs, 2, // rows,//
