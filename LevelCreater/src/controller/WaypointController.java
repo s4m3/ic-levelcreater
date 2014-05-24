@@ -213,4 +213,8 @@ public class WaypointController {
 		return paths;
 	}
 
+	public int getWayPointSize() {
+		return wayPointSize;
+	}
+
 }

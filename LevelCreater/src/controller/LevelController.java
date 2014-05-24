@@ -35,7 +35,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	private ArrayList<String> statusUpdates;
 	private TimerThread timerThread;
 	private Level level;
-	public WaypointController wpController;
+	private WaypointController wpController;
 
 	public static final int CAVERN_ITERATIONS = 6;
 
@@ -44,14 +44,10 @@ public class LevelController extends SwingWorker<Void, Void> {
 	private static int yTranslate = 0;
 
 	public LevelController(LevelParameters levelParameters) {
-		scale = levelParameters.getScale();
+		scale = levelParameters.getScale() != 0 ? levelParameters.getScale() : 1;
 		level = new Level();
 		this.levelParameters = levelParameters;
 		statusUpdates = new ArrayList<String>();
-	}
-
-	public LevelController() {
-
 	}
 
 	@Override
@@ -190,8 +186,9 @@ public class LevelController extends SwingWorker<Void, Void> {
 			for (MapPoint mapPoint : updatedPath) {
 				speedUpPoly.addPoint(mapPoint.x, mapPoint.y);
 			}
-			LOSpeedUp test = new LOSpeedUp(speedUpPoly);
-			level.addLevelObject(test);
+			LOSpeedUp speedUp = new LOSpeedUp(speedUpPoly);
+			speedUp.setLineWidth(wpController.getWayPointSize());
+			level.addLevelObject(speedUp);
 
 		}
 
@@ -252,7 +249,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 	public void done() {
 		// Toolkit.getDefaultToolkit().beep();
 		if (getProgress() < 100) {
-			JOptionPane.showMessageDialog(null, "Something went wrong");
+			JOptionPane.showMessageDialog(null, "Error occured during Level Creation");
 			setProgress(0);
 			statusUpdates.add("Error: invalid level");
 		}
@@ -341,6 +338,10 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	public ArrayList<String> getStatusUpdates() {
 		return statusUpdates;
+	}
+
+	public WaypointController getWpController() {
+		return wpController;
 	}
 
 }

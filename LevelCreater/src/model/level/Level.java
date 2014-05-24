@@ -20,6 +20,10 @@ public class Level {
 		this.levelObjects = new ArrayList<LevelObject>();
 	}
 
+	public Level(List<LevelObject> levelObjs) {
+		this.levelObjects = levelObjs;
+	}
+
 	public void addLevelObject(LevelObject lo) {
 		this.levelObjects.add(lo);
 	}

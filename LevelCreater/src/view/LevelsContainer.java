@@ -36,8 +36,7 @@ import model.level.LevelParameters;
 import controller.LevelController;
 import controller.actionlistener.SaveLevelMenuItemListener;
 
-public class LevelsContainer extends JFrame implements ItemListener,
-		ActionListener {
+public class LevelsContainer extends JFrame implements ItemListener, ActionListener {
 	private static final long serialVersionUID = -1856101864226493020L;
 	private LevelPanel levelPanel;
 
@@ -52,6 +51,8 @@ public class LevelsContainer extends JFrame implements ItemListener,
 	@SuppressWarnings("serial")
 	public LevelsContainer(final LevelController levelController) {
 		LevelParameters lp = levelController.getLevelParameters();
+		boolean showPathOptionEnabled = (levelController.getWpController() != null
+				&& levelController.getWpController().getPaths() != null && levelController.getWpController().getPaths().size() > 0);
 
 		setTitle(levelController.getLevelParameters().getLevelName());
 		setLocation(400, 100);
@@ -68,13 +69,10 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 		contentPane.setLayout(new BorderLayout());
 
-		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit()
-				.getScreenSize();
-		Dimension preferredSize = new Dimension(
-				lp.getLevelWidth() < screenSize.getWidth() ? lp.getLevelWidth()
-						: (int) screenSize.getWidth() - 100,
-				lp.getLevelHeight() < screenSize.getHeight() ? lp
-						.getLevelHeight() : (int) screenSize.getHeight() - 50);
+		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension preferredSize = new Dimension(lp.getLevelWidth() < screenSize.getWidth() ? lp.getLevelWidth()
+				: (int) screenSize.getWidth() - 100, lp.getLevelHeight() < screenSize.getHeight() ? lp.getLevelHeight()
+				: (int) screenSize.getHeight() - 50);
 
 		if (preferredSize.width < MIN_WIDTH)
 			preferredSize.width = MIN_WIDTH;
@@ -85,31 +83,26 @@ public class LevelsContainer extends JFrame implements ItemListener,
 		// levelsPanel.setAlignmentX(LEFT_ALIGNMENT);
 		levelPanel = new LevelPanel(levelController);
 
-		// THIS Should not be here! TODO or ok??
 		JPanel optionsPanel = new JPanel(new FlowLayout());
 		optionsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		optionsPanel.setMaximumSize(new Dimension(screenSize.width, 60));
 		optionsPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-		JLabel verticesCount = new JLabel(String.format(
-				"Number of Vertices:%s", levelController.getLevel()
-						.getNumOfVertices()));
+		JLabel verticesCount = new JLabel(String.format("Number of Vertices:%s", levelController.getLevel().getNumOfVertices()));
 		optionsPanel.add(verticesCount);
 
-		showVerticesCheckbox = new JCheckBox("Show Vertices",
-				levelPanel.isShowPolyPoints());
+		showVerticesCheckbox = new JCheckBox("Show Vertices", levelPanel.isShowPolyPoints());
 		showVerticesCheckbox.addItemListener(this);
 		optionsPanel.add(showVerticesCheckbox);
 
-		showFilledPolygonsCheckbox = new JCheckBox("Show Filled Polygons",
-				levelPanel.isShowFilledPolygons());
+		showFilledPolygonsCheckbox = new JCheckBox("Show Filled Polygons", levelPanel.isShowFilledPolygons());
 		showFilledPolygonsCheckbox.addItemListener(this);
 		optionsPanel.add(showFilledPolygonsCheckbox);
 
-		showPathsCheckbox = new JCheckBox("Show Paths",
-				levelPanel.isShowPaths());
+		showPathsCheckbox = new JCheckBox("Show Paths", levelPanel.isShowPaths());
 		showPathsCheckbox.addItemListener(this);
 		optionsPanel.add(showPathsCheckbox);
+		showPathsCheckbox.setEnabled(showPathOptionEnabled);
 
 		scaleLabel = new JLabel(getScaleLabelText());
 		optionsPanel.add(scaleLabel);
@@ -125,16 +118,12 @@ public class LevelsContainer extends JFrame implements ItemListener,
 		contentPane.add(optionsPanel, BorderLayout.NORTH);
 
 		levelPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-		levelPanel.setPreferredSize(new Dimension(levelController
-				.getLevelParameters().getLevelWidth(), levelController
+		levelPanel.setPreferredSize(new Dimension(levelController.getLevelParameters().getLevelWidth(), levelController
 				.getLevelParameters().getLevelHeight()));
 		JScrollPane scrollPane = new JScrollPane(levelPanel);
-		scrollPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setBorder(BorderFactory
-				.createEtchedBorder(EtchedBorder.LOWERED));
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		// pane.add(new LevelPanel(level));
 		// levelsPanel.add(levelPanel);
 
@@ -156,25 +145,20 @@ public class LevelsContainer extends JFrame implements ItemListener,
 			public void actionPerformed(ActionEvent arg0) {
 
 				LevelIO levelIO = new LevelIO();
-				levelIO.saveLevelToFile(levelController.getLevel()
-						.getLevelObjects(), levelController
-						.getLevelParameters().getLevelName());
+				levelIO.saveLevelToFile(levelController);
 			}
 		};
 
-		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				InputEvent.CTRL_DOWN_MASK);
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
 		levelPanel.getActionMap().put("Save", saveAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke, "Save");
+		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Save");
 
 		// include hotkey for changing poly
 		Action switchAction = new AbstractAction("Change") {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				levelPanel.setShowFilledPolygons(!levelPanel
-						.isShowFilledPolygons());
+				levelPanel.setShowFilledPolygons(!levelPanel.isShowFilledPolygons());
 				levelPanel.repaintLevel();
 				updateGUI();
 			}
@@ -182,8 +166,7 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 		KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_C, 0);
 		levelPanel.getActionMap().put("Change", switchAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke2, "Change");
+		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke2, "Change");
 
 		// include hotkey for showing points of polygons
 		Action pointsAction = new AbstractAction("Show Points") {
@@ -197,8 +180,7 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 		KeyStroke keyStroke3 = KeyStroke.getKeyStroke(KeyEvent.VK_V, 0);
 		levelPanel.getActionMap().put("Show Points", pointsAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke3, "Show Points");
+		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke3, "Show Points");
 
 		// include hotkey for zooming in
 		Action zoomInAction = new AbstractAction("Zoom In") {
@@ -212,8 +194,7 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 		KeyStroke keyStroke4 = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
 		levelPanel.getActionMap().put("Zoom In", zoomInAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke4, "Zoom In");
+		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke4, "Zoom In");
 
 		// include hotkey for zooming out
 		Action zoomOutAction = new AbstractAction("Zoom Out") {
@@ -227,23 +208,23 @@ public class LevelsContainer extends JFrame implements ItemListener,
 
 		KeyStroke keyStroke5 = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
 		levelPanel.getActionMap().put("Zoom Out", zoomOutAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke5, "Zoom Out");
+		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke5, "Zoom Out");
 
-		// include hotkey for showing paths
-		Action showPathAction = new AbstractAction("Show Path") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				levelPanel.setShowPaths(!levelPanel.isShowPaths());
-				levelPanel.repaintLevel();
-				updateGUI();
-			}
-		};
+		if (showPathOptionEnabled) {
+			// include hotkey for showing paths
+			Action showPathAction = new AbstractAction("Show Path") {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					levelPanel.setShowPaths(!levelPanel.isShowPaths());
+					levelPanel.repaintLevel();
+					updateGUI();
+				}
+			};
 
-		KeyStroke keyStroke6 = KeyStroke.getKeyStroke(KeyEvent.VK_B, 0);
-		levelPanel.getActionMap().put("Show Path", showPathAction);
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke6, "Show Path");
+			KeyStroke keyStroke6 = KeyStroke.getKeyStroke(KeyEvent.VK_B, 0);
+			levelPanel.getActionMap().put("Show Path", showPathAction);
+			levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke6, "Show Path");
+		}
 
 	}
 
@@ -252,12 +233,10 @@ public class LevelsContainer extends JFrame implements ItemListener,
 	}
 
 	private void updateGUI() {
-		this.showFilledPolygonsCheckbox.setSelected(levelPanel
-				.isShowFilledPolygons());
+		this.showFilledPolygonsCheckbox.setSelected(levelPanel.isShowFilledPolygons());
 		this.showPathsCheckbox.setSelected(levelPanel.isShowPaths());
 		this.showVerticesCheckbox.setSelected(levelPanel.isShowPolyPoints());
-		this.scaleLabel.setText(String.format("Scale:%.1f",
-				levelPanel.getScale()));
+		this.scaleLabel.setText(String.format("Scale:%.1f", levelPanel.getScale()));
 	}
 
 	@Override

@@ -70,8 +70,7 @@ public class LevelPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		paintLevel(g2);
 
 	}
@@ -113,10 +112,8 @@ public class LevelPanel extends JPanel {
 			if (showPolyPoints) {
 				if (loCircle instanceof LOCircledWall) {
 					g2.setColor(Color.MAGENTA);
-					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(
-							loCircle.getPosition().x - polyPointSize / 2,
-							loCircle.getPosition().y - polyPointSize / 2,
-							polyPointSize, polyPointSize);
+					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(loCircle.getPosition().x - polyPointSize / 2,
+							loCircle.getPosition().y - polyPointSize / 2, polyPointSize, polyPointSize);
 					g2.fill(pointEllipse);
 				}
 			}
@@ -143,10 +140,8 @@ public class LevelPanel extends JPanel {
 			if (showPolyPoints) {
 				g2.setColor(Color.MAGENTA);
 				for (int i = 0; i < poly.npoints; i++) {
-					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(
-							poly.xpoints[i] - polyPointSize / 2,
-							poly.ypoints[i] - polyPointSize / 2, polyPointSize,
-							polyPointSize);
+					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(poly.xpoints[i] - polyPointSize / 2, poly.ypoints[i]
+							- polyPointSize / 2, polyPointSize, polyPointSize);
 					g2.fill(pointEllipse);
 				}
 			}
@@ -156,19 +151,18 @@ public class LevelPanel extends JPanel {
 
 	private void paintSpeedUpAsLine(Graphics2D g2, LOSpeedUp speedUpObj) {
 		g2.setColor(speedUpObj.getObjectColor());
-		g2.setStroke(new BasicStroke(levelController.getLevelParameters()
-				.getScale() + 1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g2.setStroke(new BasicStroke(levelController.getLevelParameters().getScale() + speedUpObj.getLineWidth(),
+				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		Polygon poly = speedUpObj.getPolygon();
 		for (int i = 0; i < poly.npoints - 1; i++) {
-			g2.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i + 1],
-					poly.ypoints[i + 1]);
+			g2.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i + 1], poly.ypoints[i + 1]);
 		}
 	}
 
 	private void paintPaths(Graphics2D g2) {
 		g2.setColor(Color.MAGENTA);
 		g2.setStroke(new BasicStroke(1));
-		List<Path> paths = levelController.wpController.getPaths();
+		List<Path> paths = levelController.getWpController().getPaths();
 		int size, i;
 		List<MapPoint> pointList;
 		MapPoint aP;
@@ -186,8 +180,7 @@ public class LevelPanel extends JPanel {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension((int) (levelController.getLevelParameters()
-				.getLevelWidth() * scale), (int) (levelController
+		return new Dimension((int) (levelController.getLevelParameters().getLevelWidth() * scale), (int) (levelController
 				.getLevelParameters().getLevelHeight() * scale));
 	}
 

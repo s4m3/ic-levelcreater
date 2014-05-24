@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import model.level.Level;
 import model.level.objects.LevelObject;
+import view.LevelsContainer;
 import controller.LevelController;
 
 public class LoadLevelMenuItemListener implements ActionListener {
@@ -24,7 +26,15 @@ public class LoadLevelMenuItemListener implements ActionListener {
 		}
 		LevelIO levelIO = new LevelIO();
 		List<LevelObject> loadedLevelObjs = levelIO.loadLevelFromFile();
-		// TODO: populate level
-	}
+		if (loadedLevelObjs != null && loadedLevelObjs.size() > 0) {
+			Level level = new Level(loadedLevelObjs);
+			levelController.setLevel(level);
+			levelController.getLevelParameters().setLevelName(levelIO.levelName);
+			levelController.getLevelParameters().setLevelWidth(levelIO.levelWidth);
+			levelController.getLevelParameters().setLevelHeight(levelIO.levelHeight);
+			LevelsContainer levelContainer = new LevelsContainer(levelController);
+			levelContainer.setVisible(true);
+		}
 
+	}
 }

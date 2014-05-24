@@ -100,7 +100,7 @@ public class LevelCreator extends JFrame implements PropertyChangeListener {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Level");
 		JMenuItem load = new JMenuItem("Load existing Level");
-		load.addActionListener(new LoadLevelMenuItemListener(new LevelController()));
+		load.addActionListener(new LoadLevelMenuItemListener(new LevelController(new LevelParameters())));
 		menu.add(load);
 		menuBar.add(menu);
 
