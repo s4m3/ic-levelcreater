@@ -9,8 +9,7 @@ import model.level.MapPoint;
 /**
  * 
  * 
- * Ported from
- * https://github.com/opensciencemap/VectorTileMap/blob/master/TileMapApp
+ * Adaptiert von: https://github.com/opensciencemap/VectorTileMap/blob/master/TileMapApp
  * /src/org/osmdroid/utils/DouglasPeuckerReducer.java
  * 
  * 
@@ -18,18 +17,16 @@ import model.level.MapPoint;
 public class PolygonPointReducer {
 
 	/**
-	 * Reduce the number of points in a shape using the Douglas-Peucker
-	 * algorithm
+	 * Reduce the number of points in a shape using the Douglas-Peucker algorithm
 	 * 
 	 * @param shape
 	 *            The shape to reduce
 	 * @param tolerance
-	 *            The tolerance to decide whether or not to keep a point, in the
-	 *            coordinate system of the points (micro-degrees here)
+	 *            The tolerance to decide whether or not to keep a point, in the coordinate system of the points (micro-degrees
+	 *            here)
 	 * @return the reduced shape
 	 */
-	public ArrayList<MapPoint> reduceWithTolerance(ArrayList<MapPoint> shape,
-			double tolerance) {
+	public ArrayList<MapPoint> reduceWithTolerance(ArrayList<MapPoint> shape, double tolerance) {
 		int n = shape.size();
 		// if a shape has 2 or less points it cannot be reduced
 		if (tolerance <= 0 || n < 3) {
@@ -64,8 +61,7 @@ public class PolygonPointReducer {
 	}
 
 	/**
-	 * Reduce the points in shape between the specified first and last index.
-	 * Mark the points to keep in marked[]
+	 * Reduce the points in shape between the specified first and last index. Mark the points to keep in marked[]
 	 * 
 	 * @param shape
 	 *            The original shape
@@ -74,14 +70,11 @@ public class PolygonPointReducer {
 	 * @param tolerance
 	 *            The tolerance to determine if a point is kept
 	 * @param firstIdx
-	 *            The index in original shape's point of the starting point for
-	 *            this line segment
+	 *            The index in original shape's point of the starting point for this line segment
 	 * @param lastIdx
-	 *            The index in original shape's point of the ending point for
-	 *            this line segment
+	 *            The index in original shape's point of the ending point for this line segment
 	 */
-	private void douglasPeuckerReduction(ArrayList<MapPoint> shape,
-			boolean[] marked, double tolerance, int firstIdx, int lastIdx) {
+	private void douglasPeuckerReduction(ArrayList<MapPoint> shape, boolean[] marked, double tolerance, int firstIdx, int lastIdx) {
 		if (lastIdx <= firstIdx + 1) {
 			// overlapping indexes, just return
 			return;
@@ -114,21 +107,18 @@ public class PolygonPointReducer {
 			marked[indexFarthest] = true;
 
 			// reduce the shape between the starting point to newly found point
-			douglasPeuckerReduction(shape, marked, tolerance, firstIdx,
-					indexFarthest);
+			douglasPeuckerReduction(shape, marked, tolerance, firstIdx, indexFarthest);
 
 			// reduce the shape between the newly found point and the finishing
 			// point
-			douglasPeuckerReduction(shape, marked, tolerance, indexFarthest,
-					lastIdx);
+			douglasPeuckerReduction(shape, marked, tolerance, indexFarthest, lastIdx);
 		}
 		// else: the farthest point is within the tolerance, the whole segment
 		// is discarded.
 	}
 
 	/**
-	 * Calculate the orthogonal distance from the line joining the lineStart and
-	 * lineEnd points to point
+	 * Calculate the orthogonal distance from the line joining the lineStart and lineEnd points to point
 	 * 
 	 * @param point
 	 *            The point the distance is being calculated for
@@ -138,10 +128,8 @@ public class PolygonPointReducer {
 	 *            The point that ends the line
 	 * @return The distance in points coordinate system
 	 */
-	private double orthogonalDistance(MapPoint point, MapPoint lineStart,
-			MapPoint lineEnd) {
-		Line2D.Float line = new Line2D.Float(lineStart.x, lineStart.y,
-				lineEnd.x, lineEnd.y);
+	private double orthogonalDistance(MapPoint point, MapPoint lineStart, MapPoint lineEnd) {
+		Line2D.Float line = new Line2D.Float(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y);
 		return line.ptLineDist(new Point2D.Float(point.x, point.y));
 
 	}

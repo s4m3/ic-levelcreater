@@ -34,15 +34,6 @@ public class WaypointController {
 		wayPointSize = 1 + (minDimension / DIMENSION_FRACTION);
 	}
 
-	private Rectangle getNextSection(List<Rectangle> sectionList) {
-		int sectionListSize = sectionList.size();
-		if (sectionListSize > 0) {
-			return sectionList.get(Randomizer.random.nextInt(sectionListSize));
-		} else {
-			return new Rectangle(0, 0, map.length - 1, map[0].length);
-		}
-	}
-
 	public List<LevelObject> createWaypointsWithSections(int numOfWaypoints) {
 		if (this.map.equals(null))
 			return null;
@@ -169,6 +160,15 @@ public class WaypointController {
 		}
 
 		return sections;
+	}
+
+	private Rectangle getNextSection(List<Rectangle> sectionList) {
+		int sectionListSize = sectionList.size();
+		if (sectionListSize > 0) {
+			return sectionList.get(Randomizer.random.nextInt(sectionListSize));
+		} else {
+			return new Rectangle(0, 0, map.length - 1, map[0].length);
+		}
 	}
 
 	private LevelObject getClosestWaypoint(List<LevelObject> waypoints, LOWaypoint waypoint) {

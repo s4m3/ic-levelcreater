@@ -119,8 +119,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		statusUpdates.add("contours found");
 		// TODO: maybe fix this? watch out for the hack in contour tracer for
 		// corner points!!
-		// contour tracer changes x and y, therefore x and y need to be switched
-		// again
+		// contour tracer changes x and y, therefore x and y need to be switched again
 		contourTracer.switchContourPointsXandY();
 
 		// get traced contours
@@ -224,9 +223,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// labels start with 2. -1,0,1 are reserved for waypoints, empty space
 		// and walls
 		for (int i = 2; i < amountOfRegions; i++) {
-			// System.out.println(String.format("RegionSize. Num:%d, Size: %d",
-			// i,
-			// regionSizeByLabel.get(i)));
 
 			if (regionSizeByLabel.get(i) < minSize) {
 				regionsToDelete.add(i);
@@ -242,9 +238,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 	}
 
-	/*
-	 * Executed in event dispatching thread
-	 */
 	@Override
 	public void done() {
 		// Toolkit.getDefaultToolkit().beep();
@@ -276,9 +269,6 @@ public class LevelController extends SwingWorker<Void, Void> {
 		xPoints[3] = points.get(0).x;
 		yPoints[3] = points.get(0).y + 2;
 
-		// for (int i = 0; i < yPoints.length; i++) {
-		// System.out.println(xPoints[i] +":"+yPoints[i]);
-		// }
 		LOWall wall = new LOWall(new Polygon(xPoints, yPoints, xPoints.length));
 		level.addLevelObject(wall);
 	}

@@ -65,9 +65,9 @@ public class AStar {
 					return path;
 				}
 				boolean add = true;
-				if (besserIn(n, openList))
+				if (betterIn(n, openList))
 					add = false;
-				if (besserIn(n, closedList))
+				if (betterIn(n, closedList))
 					add = false;
 				if (add)
 					openList.add(n);
@@ -89,9 +89,7 @@ public class AStar {
 		return path;
 	}
 
-	private Node getLeastF(List<Node> l) // Node aus open-/closedList mit
-											// niedrigstem f suchen
-	{
+	private Node getLeastF(List<Node> l) {
 		Node least = null;
 		for (Node n : l) {
 			if ((least == null) || (n.getF() < least.getF())) {
@@ -101,8 +99,7 @@ public class AStar {
 		return least;
 	}
 
-	private boolean besserIn(Node n, List<Node> l) // Umweg gegangen?
-	{
+	private boolean betterIn(Node n, List<Node> l) {
 		for (Node no : l) {
 			if (no.getX() == n.getX() && no.getY() == n.getY() && no.getF() <= n.getF())
 				return true;
@@ -121,10 +118,9 @@ public class AStar {
 		return newG;
 	}
 
-	private float calcH(Node act, Point goal) // Heuristik
-	{
-		int distX = Math.abs(act.getX() - goal.x); // Differenz a
-		int distY = Math.abs(act.getY() - goal.y); // Differenz b
+	private float calcH(Node act, Point goal) {
+		int distX = Math.abs(act.getX() - goal.x);
+		int distY = Math.abs(act.getY() - goal.y);
 		float ret = (float) Math.sqrt(distX * distX + distY * distY);
 		return ret;
 	}
@@ -137,6 +133,21 @@ public class AStar {
 		}
 		return false;
 	}
+
+	private boolean listContainsNode(List<Node> openList, int x, int y) {
+		if (openList == null)
+			return false;
+
+		for (Node node : openList) {
+			if (node.getX() == x && node.getY() == y)
+				return true;
+		}
+		return false;
+	}
+
+	// //////////////////////////////////////////////////
+	// LOGGING AND DEBUGGING
+	// //////////////////////////////////////////////////
 
 	public void printMapWithSymbols(int[][] map, Point start, Point goal, List<Node> openList) {
 		System.out.println(mapToStringWithSymbols(map, start, goal, openList));
@@ -179,14 +190,4 @@ public class AStar {
 		return returnString;
 	}
 
-	private boolean listContainsNode(List<Node> openList, int x, int y) {
-		if (openList == null)
-			return false;
-
-		for (Node node : openList) {
-			if (node.getX() == x && node.getY() == y)
-				return true;
-		}
-		return false;
-	}
 }
