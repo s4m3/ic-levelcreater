@@ -1,8 +1,10 @@
 package controller;
 
+import helper.Randomizer;
 import helper.TimerThread;
 
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -157,11 +159,11 @@ public class LevelController extends SwingWorker<Void, Void> {
 			if (shapes[j] instanceof Polygon) {
 				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
 				LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList()));
-				slowDownObj.inflatePolygon();
+				inflatePolygon(slowDownObj.getPolygon());
 				level.addLevelObject(slowDownObj);
 			}
 		}
-		statusUpdates.add("wall polygon creation done");
+		statusUpdates.add("wall polygon- and slow downers creation done");
 		setProgress(89);
 
 		statusUpdates.add("creating waypoints...");
@@ -179,7 +181,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		Iterator<Path> pathIter = wpController.getPaths().iterator();
 		Path path;
 		while (pathIter.hasNext()) {
-			path = (Path) pathIter.next();
+			path = pathIter.next();
 			ArrayList<MapPoint> updatedPath = polyPointReducer.reduceWithTolerance(path.getNodesAsArrayList(), 1);
 			Polygon speedUpPoly = new Polygon();
 			for (MapPoint mapPoint : updatedPath) {
@@ -312,6 +314,44 @@ public class LevelController extends SwingWorker<Void, Void> {
 					circle.scale(scale);
 			}
 		}
+
+		Iterator<Path> pathIter = wpController.getPaths().iterator();
+		Path path;
+		while (pathIter.hasNext()) {
+			path = pathIter.next();
+			path.scale(scale);
+		}
+	}
+
+	private void inflatePolygon(Polygon polygon) {
+		Rectangle bounds = polygon.getBounds();
+		int points = polygon.npoints;
+		MapPoint center = new MapPoint(bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2));
+
+		// move polygon to origin, ...
+		polygon.translate(-center.x, -center.y);
+		// ...modify, ...
+		double inflation;
+		int xBoundsMax = this.levelParameters.getLevelWidth() - center.x;
+		int yBoundsMax = this.levelParameters.getLevelHeight() - center.y;
+		int xBoundsMin = 0 - center.x;
+		int yBoundsMin = 0 - center.y;
+		int newX, newY;
+		for (int i = 0; i < points; i++) {
+			inflation = Randomizer.randomIntFromInterval(14, 18) / 10.0;
+			newX = (int) (polygon.xpoints[i] * inflation);
+			polygon.xpoints[i] = clampValue(newX, xBoundsMin, xBoundsMax);
+
+			newY = (int) (polygon.ypoints[i] + inflation);
+			polygon.ypoints[i] = clampValue(newY, yBoundsMin, yBoundsMax);
+
+		}
+		// ...and translate back to original position
+		polygon.translate(center.x, center.y);
+	}
+
+	private int clampValue(int value, int min, int max) {
+		return value < min ? min : value > max ? max : value;
 	}
 
 	public Level getLevel() {

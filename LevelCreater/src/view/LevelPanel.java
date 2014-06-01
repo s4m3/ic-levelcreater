@@ -157,6 +157,14 @@ public class LevelPanel extends JPanel {
 		for (int i = 0; i < poly.npoints - 1; i++) {
 			g2.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i + 1], poly.ypoints[i + 1]);
 		}
+		if (showPolyPoints) {
+			g2.setColor(Color.MAGENTA);
+			for (int i = 0; i < poly.npoints; i++) {
+				Ellipse2D.Double pointEllipse = new Ellipse2D.Double(poly.xpoints[i] - polyPointSize / 2, poly.ypoints[i]
+						- polyPointSize / 2, polyPointSize, polyPointSize);
+				g2.fill(pointEllipse);
+			}
+		}
 	}
 
 	private void paintPaths(Graphics2D g2) {

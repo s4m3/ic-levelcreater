@@ -38,4 +38,11 @@ public class Path {
 		return pointList;
 	}
 
+	public void scale(int scale) {
+		for (MapPoint node : nodes) {
+			node.x = node.x * scale;
+			node.y = node.y * scale;
+		}
+	}
+
 }
