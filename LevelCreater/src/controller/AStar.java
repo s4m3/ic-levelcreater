@@ -121,8 +121,8 @@ public class AStar {
 	private float calcH(Node act, Point goal) {
 		int distX = Math.abs(act.getX() - goal.x);
 		int distY = Math.abs(act.getY() - goal.y);
-		float ret = (float) Math.sqrt(distX * distX + distY * distY);
-		return ret;
+		int returnValue = distX * distX + distY * distY;
+		return returnValue;
 	}
 
 	private boolean isOutOfBounds(int x, int y, int mapWidth, int mapHeight) {

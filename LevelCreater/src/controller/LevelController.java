@@ -111,7 +111,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		// delete regions that are to small
 		cleanupMap(createdMap, cellAutomat.getRegionSizeByLabel());
-
+		setProgress(75);
+		statusUpdates.add("map cleanup done");
 		// init contour tracer that creates polygons out of the labeled regions
 		// map
 		ContourTracer contourTracer = new ContourTracer(createdMap);
@@ -157,6 +158,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// init polygon hull controller and create inflated polygons of walls as
 		// slow down objects surrounding the walls
 		PolygonHullController polygonHullController = new PolygonHullController();
+		int fractionOfLevelSize = this.getLevelParameters().getLevelWidth() * this.getLevelParameters().getLevelHeight() < 1000000 ? 1000
+				: 10000;
 		for (int j = 1; j < shapes.length; j++) {
 			if (shapes[j] instanceof Polygon) {
 				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
@@ -164,7 +167,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 				// only add for large polygons
 				if ((bounds.width * bounds.height) > ((this.getLevelParameters().getLevelWidth() * this.getLevelParameters()
-						.getLevelHeight()) / 1000)) {
+						.getLevelHeight()) / fractionOfLevelSize)) {
 					LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList()));
 					inflatePolygon(slowDownObj.getPolygon());
 					level.addLevelObject(slowDownObj);
