@@ -40,6 +40,8 @@ public class LevelController extends SwingWorker<Void, Void> {
 	private WaypointController wpController;
 
 	public static final int CAVERN_ITERATIONS = 6;
+	public static final int POLYGON_INFLATION_MIN = 11;
+	public static final int POLYGON_INFLATION_MAX = 17;
 
 	public int scale = 1;
 	private static int xTranslate = 0;
@@ -158,9 +160,16 @@ public class LevelController extends SwingWorker<Void, Void> {
 		for (int j = 1; j < shapes.length; j++) {
 			if (shapes[j] instanceof Polygon) {
 				LOPolygon p = new LOSlowDown((Polygon) shapes[j]);
-				LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList()));
-				inflatePolygon(slowDownObj.getPolygon());
-				level.addLevelObject(slowDownObj);
+				Rectangle bounds = p.getPolygon().getBounds();
+
+				// only add for large polygons
+				if ((bounds.width * bounds.height) > ((this.getLevelParameters().getLevelWidth() * this.getLevelParameters()
+						.getLevelHeight()) / 1000)) {
+					LOSlowDown slowDownObj = new LOSlowDown(polygonHullController.getPolygonHullOfPoints(p.getPolyPointList()));
+					inflatePolygon(slowDownObj.getPolygon());
+					level.addLevelObject(slowDownObj);
+				}
+
 			}
 		}
 		statusUpdates.add("wall polygon- and slow downers creation done");
@@ -323,26 +332,43 @@ public class LevelController extends SwingWorker<Void, Void> {
 		}
 	}
 
+	// private void inflatePolygon2(Polygon polygon) {
+	// AffineTransform test = new AffineTransform();
+	// test.scale(10, 10);
+	// double[] coords = new double[6];
+	// Shape temp = new Polygon();
+	// Polygon returnPoly = new Polygon();
+	// for (PathIterator pathIter = temp.getPathIterator(test); !pathIter.isDone(); pathIter.next()) {
+	// int type = pathIter.currentSegment(coords);
+	// returnPoly.addPoint((int) coords[0], (int) coords[1]);
+	// }
+	// polygon = returnPoly;
+	// }
+
 	private void inflatePolygon(Polygon polygon) {
 		Rectangle bounds = polygon.getBounds();
+
+		// only inflate large polygons
+		if ((bounds.width * bounds.height) < ((this.levelParameters.getLevelWidth() * this.levelParameters.getLevelHeight()) / 1000))
+			return;
+
 		int points = polygon.npoints;
-		MapPoint center = new MapPoint(bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2));
+		MapPoint center = new MapPoint((int) bounds.getCenterX(), (int) bounds.getCenterY());
 
 		// move polygon to origin, ...
 		polygon.translate(-center.x, -center.y);
 		// ...modify, ...
-		double inflation;
+		double inflation = Randomizer.randomIntFromInterval(POLYGON_INFLATION_MIN, POLYGON_INFLATION_MAX) / 10.0;
 		int xBoundsMax = this.levelParameters.getLevelWidth() - center.x;
 		int yBoundsMax = this.levelParameters.getLevelHeight() - center.y;
 		int xBoundsMin = 0 - center.x;
 		int yBoundsMin = 0 - center.y;
 		int newX, newY;
 		for (int i = 0; i < points; i++) {
-			inflation = Randomizer.randomIntFromInterval(14, 18) / 10.0;
 			newX = (int) (polygon.xpoints[i] * inflation);
 			polygon.xpoints[i] = clampValue(newX, xBoundsMin, xBoundsMax);
 
-			newY = (int) (polygon.ypoints[i] + inflation);
+			newY = (int) (polygon.ypoints[i] * inflation);
 			polygon.ypoints[i] = clampValue(newY, yBoundsMin, yBoundsMax);
 
 		}
