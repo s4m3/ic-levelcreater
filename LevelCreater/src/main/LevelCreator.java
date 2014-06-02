@@ -2,9 +2,13 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -14,6 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -29,51 +36,54 @@ import javax.swing.border.Border;
 import javax.swing.text.PlainDocument;
 
 import layout.SpringUtilities;
-import model.LevelParameterDefaults;
-import model.LevelParameters;
-import controller.actionlistener.CreateButtonListener;
+import model.level.LevelParameterDefaults;
+import model.level.LevelParameters;
+import view.LevelsContainer;
+import controller.LevelController;
 import controller.actionlistener.LevelNumOfWaypointsParameterListener;
 import controller.actionlistener.LevelheightParameterListener;
 import controller.actionlistener.LevelnameParameterListener;
 import controller.actionlistener.LevelwidthParameterListener;
+import controller.actionlistener.LoadLevelMenuItemListener;
 import controller.actionlistener.ObstacleChangeListener;
 import controller.actionlistener.ParameterListenerBase;
 import controller.actionlistener.RegionMinSizeChangeListener;
 import controller.actionlistener.ScaleParameterListener;
 import filters.IntegerFilter;
 
-public class LevelCreater extends JFrame {
+public class LevelCreator extends JFrame implements PropertyChangeListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1728955245801240639L;
-	private static final Dimension defaultDimension = new Dimension(800, 600);
-	private static LevelCreater instance = null;
+	private static final Dimension DEFAULT_DIMENSION = new Dimension(800, 600);
+	private static LevelCreator instance = null;
 
 	private LevelParameters levelParameters;
+	private LevelController levelController;
 
 	public JProgressBar progressBar;
 	public JButton createButton;
 	public JTextArea outputTextField;
 	public JLabel timerLabel;
 
-	private LevelCreater() {
-		this.setTitle("Level Creater");
-		this.setSize(defaultDimension);
+	private LevelCreator() {
+		this.setTitle("Level Creator");
+		this.setSize(DEFAULT_DIMENSION);
 		this.setLocation(100, 100);
 		levelParameters = new LevelParameters();
 	}
 
-	public static LevelCreater getInstance() {
+	public static LevelCreator getInstance() {
 		if (instance == null) {
-			instance = new LevelCreater();
+			instance = new LevelCreator();
 		}
 		return instance;
 	}
 
 	private static void createAndShowGUI() {
-		LevelCreater frame = LevelCreater.getInstance();
+		LevelCreator frame = LevelCreator.getInstance();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addComponentsToPane(frame.getContentPane());
 		frame.pack();
@@ -85,32 +95,37 @@ public class LevelCreater extends JFrame {
 			pane.add(new JLabel("Container doesn't use BorderLayout!"));
 			return;
 		}
-		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\"!");
+
+		// Menu
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Level");
+		JMenuItem load = new JMenuItem("Load existing Level");
+		load.addActionListener(new LoadLevelMenuItemListener(new LevelController(new LevelParameters())));
+		menu.add(load);
+		menuBar.add(menu);
+
+		setJMenuBar(menuBar);
+
+		JLabel topLabel = new JLabel("Insert parameters and press \"CREATE\" or hit ENTER!");
 		pane.add(topLabel, BorderLayout.NORTH);
-		String[] labels = { "Levelname: ", "Width: ", "Height: ",
-				"Number of Waypoints: ", "Scale: " };
+		String[] labels = { "Levelname: ", "Width: ", "Height: ", "Number of Waypoints: ", "Scale: " };
 		int numPairs = labels.length;
 
-		// Create and populate the panel.\
+		// Create and populate the panel.
 		JPanel allParametersPanel = new JPanel();
-		allParametersPanel.setLayout(new BoxLayout(allParametersPanel,
-				BoxLayout.Y_AXIS));
+		allParametersPanel.setLayout(new BoxLayout(allParametersPanel, BoxLayout.Y_AXIS));
 		JPanel parameterPanel = new JPanel(new SpringLayout());
 
-		addParameter("Levelname", LevelParameterDefaults.levelName,
-				parameterPanel,
-				new LevelnameParameterListener(levelParameters), false);
-		addParameter("Width", LevelParameterDefaults.LEVEL_WIDTH,
-				parameterPanel,
+		addParameter("Levelname", LevelParameterDefaults.levelName, parameterPanel, new LevelnameParameterListener(
+				levelParameters), false);
+		addParameter("Width", LevelParameterDefaults.LEVEL_WIDTH, parameterPanel,
 				new LevelwidthParameterListener(levelParameters), true);
-		addParameter("Height", LevelParameterDefaults.LEVEL_HEIGHT,
-				parameterPanel, new LevelheightParameterListener(
-						levelParameters), true);
-		addParameter("Number of Waypoints",
-				LevelParameterDefaults.NUM_WAYPOINTS, parameterPanel,
+		addParameter("Height", LevelParameterDefaults.LEVEL_HEIGHT, parameterPanel, new LevelheightParameterListener(
+				levelParameters), true);
+		addParameter("Number of Waypoints", LevelParameterDefaults.NUM_WAYPOINTS, parameterPanel,
 				new LevelNumOfWaypointsParameterListener(levelParameters), true);
-		addParameter("Scale", LevelParameterDefaults.SCALE, parameterPanel,
-				new ScaleParameterListener(levelParameters), true);
+		addParameter("Level Scale", LevelParameterDefaults.SCALE, parameterPanel, new ScaleParameterListener(levelParameters),
+				true);
 
 		// Lay out the panel.
 		SpringUtilities.makeCompactGrid(parameterPanel, numPairs, 2, // rows,//
@@ -128,16 +143,12 @@ public class LevelCreater extends JFrame {
 		JLabel obstacleLabel = new JLabel("Wall Percentage");
 		JLabel amountOfObstaclesLabel = new JLabel("medium");
 		Dimension d = amountOfObstaclesLabel.getPreferredSize();
-		amountOfObstaclesLabel
-				.setPreferredSize(new Dimension(d.width, d.height));
+		amountOfObstaclesLabel.setPreferredSize(new Dimension(d.width, d.height));
 		obstaclePanel.add(obstacleLabel);
 
-		JSlider amoutOfObstacleSlider = new JSlider(JSlider.HORIZONTAL,
-				LevelParameterDefaults.OBSTACLE_MIN,
-				LevelParameterDefaults.OBSTACLE_MAX,
-				LevelParameterDefaults.OBSTACLES);
-		amoutOfObstacleSlider.addChangeListener(new ObstacleChangeListener(
-				levelParameters, amountOfObstaclesLabel));
+		JSlider amoutOfObstacleSlider = new JSlider(JSlider.HORIZONTAL, LevelParameterDefaults.OBSTACLE_MIN,
+				LevelParameterDefaults.OBSTACLE_MAX, LevelParameterDefaults.OBSTACLES);
+		amoutOfObstacleSlider.addChangeListener(new ObstacleChangeListener(levelParameters, amountOfObstaclesLabel));
 		// Turn on labels at major tick marks.
 		amoutOfObstacleSlider.setMajorTickSpacing(10);
 		amoutOfObstacleSlider.setMinorTickSpacing(5);
@@ -150,25 +161,21 @@ public class LevelCreater extends JFrame {
 		allParametersPanel.add(obstaclePanel);
 
 		// MIN SIZE OF REGION PARAMETER
-		levelParameters
-				.setMinSizeRegionInMapSizePercentage(LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE);
+		levelParameters.setMinSizeRegionInMapSizePercentage(LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE);
 		JPanel minSizeRegionPanel = new JPanel();
 		minSizeRegionPanel.setBorder(paneEdge);
 		JLabel minSizeRegionLabel = new JLabel("Delete Small Walls");
 		minSizeRegionPanel.add(minSizeRegionLabel);
 		JLabel minSizeRegionPercentageLabel = new JLabel("normal");
 		Dimension dim = minSizeRegionPercentageLabel.getPreferredSize();
-		minSizeRegionPercentageLabel.setPreferredSize(new Dimension(dim.width,
-				dim.height));
+		minSizeRegionPercentageLabel.setPreferredSize(new Dimension(dim.width, dim.height));
 		minSizeRegionPanel.add(minSizeRegionPercentageLabel);
 
-		JSlider minSizeRegionSlider = new JSlider(
-				JSlider.HORIZONTAL,
+		JSlider minSizeRegionSlider = new JSlider(JSlider.HORIZONTAL,
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MIN * 10000),
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE_MAX * 10000),
 				(int) (LevelParameterDefaults.MIN_SIZE_REGION_IN_MAP_SIZE_PERCENTAGE * 10000));
-		minSizeRegionSlider.addChangeListener(new RegionMinSizeChangeListener(
-				levelParameters, minSizeRegionPercentageLabel));
+		minSizeRegionSlider.addChangeListener(new RegionMinSizeChangeListener(levelParameters, minSizeRegionPercentageLabel));
 
 		minSizeRegionSlider.setMajorTickSpacing(1);
 		minSizeRegionSlider.setMinorTickSpacing(1);
@@ -198,17 +205,21 @@ public class LevelCreater extends JFrame {
 		southPanel.add(progressBar, BorderLayout.WEST);
 
 		createButton = new JButton("CREATE");
-		createButton.addActionListener(new CreateButtonListener());
+		createButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createLevel();
+			}
+		});
 
 		outputTextField = new JTextArea();
-		outputTextField
-				.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+		outputTextField.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		outputTextField.setText("Logger...");
 		outputTextField.setEditable(false);
 		JScrollPane outputTextScrollPane = new JScrollPane(outputTextField);
 		outputTextScrollPane.setPreferredSize(new Dimension(100, 100));
-		outputTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0,
-				0, 0));
+		outputTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		southPanel.add(outputTextScrollPane, BorderLayout.SOUTH);
 
 		southPanel.add(createButton, BorderLayout.EAST);
@@ -226,15 +237,13 @@ public class LevelCreater extends JFrame {
 
 		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		southPanel.getActionMap().put("Create", createAction);
-		southPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				keyStroke, "Create");
+		southPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "Create");
 
 		pane.add(southPanel, BorderLayout.SOUTH);
 
 	}
 
-	private void addParameter(String parameterName, Object defaultValue,
-			JPanel parameterPanel, ParameterListenerBase listener,
+	private void addParameter(String parameterName, Object defaultValue, JPanel parameterPanel, ParameterListenerBase listener,
 			boolean isIntegerFiltered) {
 		JLabel l = new JLabel(parameterName, JLabel.TRAILING);
 		parameterPanel.add(l);
@@ -257,9 +266,73 @@ public class LevelCreater extends JFrame {
 		this.levelParameters = levelParameters;
 	}
 
-	public void createLevel() {
-		JOptionPane.showMessageDialog(null, "create LEvel ");
-		// TODO: logic here???
+	private void createLevel() {
+		if (!allParametersOk()) {
+			JOptionPane.showMessageDialog(null, getParameterMessage());
+			return;
+		}
+		createButton.setEnabled(false);
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		outputTextField.setText("Creating Level...\n");
+		levelController = new LevelController(getLevelParameters());
+		levelController.addPropertyChangeListener(this);
+
+		levelController.execute();
+	}
+
+	private String getParameterMessage() {
+		LevelParameters paras = getLevelParameters();
+		String text = "Invalid Parameters! \n";
+		text += "Level width must be between" + LevelParameterDefaults.LEVEL_WIDTH_MIN + " and "
+				+ LevelParameterDefaults.LEVEL_WIDTH_MAX + ". (Currently:" + paras.getLevelWidth() + ")\n";
+		text += "Level height must be between" + LevelParameterDefaults.LEVEL_HEIGHT_MIN + " and "
+				+ LevelParameterDefaults.LEVEL_HEIGHT_MAX + ". (Currently:" + paras.getLevelHeight() + ")\n";
+		text += "Amount of waypoints must be between" + LevelParameterDefaults.NUM_WAYPOINTS_MIN + " and "
+				+ LevelParameterDefaults.NUM_WAYPOINTS_MAX + ". (Currently:" + paras.getNumOfWaypoints() + ")\n";
+		return text;
+	}
+
+	private boolean allParametersOk() {
+		boolean parametersOk = true;
+		LevelParameters paras = LevelCreator.getInstance().getLevelParameters();
+
+		int parameter = paras.getLevelHeight();
+		if (parameter < LevelParameterDefaults.LEVEL_HEIGHT_MIN || parameter > LevelParameterDefaults.LEVEL_HEIGHT_MAX)
+			parametersOk = false;
+
+		parameter = paras.getLevelWidth();
+		if (parameter < LevelParameterDefaults.LEVEL_WIDTH_MIN || parameter > LevelParameterDefaults.LEVEL_WIDTH_MAX)
+			parametersOk = false;
+
+		parameter = paras.getNumOfWaypoints();
+		if (parameter < LevelParameterDefaults.NUM_WAYPOINTS_MIN || parameter > LevelParameterDefaults.NUM_WAYPOINTS_MAX)
+			parametersOk = false;
+
+		parameter = paras.getScale();
+		if (parameter < LevelParameterDefaults.SCALE_MIN || parameter > LevelParameterDefaults.SCALE_MAX)
+			parametersOk = false;
+
+		return parametersOk;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if ("progress" == evt.getPropertyName()) {
+			int progress = (Integer) evt.getNewValue();
+			progressBar.setValue(progress);
+			while (levelController.getStatusUpdates().size() > 0) {
+				outputTextField.append(levelController.getStatusUpdates().get(0) + "\n");
+				levelController.getStatusUpdates().remove(0);
+			}
+
+			if (progress >= 100) {
+				LevelsContainer levelContainer = new LevelsContainer(levelController);
+				// levelContainer.pack();
+				levelContainer.setVisible(true);
+
+			}
+		}
+
 	}
 
 	public static void main(String[] args) {

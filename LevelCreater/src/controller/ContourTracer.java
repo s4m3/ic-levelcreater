@@ -2,8 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
-import model.Contour;
-import model.MapPoint;
+import model.contour.Contour;
+import model.level.MapPoint;
 
 public class ContourTracer {
 	static final byte FOREGROUND = 1;
@@ -16,7 +16,7 @@ public class ContourTracer {
 
 	int width;
 	int height;
-	
+
 	int regionId = 0;
 
 	public ContourTracer(int[][] map) {
@@ -40,15 +40,6 @@ public class ContourTracer {
 					pixelArray[u][v] = FOREGROUND;
 			}
 		}
-		
-		
-		//TODO: delete
-//		for (int i = 0; i < pixelArray.length; i++) {
-//			for (int j = 0; j < pixelArray[i].length; j++) {
-//				System.out.print(pixelArray[i][j]);
-//			}
-//			System.out.println();
-//		}
 	}
 
 	void findAllContours() {
@@ -80,26 +71,18 @@ public class ContourTracer {
 						if (labelArray[v][u] == 0) {
 							// unlabeled—new inner contour
 							Contour ic = traceContour(u - 1, v, label, 0);
-							//TODO: works but weird...
-							//contours.add(ic);
+							// TODO: works but weird...
+							// contours.add(ic);
 						}
 						label = 0;
 					}
 				}
 			}
 		}
-//		//TODO: delete
-//		System.out.println();
-//		for (int i = 0; i < labelArray.length; i++) {
-//			for (int j = 0; j < labelArray[i].length; j++) {
-//				System.out.print(labelArray[i][j] >= 0 ? labelArray[i][j] : "#" );
-//			}
-//			System.out.println();
-//		}
-		// shift back to original coordinates
+
 		Contour.moveContoursBy(contours, -1, -1);
-		
-		//first contours corner points are lost due to array index.
+
+		// first contours corner points are lost due to array index.
 		Contour.addCornerPointsForOutsideContour(contours.get(0), pixelArray[0].length - 2, pixelArray.length - 2);
 	}
 
@@ -131,9 +114,6 @@ public class ContourTracer {
 			// are we back at the starting position?
 			done = (xP == xS && yP == yS && xC == xT && yC == yT);
 			if (!done) {
-//				if(label == 1) {
-//					System.out.print(pt.x + ":" + pt.y + " ");
-//				}
 				cont.addPoint(pt);
 			}
 		}
@@ -143,8 +123,7 @@ public class ContourTracer {
 	int findNextPoint(MapPoint pt, int dir) {
 		// starts at Point pt in direction dir, returns the
 		// ﬁnal tracing direction, and modiﬁes pt
-		final int[][] delta = { { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 },
-				{ -1, 0 }, { -1, -1 }, { 0, -1 }, { 1, -1 } };
+		final int[][] delta = { { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, { 0, -1 }, { 1, -1 } };
 		for (int i = 0; i < 7; i++) {
 			int x = pt.x + delta[dir][0];
 			int y = pt.y + delta[dir][1];

@@ -1,6 +1,5 @@
-package model;
+package model.level.objects;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ public class LOPolygon extends LevelObject {
 	protected Polygon polygon;
 
 	public LOPolygon() {
-		this.objectColor = Color.BLACK;
+		super();
 	}
 
 	public Polygon getPolygon() {
@@ -19,7 +18,7 @@ public class LOPolygon extends LevelObject {
 	public void setPolygon(Polygon polygon) {
 		this.polygon = polygon;
 	}
-	
+
 	public Polygon getScaledPolygon(int scale) {
 		int length = this.polygon.npoints;
 		int[] xPoints = new int[length];
@@ -29,12 +28,9 @@ public class LOPolygon extends LevelObject {
 			xPoints[i] = this.polygon.xpoints[i] * scale;
 			yPoints[i] = this.polygon.ypoints[i] * scale;
 		}
-		
+
 		return new Polygon(xPoints, yPoints, length);
-		
-		//AffineTransform at = new Affine
-			//	this.polygon.ge
-		//int[] xPoints = this.polygon;
+
 	}
 
 	public void scale(int scale) {
@@ -49,7 +45,7 @@ public class LOPolygon extends LevelObject {
 	public void translate(int xtranslate, int ytranslate) {
 		this.getPolygon().translate(xtranslate, ytranslate);
 	}
-	
+
 	public ArrayList<Point> getPolyPointList() {
 		ArrayList<Point> list = new ArrayList<Point>(polygon.npoints);
 		for (int i = 0; i < polygon.npoints; i++) {

@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,12 +17,13 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
-import model.LOCircle;
-import model.LOCircledWall;
-import model.LOPolygon;
-import model.LevelObject;
-import model.MapPoint;
-import model.Path;
+import model.astar.Path;
+import model.level.Level;
+import model.level.MapPoint;
+import model.level.objects.LOCircle;
+import model.level.objects.LOCircledWall;
+import model.level.objects.LOPolygon;
+import model.level.objects.LOSpeedUp;
 import controller.LevelController;
 
 public class LevelPanel extends JPanel {
@@ -68,8 +70,7 @@ public class LevelPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		paintLevel(g2);
 
 	}
@@ -80,64 +81,96 @@ public class LevelPanel extends JPanel {
 	}
 
 	public void paintLevel(Graphics2D g2) {
-		ArrayList<LevelObject> levelObjs = (ArrayList<LevelObject>) levelController
-				.getLevel().getLevelObjects();
+		Level level = levelController.getLevel();
 		AffineTransform scaleMatrix = new AffineTransform();
 		scaleMatrix.scale(scale, scale);
 		g2.setTransform(scaleMatrix);
-		paintLevelObjects(g2, levelObjs);
+		paintLevelObjects(g2, level);
 		if (showPaths)
 			paintPaths(g2);
 		revalidate();
 		super.revalidate();
 	}
 
-	private void paintLevelObjects(Graphics2D g2,
-			ArrayList<LevelObject> levelObjs) {
-		for (LevelObject levelObject : levelObjs) {
-			g2.setColor(levelObject.getObjectColor());
-			if (levelObject instanceof LOPolygon) {
-				Polygon poly = ((LOPolygon) levelObject).getPolygon();
-				if (showFilledPolygons)
-					g2.fillPolygon(poly);
-				else
-					g2.drawPolygon(poly);
+	private void paintLevelObjects(Graphics2D g2, Level level) {
+		paintPolys(g2, level.getFloor());
+		paintPolys(g2, level.getSlowDowners());
+		paintLines(g2, level.getSpeedUps());
+		paintPolys(g2, level.getWalls());
+		paintCircles(g2, level.getWaypoints());
+	}
 
-				if (showPolyPoints) {
+	private void paintCircles(Graphics2D g2, ArrayList<LOCircle> circles) {
+		for (LOCircle loCircle : circles) {
+			g2.setColor(loCircle.getObjectColor());
+			Ellipse2D.Double ellipse = loCircle.getEllipse();
+			if (showFilledPolygons)
+				g2.fill(ellipse);
+			else
+				g2.draw(ellipse);
+
+			if (showPolyPoints) {
+				if (loCircle instanceof LOCircledWall) {
 					g2.setColor(Color.MAGENTA);
-					for (int i = 0; i < poly.npoints; i++) {
-						Ellipse2D.Double pointEllipse = new Ellipse2D.Double(
-								poly.xpoints[i] - polyPointSize / 2,
-								poly.ypoints[i] - polyPointSize / 2,
-								polyPointSize, polyPointSize);
-						g2.fill(pointEllipse);
-					}
+					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(loCircle.getPosition().x - polyPointSize / 2,
+							loCircle.getPosition().y - polyPointSize / 2, polyPointSize, polyPointSize);
+					g2.fill(pointEllipse);
 				}
-			} else if (levelObject instanceof LOCircle) {
-				Ellipse2D.Double ellipse = ((LOCircle) levelObject)
-						.getEllipse();
-				if (showFilledPolygons)
-					g2.fill(ellipse);
-				else
-					g2.draw(ellipse);
+			}
+		}
 
-				if (showPolyPoints) {
-					if (levelObject instanceof LOCircledWall) {
-						g2.setColor(Color.MAGENTA);
-						Ellipse2D.Double pointEllipse = new Ellipse2D.Double(
-								levelObject.getPosition().x - polyPointSize / 2,
-								levelObject.getPosition().y - polyPointSize / 2,
-								polyPointSize, polyPointSize);
-						g2.fill(pointEllipse);
-					}
+	}
+
+	private void paintLines(Graphics2D g2, ArrayList<LOPolygon> polys) {
+		for (LOPolygon loPolygon : polys) {
+			paintSpeedUpAsLine(g2, (LOSpeedUp) loPolygon);
+		}
+
+	}
+
+	private void paintPolys(Graphics2D g2, ArrayList<LOPolygon> polys) {
+		for (LOPolygon loPoly : polys) {
+			Polygon poly = loPoly.getPolygon();
+			g2.setColor(loPoly.getObjectColor());
+			if (showFilledPolygons)
+				g2.fillPolygon(poly);
+			else
+				g2.drawPolygon(poly);
+
+			if (showPolyPoints) {
+				g2.setColor(Color.MAGENTA);
+				for (int i = 0; i < poly.npoints; i++) {
+					Ellipse2D.Double pointEllipse = new Ellipse2D.Double(poly.xpoints[i] - polyPointSize / 2, poly.ypoints[i]
+							- polyPointSize / 2, polyPointSize, polyPointSize);
+					g2.fill(pointEllipse);
 				}
+			}
+		}
+
+	}
+
+	private void paintSpeedUpAsLine(Graphics2D g2, LOSpeedUp speedUpObj) {
+		g2.setColor(speedUpObj.getObjectColor());
+		g2.setStroke(new BasicStroke(levelController.getLevelParameters().getScale() + speedUpObj.getLineWidth(),
+				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		Polygon poly = speedUpObj.getPolygon();
+		for (int i = 0; i < poly.npoints - 1; i++) {
+			g2.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i + 1], poly.ypoints[i + 1]);
+		}
+		if (showPolyPoints) {
+			g2.setColor(Color.MAGENTA);
+			for (int i = 0; i < poly.npoints; i++) {
+				Ellipse2D.Double pointEllipse = new Ellipse2D.Double(poly.xpoints[i] - polyPointSize / 2, poly.ypoints[i]
+						- polyPointSize / 2, polyPointSize, polyPointSize);
+				g2.fill(pointEllipse);
 			}
 		}
 	}
 
 	private void paintPaths(Graphics2D g2) {
 		g2.setColor(Color.MAGENTA);
-		List<Path> paths = levelController.wpController.getPaths();
+		g2.setStroke(new BasicStroke(1));
+		List<Path> paths = levelController.getWpController().getPaths();
 		int size, i;
 		List<MapPoint> pointList;
 		MapPoint aP;
@@ -155,8 +188,7 @@ public class LevelPanel extends JPanel {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension((int) (levelController.getLevelParameters()
-				.getLevelWidth() * scale), (int) (levelController
+		return new Dimension((int) (levelController.getLevelParameters().getLevelWidth() * scale), (int) (levelController
 				.getLevelParameters().getLevelHeight() * scale));
 	}
 

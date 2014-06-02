@@ -1,4 +1,4 @@
-package model;
+package model.contour;
 
 import java.awt.Polygon;
 import java.awt.Shape;
@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import model.level.MapPoint;
+
 public class Contour {
 	static int INITIAL_SIZE = 50;
 	int label;
 	List<MapPoint> points;
-	
+
 	Contour(int label, int size) {
 		this.label = label;
 		points = new ArrayList<MapPoint>(size);
@@ -67,7 +69,7 @@ public class Contour {
 		}
 	}
 
-	public static void moveContoursBy (List<Contour> contours, int dx, int dy) {
+	public static void moveContoursBy(List<Contour> contours, int dx, int dy) {
 		for (Contour c : contours) {
 			c.movePointsBy(c.getPoints(), dx, dy);
 		}
@@ -91,20 +93,19 @@ public class Contour {
 		}
 	}
 
-	public static void addCornerPointsForOutsideContour(Contour contour, int mapWidth, int mapHeight) {
+	public static void addCornerPointsForOutsideContour(Contour contour,
+			int mapWidth, int mapHeight) {
 		for (MapPoint mp : contour.getPoints()) {
-			if(mp.x == 0 && mp.y == mapHeight - 1)
+			if (mp.x == 0 && mp.y == mapHeight - 1)
 				mp.y = mapHeight;
-			else if(mp.x == mapWidth - 1 && mp.y == 0)
+			else if (mp.x == mapWidth - 1 && mp.y == 0)
 				mp.x = mapWidth;
-			else if(mp.x == mapWidth - 1 && mp.y == mapHeight - 1) {
+			else if (mp.x == mapWidth - 1 && mp.y == mapHeight - 1) {
 				mp.x = mapWidth;
 				mp.y = mapHeight;
 			}
 		}
-		
+
 	}
-	
-	
-	
+
 }

@@ -1,13 +1,12 @@
 package controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-import model.MapPoint;
+import model.level.MapPoint;
 
 public class CellularAutomaton {
 
@@ -21,38 +20,19 @@ public class CellularAutomaton {
 
 	private Map<Integer, Integer> regionSizeByLabel;
 
-	// private enum neighbors {
-	// ALL_BACKGROUND, ONE, MANY
-	// }
-
-	public CellularAutomaton() {
-		mapWidth = 40;
-		mapHeight = 21;
-		percentAreWalls = 40;
-		regionSizeByLabel = new HashMap<Integer, Integer>();
-		randomFillMap();
+	public CellularAutomaton(int width, int height) {
+		this.mapWidth = width;
+		this.mapHeight = height;
 	}
 
 	public CellularAutomaton(int width, int height, int percentAreWalls) {
-		this.mapWidth = width;
-		this.mapHeight = height;
+		this(width, height);
 		this.percentAreWalls = percentAreWalls;
 		regionSizeByLabel = new HashMap<Integer, Integer>();
 		randomFillMap();
 	}
 
-	public CellularAutomaton(int mapWidth, int mapHeight, int[][] map,
-			int percentWalls) {
-		this.mapWidth = mapWidth;
-		this.mapHeight = mapHeight;
-		this.percentAreWalls = percentWalls == 0 ? 40 : percentWalls;
-		this.map = new int[this.mapWidth][this.mapHeight];
-		this.map = map;
-		regionSizeByLabel = new HashMap<Integer, Integer>();
-	}
-
 	public void makeCaverns() {
-		// By initilizing column in the outter loop, its only created ONCE
 		for (int column = 0, row = 0; row < mapHeight; row++) {
 			for (column = 0; column < mapWidth; column++) {
 				map[column][row] = placeWallLogic(column, row);
@@ -135,53 +115,6 @@ public class CellularAutomaton {
 		return false;
 	}
 
-	public void printThisMap() {
-		System.out.println(mapToString());
-	}
-
-	public void printMap(int[][] map) {
-		System.out.println(mapToString(map));
-	}
-
-	private String mapToString() {
-		String returnString = "Width: " + mapWidth + "\tHeight: " + mapHeight
-				+ "\t" + percentAreWalls + "% Walls \n";
-
-		ArrayList<String> mapSymbols = new ArrayList<String>();
-		mapSymbols.add(".");
-		mapSymbols.add("#");
-		mapSymbols.add("+");
-
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				returnString += map[column][row];// mapSymbols.get(map[column][row]);
-			}
-			returnString += "\n";
-		}
-		return returnString;
-	}
-
-	private String mapToString(int[][] map) {
-		String returnString = "Width: " + mapWidth + "\tHeight: " + mapHeight
-				+ "\t" + percentAreWalls + "% Walls \n";
-
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				returnString += map[column][row];// mapSymbols.get(map[column][row]);
-			}
-			returnString += "\n";
-		}
-		return returnString;
-	}
-
-	public void BlankMap() {
-		for (int column = 0, row = 0; row < mapHeight; row++) {
-			for (column = 0; column < mapWidth; column++) {
-				map[column][row] = 0;
-			}
-		}
-	}
-
 	public void randomFillMap() {
 		// New, empty map
 		map = new int[mapWidth][mapHeight];
@@ -214,7 +147,7 @@ public class CellularAutomaton {
 		}
 	}
 
-	int RandomPercent(int percent) {
+	private int RandomPercent(int percent) {
 		if (percent >= (rand.nextInt(100) + 1)) {
 			return 1;
 		}
@@ -232,8 +165,6 @@ public class CellularAutomaton {
 
 	public int[][] getMapWithLabeledRegions() {
 		int[][] map = cloneArray(this.map);
-		int mapHeight = map[0].length;
-		int mapWidth = map.length;
 		int m = 2;
 		try {
 			for (int column = 0, row = 0; row < mapHeight; row++) {
@@ -245,7 +176,6 @@ public class CellularAutomaton {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return map;
@@ -272,22 +202,6 @@ public class CellularAutomaton {
 			regionSizeByLabel.put(label, size);
 	}
 
-	public int[] getNeighborLabels(int x, int y) {
-		int[] result = new int[4];
-		Arrays.fill(result, -1);
-		result[0] = getLabel(x - 1, y - 1);
-		result[1] = getLabel(x, y - 1);
-		result[2] = getLabel(x + 1, y - 1);
-		result[3] = getLabel(x - 1, y);
-		return result;
-	}
-
-	private int getLabel(int x, int y) {
-		if (isWallOutOfBounds(x, y))
-			return 0;
-		return map[x][y];
-	}
-
 	public ArrayList<MapPoint> makeEntrance(int[][] input) {
 		ArrayList<MapPoint> pointList = new ArrayList<MapPoint>();
 		int middleY = input[0].length / 2;
@@ -306,6 +220,10 @@ public class CellularAutomaton {
 		}
 		return pointList;
 	}
+
+	// //////////////////////////////////////////////////
+	// MAP EVALUATION
+	// //////////////////////////////////////////////////
 
 	public boolean isValidMap(int[][] map) {
 		boolean isEntrancePossible = isEntrancePossible(map);
@@ -383,8 +301,57 @@ public class CellularAutomaton {
 		return innerPixel;
 	}
 
+	// //////////////////////////////////////////////////
+	// SETTERS AND GETTERS
+	// //////////////////////////////////////////////////
+
 	public Map<Integer, Integer> getRegionSizeByLabel() {
 		return regionSizeByLabel;
+	}
+
+	// //////////////////////////////////////////////////
+	// LOGGING AND DEBUGGING
+	// //////////////////////////////////////////////////
+
+	public void printMap(int[][] map) {
+		System.out.println(mapToString(map));
+	}
+
+	public void printMapWithSymbols(int[][] map) {
+		System.out.println(mapToStringWithSymbols(map));
+	}
+
+	private String mapToStringWithSymbols(int[][] map) {
+		String returnString = "";
+		ArrayList<String> mapSymbols = new ArrayList<String>();
+		mapSymbols.add(".");
+		mapSymbols.add("#");
+		mapSymbols.add("W");
+
+		int mapVal;
+		int val;
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				mapVal = map[column][row];
+				val = mapVal == 0 ? 0 : mapVal > 0 ? 1 : 2;
+				returnString += mapSymbols.get(val);
+			}
+			returnString += "\n";
+		}
+		return returnString;
+	}
+
+	private String mapToString(int[][] map) {
+		String returnString = "Width: " + mapWidth + "\tHeight: " + mapHeight
+				+ "\t" + percentAreWalls + "% Walls \n";
+
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				returnString += map[column][row];// mapSymbols.get(map[column][row]);
+			}
+			returnString += "\n";
+		}
+		return returnString;
 	}
 
 }

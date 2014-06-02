@@ -1,8 +1,10 @@
-package model;
+package model.astar;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.level.MapPoint;
 
 public class Path {
 
@@ -19,6 +21,14 @@ public class Path {
 		return nodes;
 	}
 
+	public ArrayList<MapPoint> getNodesAsArrayList() {
+		ArrayList<MapPoint> nodesAsAL = new ArrayList<>(nodes.size());
+		for (MapPoint mapPoint : nodes) {
+			nodesAsAL.add(mapPoint);
+		}
+		return nodesAsAL;
+	}
+
 	public ArrayList<Point> getPathAsArrayListOfPoints() {
 		ArrayList<Point> pointList = new ArrayList<Point>(nodes.size());
 		for (MapPoint mapPoint : nodes) {
@@ -26,6 +36,13 @@ public class Path {
 			pointList.add(p);
 		}
 		return pointList;
+	}
+
+	public void scale(int scale) {
+		for (MapPoint node : nodes) {
+			node.x = node.x * scale;
+			node.y = node.y * scale;
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package model;
+package model.level;
 
 public class MapPoint {
 	public int x, y;

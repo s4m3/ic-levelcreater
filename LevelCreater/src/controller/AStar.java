@@ -4,15 +4,15 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Node;
+import model.astar.Node;
 
 /**
- * Adaptiert von
- * http://www.java-forum.org/codeschnipsel-u-projekte/5046-codeschnipsel.html
+ * Adaptiert von http://www.java-forum.org/codeschnipsel-u-projekte/5046-codeschnipsel.html
  */
 public class AStar {
 
 	public ArrayList<Node> calculatePath(int[][] map, Point start, Point goal) {
+		// printMapWithSymbols(map, start, goal, null);
 		int mapWidth = map.length;
 		int mapHeight = map[0].length;
 		int startX, startY, endX, endY, iX, iY; // for iteration through
@@ -38,41 +38,44 @@ public class AStar {
 			endX = cX + 1;
 			endY = cY + 1;
 
-			for (iX = startX; iX < endX; iX++) {
-				for (iY = startY; iY < endY; iY++) {
-					if (!isOutOfBounds(iX, iY, mapWidth, mapHeight)
-							&& !(iX == cX && iY == cY)) { // check: out of
-															// bounds and ignore
-															// same node
+			for (iX = startX; iX <= endX; iX++) {
+				for (iY = startY; iY <= endY; iY++) {
+					if (!isOutOfBounds(iX, iY, mapWidth, mapHeight) && !(iX == cX && iY == cY)) { // check: out of
+																									// bounds and ignore
+																									// same node
 						if (map[iX][iY] == 0) {
+
 							Node n = new Node(currentNode, iX, iY);
+							// printMapWithSymbols(map, start, goal,
+							// closedList);
 							n.setG(calcG(n));
 							n.setH(calcH(n, goal));
 							n.setF(n.getG() + n.getH());
+							// System.out.println(String.format("%f %f %f",
+							// n.getG(), n.getH(), n.getF()));
 							successors.add(n);
 						}
 					}
 				}
 			}
 
-			for (Node n : successors) { // für jede Gehmöglichkeit
-				if (n.getX() == (int) goal.getX()
-						&& n.getY() == (int) goal.getY()) {
+			for (Node n : successors) {
+				if (n.getX() == (int) goal.getX() && n.getY() == (int) goal.getY()) {
 					ArrayList<Node> path = generatePath(n);
 					return path;
 				}
-				boolean add = true; // wenn es keinen besseren Knoten in der
-				if (besserIn(n, openList)) // openList und der
+				boolean add = true;
+				if (betterIn(n, openList))
 					add = false;
-				if (besserIn(n, closedList)) // closedList
+				if (betterIn(n, closedList))
 					add = false;
 				if (add)
-					openList.add(n); // gibt, successor zur openList hinzufügen
+					openList.add(n);
 			}
-			closedList.add(currentNode); // Schleife beendet, q zur closedList
-											// tun
+			closedList.add(currentNode);
+
 		}
-		// Schleife beendet->kein Weg gefunden
+		// no way found
 		return null;
 	}
 
@@ -86,9 +89,7 @@ public class AStar {
 		return path;
 	}
 
-	private Node getLeastF(List<Node> l) // Node aus open-/closedList mit
-											// niedrigstem f suchen
-	{
+	private Node getLeastF(List<Node> l) {
 		Node least = null;
 		for (Node n : l) {
 			if ((least == null) || (n.getF() < least.getF())) {
@@ -98,11 +99,9 @@ public class AStar {
 		return least;
 	}
 
-	private boolean besserIn(Node n, List<Node> l) // Umweg gegangen?
-	{
+	private boolean betterIn(Node n, List<Node> l) {
 		for (Node no : l) {
-			if (no.getX() == n.getX() && no.getY() == n.getY()
-					&& no.getF() <= n.getF())
+			if (no.getX() == n.getX() && no.getY() == n.getY() && no.getF() <= n.getF())
 				return true;
 		}
 		return false;
@@ -119,12 +118,11 @@ public class AStar {
 		return newG;
 	}
 
-	private float calcH(Node act, Point goal) // Heuristik
-	{
-		int distX = Math.abs(act.getX() - goal.x); // Differenz a
-		int distY = Math.abs(act.getY() - goal.y); // Differenz b
-		float ret = (float) Math.sqrt(distX * distX + distY * distY);
-		return ret;
+	private float calcH(Node act, Point goal) {
+		int distX = Math.abs(act.getX() - goal.x);
+		int distY = Math.abs(act.getY() - goal.y);
+		int returnValue = distX * distX + distY * distY;
+		return returnValue;
 	}
 
 	private boolean isOutOfBounds(int x, int y, int mapWidth, int mapHeight) {
@@ -135,4 +133,61 @@ public class AStar {
 		}
 		return false;
 	}
+
+	private boolean listContainsNode(List<Node> openList, int x, int y) {
+		if (openList == null)
+			return false;
+
+		for (Node node : openList) {
+			if (node.getX() == x && node.getY() == y)
+				return true;
+		}
+		return false;
+	}
+
+	// //////////////////////////////////////////////////
+	// LOGGING AND DEBUGGING
+	// //////////////////////////////////////////////////
+
+	public void printMapWithSymbols(int[][] map, Point start, Point goal, List<Node> openList) {
+		System.out.println(mapToStringWithSymbols(map, start, goal, openList));
+	}
+
+	private String mapToStringWithSymbols(int[][] map, Point start, Point goal, List<Node> openList) {
+		String returnString = "";
+		ArrayList<String> mapSymbols = new ArrayList<String>();
+		mapSymbols.add(".");
+		mapSymbols.add("#");
+		mapSymbols.add("W");
+		mapSymbols.add("S");
+		mapSymbols.add("G");
+		mapSymbols.add("N");
+
+		int startX = start.x;
+		int startY = start.y;
+		int goalX = goal.x;
+		int goalY = goal.y;
+		int mapVal;
+		int val;
+		int mapHeight = map[0].length;
+		int mapWidth = map.length;
+
+		for (int column = 0, row = 0; row < mapHeight; row++) {
+			for (column = 0; column < mapWidth; column++) {
+				mapVal = map[column][row];
+				val = mapVal == 0 ? 0 : mapVal > 0 ? 1 : 2;
+				if (column == startX && row == startY)
+					val = 3;
+				else if (column == goalX && row == goalY)
+					val = 4;
+				else if (listContainsNode(openList, column, row))
+					val = 5;
+
+				returnString += mapSymbols.get(val);
+			}
+			returnString += "\n";
+		}
+		return returnString;
+	}
+
 }
