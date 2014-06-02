@@ -32,6 +32,9 @@ public class WaypointController {
 		// set waypoint size according to width and height of map
 		int minDimension = map.length < map[0].length ? map.length : map[0].length;
 		wayPointSize = 1 + (minDimension / DIMENSION_FRACTION);
+		if(map.length * map[0].length >= 1000000) {
+			wayPointSize /= 2;
+		}
 	}
 
 	public List<LevelObject> createWaypointsWithSections(int numOfWaypoints) {

@@ -88,8 +88,14 @@ public class LevelsContainer extends JFrame implements ItemListener, ActionListe
 		optionsPanel.setMaximumSize(new Dimension(screenSize.width, 60));
 		optionsPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-		JLabel verticesCount = new JLabel(String.format("Number of Vertices:%s", levelController.getLevel().getNumOfVertices()));
+		JLabel levelSizeLabel = new JLabel(String.format("Size:%sx%s ", levelController.getLevelParameters().getLevelWidth(), levelController.getLevelParameters().getLevelHeight()));
+		optionsPanel.add(levelSizeLabel);
+		
+		JLabel verticesCount = new JLabel(String.format("Number of Vertices:%s ", levelController.getLevel().getNumOfVertices()));
 		optionsPanel.add(verticesCount);
+		
+		JLabel waypointLabel = new JLabel(String.format("Number of Waypoints:%s", levelController.getLevel().getWaypoints().size()));
+		optionsPanel.add(waypointLabel);
 
 		showVerticesCheckbox = new JCheckBox("Show Vertices", levelPanel.isShowPolyPoints());
 		showVerticesCheckbox.addItemListener(this);

@@ -9,6 +9,7 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -91,28 +92,32 @@ public class LevelController extends SwingWorker<Void, Void> {
 
 		// label regions and get copy, to keep original created map
 		int[][] createdMap = cellAutomat.getMapWithLabeledRegions();
-		setProgress(40);
+		setProgress(15);
 		statusUpdates.add("region labeling done");
 
 		// validate created map
 		if (!cellAutomat.isValidMap(createdMap))
 			return null;
-
+		
+		statusUpdates.add("validation done");
+		
 		// to have a closed outside polygon, close the polygon in the middle
 		ArrayList<MapPoint> entrance = cellAutomat.makeEntrance(createdMap);
 
 		// cellAutomat.printMap(createdMap);
-		setProgress(65);
+		setProgress(20);
 
 		// after opening the polygon, make a entrance polygon that closes that
 		// spot
 		createEntranceClosingPolygon(entrance);
-		setProgress(70);
+		statusUpdates.add("cleaning up map...");
+		setProgress(30);
 
 		// delete regions that are to small
 		cleanupMap(createdMap, cellAutomat.getRegionSizeByLabel());
-		setProgress(75);
+		setProgress(50);
 		statusUpdates.add("map cleanup done");
+		
 		// init contour tracer that creates polygons out of the labeled regions
 		// map
 		ContourTracer contourTracer = new ContourTracer(createdMap);
@@ -120,7 +125,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// trace contours
 		contourTracer.findAllContours();
 
-		setProgress(80);
+		setProgress(60);
 		statusUpdates.add("contours found");
 		// TODO: maybe fix this? watch out for the hack in contour tracer for
 		// corner points!!
@@ -141,7 +146,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 			updatedContours.add(contour);
 		}
 		statusUpdates.add("polygon points reduced");
-		setProgress(85);
+		setProgress(70);
 
 		// finally create polygons out of the cleaned contours
 		Shape[] shapes = Contour.makePolygons(updatedContours);
@@ -176,10 +181,10 @@ public class LevelController extends SwingWorker<Void, Void> {
 			}
 		}
 		statusUpdates.add("wall polygon- and slow downers creation done");
-		setProgress(89);
+		setProgress(79);
 
 		statusUpdates.add("creating waypoints...");
-		setProgress(90);
+		setProgress(80);
 
 		// init waypoint controller
 		wpController = new WaypointController(createdMap, level.getLevelObjects());
@@ -187,7 +192,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		List<LevelObject> waypoints = wpController.createWaypointsWithSections(levelParameters.getNumOfWaypoints());
 		level.addLevelObjects(waypoints);
 
-		setProgress(95);
+		setProgress(90);
 		statusUpdates.add("waypoint creation done");
 
 		Iterator<Path> pathIter = wpController.getPaths().iterator();
@@ -208,7 +213,7 @@ public class LevelController extends SwingWorker<Void, Void> {
 		// level can be scaled (see scale, xTransform and yTransform)
 		translateAndScaleLevelObjects();
 
-		setProgress(99);
+		setProgress(95);
 
 		// print final progress time and num of vertices
 		long diff = System.currentTimeMillis() - start;
@@ -242,15 +247,34 @@ public class LevelController extends SwingWorker<Void, Void> {
 				regionsToDelete.add(i);
 			}
 		}
+		int label;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				if (regionsToDelete.contains(map[i][j])) {
-					map[i][j] = 0;
+				label = map[i][j];
+				if (label != 0 && regionsToDelete.contains(label)) {
+					cleanupFloodDelete(map, i, j, label, width, height);
+					regionsToDelete.remove(new Integer(label));
 				}
 			}
 		}
-
 	}
+	
+	private void cleanupFloodDelete(int[][] map, int column, int row, int label, int mapWidth, int mapHeight) {
+		LinkedList<MapPoint> q = new LinkedList<MapPoint>(); // queue
+		q.addFirst(new MapPoint(column, row));
+		while (!q.isEmpty()) {
+			MapPoint n = q.removeLast();
+			if ((n.x >= 0) && (n.x < mapWidth) && (n.y >= 0)
+					&& (n.y < mapHeight) && map[n.x][n.y] == label) {
+				map[n.x][n.y] = 0;
+				q.addFirst(new MapPoint(n.x + 1, n.y));
+				q.addFirst(new MapPoint(n.x, n.y + 1));
+				q.addFirst(new MapPoint(n.x, n.y - 1));
+				q.addFirst(new MapPoint(n.x - 1, n.y));
+			}
+		}
+	}
+	
 
 	@Override
 	public void done() {

@@ -132,10 +132,12 @@ public class LevelPanel extends JPanel {
 		for (LOPolygon loPoly : polys) {
 			Polygon poly = loPoly.getPolygon();
 			g2.setColor(loPoly.getObjectColor());
-			if (showFilledPolygons)
+			if (showFilledPolygons) {
 				g2.fillPolygon(poly);
-			else
+			} else {
+				g2.setStroke(new BasicStroke(1));
 				g2.drawPolygon(poly);
+			}
 
 			if (showPolyPoints) {
 				g2.setColor(Color.MAGENTA);
@@ -151,8 +153,12 @@ public class LevelPanel extends JPanel {
 
 	private void paintSpeedUpAsLine(Graphics2D g2, LOSpeedUp speedUpObj) {
 		g2.setColor(speedUpObj.getObjectColor());
-		g2.setStroke(new BasicStroke(levelController.getLevelParameters().getScale() + speedUpObj.getLineWidth(),
-				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		if (showFilledPolygons) {
+			g2.setStroke(new BasicStroke(levelController.getLevelParameters().getScale() + speedUpObj.getLineWidth(),
+					BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		} else {
+			g2.setStroke(new BasicStroke(1));
+		}
 		Polygon poly = speedUpObj.getPolygon();
 		for (int i = 0; i < poly.npoints - 1; i++) {
 			g2.drawLine(poly.xpoints[i], poly.ypoints[i], poly.xpoints[i + 1], poly.ypoints[i + 1]);
