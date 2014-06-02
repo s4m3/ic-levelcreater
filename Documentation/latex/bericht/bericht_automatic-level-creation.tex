@@ -87,10 +87,34 @@ Die Umsetzung erfolgte in Java mithilfe von AWT und Swing zur Darstellung der Er
 \section{Umsetzung}
 %TODO: Alle Algorithmen aufzählen und kurz erklären
 \subsection{Zellularer Automat}
-Die Grundform... Zunächst Mauern
+%http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
+Um die Grundform des Levels zu erstellen wurde zunächst ein evolutionärer Algorithmus benutzt. Die Recherche nach einer geeigneten Methode führte schließlich zur Implementierung eines zellulären Automaten. %TODO: Quelle
 
-\subsection{Flood Fill}
+Die Größe des Levels wird über die Parameter Breite und Höhe bestimmt. Ein zweidimensionales Array, initiiert aus Integern mit dem Wert 0 wird zunächst an zufälligen Stellen durch einen prozentualen Anteil n mit dem Wert 1 gefüllt. Die Stellen im Array, die mit 1 markiert sind, werden in einem späteren Schritt wie eine Wand behandelt, die Nullen sind später frei befahrbare Fläche. Da das Level grundsätzlich eine Außenwand haben soll, werden diese Punkte automatisch mit einer 1 gefüllt. Danach besteht das dadurch entstandene Level-Raster aus $n$ Prozent Einsen und $100-n$ Prozent Nullen. %TODO BILD. 
+Dies stellt die Generation 0 des evolutionären Algorithmus dar.
+
+Nun folgen mehrere Evolutionen oder auch Iterationen über das Raster -- iteriert wird über jeden Punkt im Raster -- mit folgenden einfachen Regeln des zellulären Automaten:
+\begin{itemize}
+\item{} Liegt der Punkt am Rand des Levels, bleibt eine 1 bestehen.
+\item{} Ist der aktuelle Punkt eine 1 und
+	\begin{itemize}
+	\item{} hat vier oder mehr Nachbarn mit dem Wert 1, bleibt der Wert 1 bestehen.
+	\item{} hat weniger als 2 Nachbarn mit dem Wert 1, wird der Wert auf 0 gesetzt.%TODO: sinnvoll? warum nicht weniger als 4?
+	\end{itemize}
+\item{} Ist der aktuelle Punkt eine 0 und hat fünf oder mehr Nachbarn mit dem Wert 1, wird der Wert auf 1 gesetzt.
+\item{} In allen sonstigen Fällen wird der Wert auf 0 gesetzt.
+\end{itemize}
+
+Durch mehrere Iterationen dieses Algorithmus entstehen mehrere zusammenhängende Flächen, die später in Polygone umgewandelt werden können und als Wände fungieren. Die genutzten Parameter (prozentualer Anteil der gefüllten Fläche bei der Initialisierung, sowie die Regeln des zellulären Automaten) haben sich durch Testdurchläufe ergeben. Dazu ist anzumerken, dass geringe Veränderungen dieser Parameter eine große Auswirkung auf das Endresultat haben. %TODO: Verweis auf die Bilder. 
+
+%TODO: bilder zeigen mit evolutionen
+
+
+\subsection{Zusammenfassung der Punktmengen}
 Um Polygone aus dem Grid... zunächst indexieren
+Da aus den entstandenen Punktmengen Polygone (Level-Wände) entstehen sollen, müssen zunächst die jeweils zusammenhängenden Punkte als zusammengehörig deklariert werden. Dazu bekommt jeden Punktmenge im Raster ein eigenes Label. Um diesen Schritt möglichst performant durchzuführen wurde der \textit{Floodfill}-Algorithmus angewendet. %TODO: Quelle, Anschaulich: http://de.wikipedia.org/wiki/Floodfill
+
+
 
 
 \subsection{Kontur tracing / Potrace/Make Polygons (convex und konkav) aus punktmenge}
